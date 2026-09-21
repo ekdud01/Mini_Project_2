@@ -7,10 +7,10 @@
 ```text
 Mini_Project_2/
 ├── backend/
-│   └── src/
+│   └── 0백엔드_스프링부트.md
 │
 ├── frontend/
-│   └── student_react_first/
+│   └── 1프론트엔드_React.md
 │
 └── README.md
 ```
