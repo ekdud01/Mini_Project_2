@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<!--
+  [임시 뼈대] 관리자 공통 레이아웃 — 황지영 님이 UI 설계서 2.2~2.5에 맞춰 완성한다.
+  각 화면은 layout:decorate="~{layout/admin-layout}"로 이 레이아웃을 쓰고,
+  <section layout:fragment="content"> 안에 본문만 작성한다.
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title layout:title-pattern="$CONTENT_TITLE | KDSQ 관리자">KDSQ 관리자</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<header class="admin-header">KDSQ 관리자</header>
+<main class="admin-main">
+    <section layout:fragment="content"></section>
+</main>
+<footer class="admin-footer">ⓒ 2026 마음 기억</footer>
+</body>
+</html>

@@ -1,9 +1,9 @@
 # KDSQ Mock 데이터
 
-REST API 설계서(v2.1)의 요청·응답 형식을 그대로 따른 Mock 데이터입니다. 백엔드가 완성되기 전에 프론트엔드가 실제와 같은 데이터로 화면을 만들고, 백엔드는 같은 JSON을 테스트 기대값으로 쓰는 것이 목적입니다.
+REST API 설계서(v1.10)의 요청·응답 형식을 그대로 따른 Mock 데이터입니다. 백엔드가 완성되기 전에 프론트엔드가 실제와 같은 데이터로 화면을 만들고, 백엔드는 같은 JSON을 테스트 기대값으로 쓰는 것이 목적입니다.
 
 - 작성일: 2026-09-26
-- 기준 문서: `필수제출문서/3.RESTAPI설계서_2조.md` (v2.1), `2.Entity설계서_2조.md` 13.4 초기 데이터
+- 기준 문서: `필수제출문서/3.RESTAPI설계서_2조.md` (v1.10), `2.Entity설계서_2조.md` 13.4 초기 데이터
 
 ## 폴더 구성
 
@@ -37,8 +37,8 @@ mock-data/
 ## 데이터 규칙 (서버 규칙과 동일)
 
 - 1차(KDSQ-P) 0~3점 → Normal, 1차에서 종료 (영역별 점수·총점 `null`)
-- 1차 4점 이상 → 2차(KDSQ-C)까지 완료해야 저장, 총점 0\~5 Borderline / 6\~30 HighRisk
-- 영역: 기억력 1\~5번, 기타 인지기능 6\~10번, 일상생활 수행능력 11~15번
+- 1차 4점 이상 → 2차(KDSQ-C)까지 완료해야 저장, 총점 0~5 Borderline / 6~30 HighRisk
+- 영역: 기억력 1~5번, 기타 인지기능 6~10번, 일상생활 수행능력 11~15번
 - 날짜는 한국 시간 `yyyy-MM-ddTHH:mm:ss` (Z 없음)
 - 결과 id 107은 관리자가 삭제한 결과(`active: false`)라 이력·상세에서 제외
 
@@ -46,41 +46,9 @@ mock-data/
 
 MSW는 브라우저에서 API 요청을 가로채 Mock 응답을 돌려줍니다. 화면 코드는 실제 API를 호출하는 것과 똑같이 작성하면 됩니다.
 
-**1. 설치 및 복사**
+**이미 `frontend` 프로젝트에 연결되어 있습니다.** `data/`와 `msw/`는 `frontend/src/mocks/`에 복사되어 있고, `npm run dev`로 실행하면 기본으로 Mock 모드로 동작합니다. 켜고 끄는 방법과 테스트 로그인(`devLogin()`)은 [`../frontend/README.md`](../frontend/README.md)를 참고하세요.
 
-```bash
-cd frontend
-npm install -D msw
-npx msw init public --save          # public/mockServiceWorker.js 생성
-```
-
-이 폴더의 `data/`와 `msw/`를 `frontend/src/mocks/`로 복사합니다.
-
-```text
-frontend/src/mocks/
-├── data/*.json
-└── msw/handlers.js, browser.js
-```
-
-**2. 개발 모드에서만 켜기 (`src/main.jsx`)**
-
-```jsx
-async function enableMocking() {
-  if (import.meta.env.VITE_USE_MOCK !== 'true') return;
-  const { worker } = await import('./mocks/msw/browser');
-  await worker.start({ onUnhandledRequest: 'bypass' });
-}
-
-enableMocking().then(() => {
-  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-});
-```
-
-**3. 켜고 끄기** — `frontend/.env.development`
-
-```properties
-VITE_USE_MOCK=true    # 백엔드 연결 시 false로 변경
-```
+> 이 폴더의 JSON을 고치면 `frontend/src/mocks/`의 같은 파일도 함께 고칩니다. 이 폴더는 백엔드 테스트·Postman용 원본입니다.
 
 ## MSW 핸들러가 흉내 내는 동작
 
