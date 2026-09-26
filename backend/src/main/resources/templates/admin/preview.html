@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin-layout}">
+<!-- [임시] 레이아웃 동작 확인용 페이지. 관리자 화면이 완성되면 이 파일과 WebConfig의 /admin/preview를 삭제한다. -->
+<head>
+    <title>레이아웃 확인</title>
+</head>
+<section layout:fragment="content">
+    <h1>레이아웃 확인용 페이지</h1>
+    <p>이 문장이 헤더와 푸터 사이에 보이면 Thymeleaf 레이아웃이 정상 동작하는 것입니다.</p>
+</section>
+</html>

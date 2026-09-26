@@ -1,0 +1,5 @@
+/* [임시 뼈대] 관리자 화면 공통 스타일 — 황지영 님이 UI 설계서 6장(디자인 토큰)에 맞춰 완성한다. */
+body { margin: 0; font-family: sans-serif; font-size: 16px; color: #1f2937; }
+.admin-header, .admin-footer { padding: 16px 24px; background: #f1f5f9; }
+.admin-main { padding: 24px; }
+.admin-login { max-width: 360px; margin: 80px auto; display: flex; flex-direction: column; gap: 8px; }

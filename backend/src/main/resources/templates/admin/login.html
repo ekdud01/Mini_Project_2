@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!--
+  [임시 뼈대] ADM-01 관리자 로그인 — 황지영 님이 UI 설계서 4.1에 맞춰 완성한다.
+  로그인 처리(POST /admin/login, 필드 email·password)는 formLogin 정식본에서 동작한다 (REST API 설계서 3.3).
+  th:action을 쓰면 CSRF 토큰 hidden 필드가 자동으로 들어간다.
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>관리자 로그인 | KDSQ 관리자</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<main class="admin-login">
+    <h1>KDSQ 관리자</h1>
+    <p th:if="${param.error}">이메일 또는 비밀번호가 올바르지 않습니다.</p>
+    <p th:if="${param.logout}">로그아웃되었습니다.</p>
+    <form th:action="@{/admin/login}" method="post">
+        <label for="email">이메일</label>
+        <input id="email" name="email" type="email" required>
+        <label for="password">비밀번호</label>
+        <input id="password" name="password" type="password" required>
+        <button type="submit">로그인</button>
+    </form>
+</main>
+</body>
+</html>

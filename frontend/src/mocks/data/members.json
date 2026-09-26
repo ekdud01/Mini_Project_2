@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "email": "hong@test.com",
+    "password": "Test1234!",
+    "name": "홍길동",
+    "gender": "MALE",
+    "birthYear": 1960,
+    "status": "ACTIVE",
+    "role": "MEMBER",
+    "createdAt": "2026-03-02T09:00:00",
+    "_note": "검사 이력 6건 (정상·주의·위험 모두 포함)"
+  },
+  {
+    "id": 2,
+    "email": "kim@test.com",
+    "password": "Test1234!",
+    "name": "김영희",
+    "gender": "FEMALE",
+    "birthYear": 1955,
+    "status": "ACTIVE",
+    "role": "MEMBER",
+    "createdAt": "2026-09-20T14:00:00",
+    "_note": "검사 이력 없음 (빈 상태 확인용)"
+  },
+  {
+    "id": 3,
+    "email": "lee@test.com",
+    "password": "Test1234!",
+    "name": "이순자",
+    "gender": "FEMALE",
+    "birthYear": 1950,
+    "status": "WITHDRAWN",
+    "role": "MEMBER",
+    "createdAt": "2026-05-10T11:00:00",
+    "_note": "탈퇴 회원 (로그인 시 403 MEMBER_WITHDRAWN)"
+  },
+  {
+    "id": 4,
+    "email": "park@test.com",
+    "password": "Test1234!",
+    "name": "박철수",
+    "gender": "MALE",
+    "birthYear": 1948,
+    "status": "ACTIVE",
+    "role": "MEMBER",
+    "createdAt": "2026-06-01T10:00:00",
+    "_note": "다른 회원 결과 접근(404) 확인용 결과 보유"
+  },
+  {
+    "id": 5,
+    "email": "admin@kdsq.com",
+    "password": "admin1234!",
+    "name": "관리자",
+    "gender": null,
+    "birthYear": null,
+    "status": "ACTIVE",
+    "role": "ADMIN",
+    "createdAt": "2026-03-01T00:00:00",
+    "_note": "ADMIN 계정 (사용자 로그인 시 401 INVALID_CREDENTIALS)"
+  }
+]
