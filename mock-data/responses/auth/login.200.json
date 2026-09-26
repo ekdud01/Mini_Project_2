@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "data": {
+    "accessToken": "mock-access-token-1",
+    "refreshToken": "mock-refresh-token-1",
+    "tokenType": "Bearer",
+    "expiresIn": 3600
+  },
+  "message": "로그인이 성공하였습니다",
+  "timestamp": "2026-09-26T10:00:00"
+}

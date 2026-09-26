@@ -1,0 +1,22 @@
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "입력값이 올바르지 않습니다",
+    "fields": [
+      {
+        "field": "email",
+        "message": "이메일 형식이 올바르지 않습니다"
+      },
+      {
+        "field": "password",
+        "message": "비밀번호는 8~20자의 영문, 숫자, 특수문자를 모두 포함해야 합니다"
+      },
+      {
+        "field": "birthYear",
+        "message": "출생년도는 1900년 이후여야 합니다"
+      }
+    ]
+  },
+  "timestamp": "2026-09-26T10:00:00"
+}

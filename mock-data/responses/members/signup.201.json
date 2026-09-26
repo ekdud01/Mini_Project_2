@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "data": {
+    "id": 6,
+    "email": "new@test.com",
+    "name": "최민수",
+    "gender": "MALE",
+    "birthYear": 1962,
+    "status": "ACTIVE"
+  },
+  "message": "회원가입이 완료되었습니다",
+  "timestamp": "2026-09-26T10:00:00"
+}

@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "data": {
+    "id": 106,
+    "memberId": 1,
+    "examType": "KDSQ_C",
+    "firstScore": 7,
+    "memoryScore": 4,
+    "otherScore": 3,
+    "adlScore": 2,
+    "totalScore": 9,
+    "riskLevel": "HighRisk",
+    "createdAt": "2026-09-24T10:35:00",
+    "solutions": [
+      {
+        "id": 2,
+        "title": "전문 검진 안내",
+        "content": "가까운 치매안심센터 또는 전문 의료기관 방문 권장 등"
+      }
+    ]
+  },
+  "timestamp": "2026-09-26T10:00:00"
+}

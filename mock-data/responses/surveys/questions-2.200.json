@@ -1,0 +1,81 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": 6,
+      "questionNumber": 1,
+      "content": "오늘이 몇 월이고, 무슨 요일인지를 모른다."
+    },
+    {
+      "id": 7,
+      "questionNumber": 2,
+      "content": "자기가 놔둔 물건을 찾지 못 한다."
+    },
+    {
+      "id": 8,
+      "questionNumber": 3,
+      "content": "같은 질문을 반복해서 한다."
+    },
+    {
+      "id": 9,
+      "questionNumber": 4,
+      "content": "약속을 하고서 잊어버린다."
+    },
+    {
+      "id": 10,
+      "questionNumber": 5,
+      "content": "물건을 가지러 갔다가 잊어버리고 그냥 온다."
+    },
+    {
+      "id": 11,
+      "questionNumber": 6,
+      "content": "물건이나, 사람의 이름을 대기가 힘들어 머뭇거린다."
+    },
+    {
+      "id": 12,
+      "questionNumber": 7,
+      "content": "대화 중 내용이 이해되지 않아 반복해서 물어 본다."
+    },
+    {
+      "id": 13,
+      "questionNumber": 8,
+      "content": "길을 잃거나 헤맨 적이 있다."
+    },
+    {
+      "id": 14,
+      "questionNumber": 9,
+      "content": "예전에 비해서 계산 능력이 떨어졌다(예: 물건값이나 거스름돈 계산을 못한다)."
+    },
+    {
+      "id": 15,
+      "questionNumber": 10,
+      "content": "예전에 비해 성격이 변했다."
+    },
+    {
+      "id": 16,
+      "questionNumber": 11,
+      "content": "이전에 잘 다루던 기구의 사용이 서툴러졌다(세탁기, 전기밥솥, 경운기 등)."
+    },
+    {
+      "id": 17,
+      "questionNumber": 12,
+      "content": "예전에 비해 방이나 집안의 정리 정돈을 하지 못한다."
+    },
+    {
+      "id": 18,
+      "questionNumber": 13,
+      "content": "상황에 맞게 스스로 옷을 선택하여 입지 못 한다."
+    },
+    {
+      "id": 19,
+      "questionNumber": 14,
+      "content": "혼자 대중교통 수단을 이용하여 목적지에 가기 힘들다(신체적인 문제(관절염)로 인한 것은 제외됨)."
+    },
+    {
+      "id": 20,
+      "questionNumber": 15,
+      "content": "내복이나 옷이 더러워져도 갈아입지 않으려고 한다."
+    }
+  ],
+  "timestamp": "2026-09-26T10:00:00"
+}

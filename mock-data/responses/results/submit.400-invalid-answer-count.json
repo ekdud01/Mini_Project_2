@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_ANSWER_COUNT",
+    "message": "모든 문항에 답해주세요"
+  },
+  "timestamp": "2026-09-26T10:00:00"
+}

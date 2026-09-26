@@ -1,0 +1,87 @@
+{
+  "surveyId": 2,
+  "firstAnswers": [
+    {
+      "questionId": 1,
+      "score": 2
+    },
+    {
+      "questionId": 2,
+      "score": 1
+    },
+    {
+      "questionId": 3,
+      "score": 2
+    },
+    {
+      "questionId": 4,
+      "score": 1
+    },
+    {
+      "questionId": 5,
+      "score": 1
+    }
+  ],
+  "answers": [
+    {
+      "questionId": 6,
+      "score": 1
+    },
+    {
+      "questionId": 7,
+      "score": 1
+    },
+    {
+      "questionId": 8,
+      "score": 0
+    },
+    {
+      "questionId": 9,
+      "score": 1
+    },
+    {
+      "questionId": 10,
+      "score": 1
+    },
+    {
+      "questionId": 11,
+      "score": 1
+    },
+    {
+      "questionId": 12,
+      "score": 0
+    },
+    {
+      "questionId": 13,
+      "score": 1
+    },
+    {
+      "questionId": 14,
+      "score": 1
+    },
+    {
+      "questionId": 15,
+      "score": 0
+    },
+    {
+      "questionId": 16,
+      "score": 1
+    },
+    {
+      "questionId": 17,
+      "score": 1
+    },
+    {
+      "questionId": 18,
+      "score": 0
+    },
+    {
+      "questionId": 19,
+      "score": 0
+    },
+    {
+      "questionId": 20,
+      "score": 0
+    }
+  ]
+}

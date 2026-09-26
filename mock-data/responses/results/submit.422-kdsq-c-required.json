@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "error": {
+    "code": "KDSQ_C_REQUIRED",
+    "message": "1차 검사 점수가 4점 이상이면 2차 검사까지 완료해야 합니다"
+  },
+  "timestamp": "2026-09-26T10:00:00"
+}

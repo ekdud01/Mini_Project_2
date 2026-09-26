@@ -1,0 +1,98 @@
+[
+  {
+    "id": 101,
+    "memberId": 1,
+    "surveyId": 1,
+    "firstScore": 2,
+    "memoryScore": null,
+    "otherScore": null,
+    "adlScore": null,
+    "riskLevel": "Normal",
+    "active": true,
+    "createdAt": "2026-04-12T10:15:00"
+  },
+  {
+    "id": 102,
+    "memberId": 1,
+    "surveyId": 2,
+    "firstScore": 5,
+    "memoryScore": 2,
+    "otherScore": 1,
+    "adlScore": 1,
+    "riskLevel": "Borderline",
+    "active": true,
+    "createdAt": "2026-05-15T14:20:00"
+  },
+  {
+    "id": 103,
+    "memberId": 1,
+    "surveyId": 2,
+    "firstScore": 6,
+    "memoryScore": 3,
+    "otherScore": 2,
+    "adlScore": 1,
+    "riskLevel": "HighRisk",
+    "active": true,
+    "createdAt": "2026-06-18T09:40:00"
+  },
+  {
+    "id": 104,
+    "memberId": 1,
+    "surveyId": 1,
+    "firstScore": 3,
+    "memoryScore": null,
+    "otherScore": null,
+    "adlScore": null,
+    "riskLevel": "Normal",
+    "active": true,
+    "createdAt": "2026-07-20T16:05:00"
+  },
+  {
+    "id": 105,
+    "memberId": 1,
+    "surveyId": 2,
+    "firstScore": 5,
+    "memoryScore": 2,
+    "otherScore": 2,
+    "adlScore": 1,
+    "riskLevel": "Borderline",
+    "active": true,
+    "createdAt": "2026-08-22T11:30:00"
+  },
+  {
+    "id": 106,
+    "memberId": 1,
+    "surveyId": 2,
+    "firstScore": 7,
+    "memoryScore": 4,
+    "otherScore": 3,
+    "adlScore": 2,
+    "riskLevel": "HighRisk",
+    "active": true,
+    "createdAt": "2026-09-24T10:35:00"
+  },
+  {
+    "id": 107,
+    "memberId": 1,
+    "surveyId": 2,
+    "firstScore": 8,
+    "memoryScore": 4,
+    "otherScore": 4,
+    "adlScore": 3,
+    "riskLevel": "HighRisk",
+    "active": false,
+    "createdAt": "2026-09-25T13:00:00"
+  },
+  {
+    "id": 201,
+    "memberId": 4,
+    "surveyId": 2,
+    "firstScore": 6,
+    "memoryScore": 3,
+    "otherScore": 3,
+    "adlScore": 2,
+    "riskLevel": "HighRisk",
+    "active": true,
+    "createdAt": "2026-09-10T15:00:00"
+  }
+]

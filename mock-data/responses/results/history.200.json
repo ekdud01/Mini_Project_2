@@ -1,0 +1,82 @@
+{
+  "success": true,
+  "data": {
+    "content": [
+      {
+        "id": 106,
+        "examType": "KDSQ_C",
+        "firstScore": 7,
+        "memoryScore": 4,
+        "otherScore": 3,
+        "adlScore": 2,
+        "totalScore": 9,
+        "riskLevel": "HighRisk",
+        "createdAt": "2026-09-24T10:35:00"
+      },
+      {
+        "id": 105,
+        "examType": "KDSQ_C",
+        "firstScore": 5,
+        "memoryScore": 2,
+        "otherScore": 2,
+        "adlScore": 1,
+        "totalScore": 5,
+        "riskLevel": "Borderline",
+        "createdAt": "2026-08-22T11:30:00"
+      },
+      {
+        "id": 104,
+        "examType": "KDSQ_P",
+        "firstScore": 3,
+        "memoryScore": null,
+        "otherScore": null,
+        "adlScore": null,
+        "totalScore": null,
+        "riskLevel": "Normal",
+        "createdAt": "2026-07-20T16:05:00"
+      },
+      {
+        "id": 103,
+        "examType": "KDSQ_C",
+        "firstScore": 6,
+        "memoryScore": 3,
+        "otherScore": 2,
+        "adlScore": 1,
+        "totalScore": 6,
+        "riskLevel": "HighRisk",
+        "createdAt": "2026-06-18T09:40:00"
+      },
+      {
+        "id": 102,
+        "examType": "KDSQ_C",
+        "firstScore": 5,
+        "memoryScore": 2,
+        "otherScore": 1,
+        "adlScore": 1,
+        "totalScore": 4,
+        "riskLevel": "Borderline",
+        "createdAt": "2026-05-15T14:20:00"
+      },
+      {
+        "id": 101,
+        "examType": "KDSQ_P",
+        "firstScore": 2,
+        "memoryScore": null,
+        "otherScore": null,
+        "adlScore": null,
+        "totalScore": null,
+        "riskLevel": "Normal",
+        "createdAt": "2026-04-12T10:15:00"
+      }
+    ],
+    "page": {
+      "number": 0,
+      "size": 100,
+      "totalElements": 6,
+      "totalPages": 1,
+      "first": true,
+      "last": true
+    }
+  },
+  "timestamp": "2026-09-26T10:00:00"
+}

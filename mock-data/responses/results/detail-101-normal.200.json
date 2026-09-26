@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "data": {
+    "id": 101,
+    "memberId": 1,
+    "examType": "KDSQ_P",
+    "firstScore": 2,
+    "memoryScore": null,
+    "otherScore": null,
+    "adlScore": null,
+    "totalScore": null,
+    "riskLevel": "Normal",
+    "createdAt": "2026-04-12T10:15:00",
+    "solutions": []
+  },
+  "timestamp": "2026-09-26T10:00:00"
+}

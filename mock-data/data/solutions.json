@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "riskLevel": "Borderline",
+    "title": "인지건강 관리 안내",
+    "content": "규칙적인 운동, 사회 활동, 정기적인 재검사 권장 등"
+  },
+  {
+    "id": 2,
+    "riskLevel": "HighRisk",
+    "title": "전문 검진 안내",
+    "content": "가까운 치매안심센터 또는 전문 의료기관 방문 권장 등"
+  }
+]

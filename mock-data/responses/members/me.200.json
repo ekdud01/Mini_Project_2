@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "email": "hong@test.com",
+    "name": "홍길동",
+    "gender": "MALE",
+    "birthYear": 1960,
+    "status": "ACTIVE",
+    "createdAt": "2026-03-02T09:00:00"
+  },
+  "timestamp": "2026-09-26T10:00:00"
+}

@@ -1,0 +1,31 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "questionNumber": 1,
+      "content": "자신의 기억력이 친구나 동료들에 비해 못하다고 생각하십니까?"
+    },
+    {
+      "id": 2,
+      "questionNumber": 2,
+      "content": "자신의 기억력이 1년 전에 비해 더 나빠졌다고 생각하십니까?"
+    },
+    {
+      "id": 3,
+      "questionNumber": 3,
+      "content": "중요한 일을 하는데 있어서도 기억력이 문제가 되는 경우가 있습니까?"
+    },
+    {
+      "id": 4,
+      "questionNumber": 4,
+      "content": "자신의 기억력이 떨어진 것을 남들도 알고 있습니까?"
+    },
+    {
+      "id": 5,
+      "questionNumber": 5,
+      "content": "잘해오던 일상적인 일을 하는데 예전보다 서툴러졌다고 생각하십니까?"
+    }
+  ],
+  "timestamp": "2026-09-26T10:00:00"
+}

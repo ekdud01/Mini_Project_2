@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "error": {
+    "code": "KDSQ_C_NOT_ALLOWED",
+    "message": "1차 검사 점수가 4점 미만이면 2차 검사 결과를 저장할 수 없습니다"
+  },
+  "timestamp": "2026-09-26T10:00:00"
+}
