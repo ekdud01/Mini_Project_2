@@ -51,9 +51,9 @@ mock-data/
 
 MSW는 브라우저에서 API 요청을 가로채 Mock 응답을 돌려줍니다. 화면 코드는 실제 API를 호출하는 것과 똑같이 작성하면 됩니다.
 
-**이미 `frontend` 프로젝트에 연결되어 있습니다.** `data/`와 `msw/`는 `frontend/src/mocks/`에 복사되어 있고, `npm run dev`로 실행하면 기본으로 Mock 모드로 동작합니다. 켜고 끄는 방법과 테스트 로그인(`devLogin()`)은 [`../frontend/README.md`](../frontend/README.md)를 참고하세요.
+**이미 `frontend` 프로젝트에 연결되어 있습니다.** 프론트엔드는 복사본 없이 이 폴더의 `data/`와 `msw/`를 직접 읽습니다 (`frontend/vite.config.js`의 `@mock` 별칭). `npm run dev`로 실행하면 기본으로 Mock 모드로 동작합니다. 켜고 끄는 방법과 테스트 로그인(`devLogin()`)은 [`../frontend/README.md`](../frontend/README.md)를 참고하세요.
 
-> 이 폴더의 JSON을 고치면 `frontend/src/mocks/`의 같은 파일도 함께 고칩니다. 이 폴더는 백엔드 테스트·Postman용 원본입니다.
+> 이 폴더가 프론트엔드 MSW·백엔드 테스트·Postman이 함께 쓰는 유일한 원본입니다. JSON을 고치면 개발 서버에 바로 반영됩니다.
 
 ## MSW 핸들러가 흉내 내는 동작
 
@@ -68,7 +68,7 @@ MSW는 브라우저에서 API 요청을 가로채 Mock 응답을 돌려줍니다
 | `GET /api/results/{id}` | 본인·활성 결과만, `solutions` 포함, 그 외 404 |
 | `GET /api/members/me/results` | 본인·활성 결과 최신순, `page`·`size` 페이징 |
 
-**토큰 만료 테스트:** 개발자 도구에서 localStorage에 저장된 `authStore`의 `accessToken` 값을 `expired`로 바꾸면 다음 요청이 401 `ACCESS_TOKEN_EXPIRED`로 응답합니다. axios 인터셉터가 재발급 후 재시도하는지 확인할 수 있습니다.
+**토큰 만료 테스트:** 개발자 도구에서 localStorage에 저장된 `auth-storage`의 `accessToken` 값을 `expired`로 바꾸면 다음 요청이 401 `ACCESS_TOKEN_EXPIRED`로 응답합니다. axios 인터셉터가 재발급 후 재시도하는지 확인할 수 있습니다.
 
 > 새로고침하면 가입·제출·탈퇴한 내용은 초기 데이터로 돌아갑니다.
 

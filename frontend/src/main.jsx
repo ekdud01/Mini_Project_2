@@ -11,7 +11,7 @@ import './index.css';
  */
 async function enableMocking() {
   if (!import.meta.env.DEV || import.meta.env.VITE_USE_MOCK === 'false') return;
-  const { worker } = await import('./mocks/msw/browser');
+  const { worker } = await import('@mock/msw/browser');
   await worker.start({ onUnhandledRequest: 'bypass' });
 
   // [개발용] 로그인 화면이 완성되기 전 테스트 로그인: 브라우저 콘솔에서 devLogin() 입력

@@ -54,6 +54,7 @@ npm run dev        # http://localhost:5173
 ```js
 devLogin()                   // hong@test.com 으로 로그인 (검사 이력 6건)
 devLogin('kim@test.com')     // 검사 이력 없는 계정 → 빈 상태 화면 확인용
+devLogin('testuser26@test.com')  // 검사 이력 23건 → 이력 표 페이지 이동 확인용
 ```
 
 로그아웃하고 싶으면 개발자 도구 → Application → Local Storage → `auth-storage`를 지운다.
@@ -67,8 +68,12 @@ devLogin('kim@test.com')     // 검사 이력 없는 계정 → 빈 상태 화�
 | lee@test.com | 탈퇴 | 로그인 시 403 `MEMBER_WITHDRAWN` 문구 |
 | park@test.com | 정상 | 결과 201번 보유 — hong으로 `/results/201` 접근 시 404 |
 | admin@kdsq.com (`admin1234!`) | 관리자 | 사용자 로그인 시 401 `INVALID_CREDENTIALS` |
+| testuser26@test.com | 정상 | 검사 이력 23건 — 이력 표 3페이지(10·10·3), 총점 30점·같은 날 2건 |
+| testuser27@test.com | 정상 | 검사 이력 11건 — 이력 표 2페이지 경계(10·1) |
 
-Mock이 흉내 내는 API와 규칙은 [`../mock-data/README.md`](../mock-data/README.md)에 있다.
+그 밖의 `testuser6~25@test.com`은 이력 1~5건을 가진 일반 회원이다 (`testuser10`은 탈퇴).
+
+Mock 데이터와 MSW 핸들러는 복사본 없이 루트의 [`../mock-data/`](../mock-data)를 직접 읽는다 (`vite.config.js`의 `@mock` 별칭). Mock이 흉내 내는 API와 규칙은 [`../mock-data/README.md`](../mock-data/README.md)에 있다.
 
 - Mock 데이터는 새로고침하면 처음 상태로 돌아간다(가입·제출·탈퇴한 내용 초기화).
 - **토큰 만료 테스트:** Local Storage의 `auth-storage` 값에서 `accessToken`을 `"expired"`로 바꾸면 다음 요청이 401 `ACCESS_TOKEN_EXPIRED`로 응답한다. 재발급 인터셉터 확인용이다.
@@ -121,7 +126,6 @@ src/
 ├── types/propTypes.js         도메인 PropTypes shape (React 설계서 3.2)
 ├── utils/date.js              날짜 표시  (+ kdsq.js: 서다영, validation.js: 강찬식)
 ├── lib/utils.js               shadcn 공통 유틸 (cn)
-└── mocks/                     MSW Mock 데이터·핸들러 (데이터를 바꾸면 ../mock-data/도 함께)
 ```
 
 ### 4-3. 라우트 (이미 연결됨, `App.jsx`)
