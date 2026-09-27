@@ -6,13 +6,17 @@ Spring Boot 4.0.8 · Java 17 · MariaDB · Spring Data JPA · Spring Security ·
 
 ## 실행 방법
 
-**1. DB 만들기** (MariaDB, 최초 1회)
+**1. DB 만들기** (MariaDB, 최초 1회) — root로 접속해서 DB를 만들고, 실습 때 만든 `boot` 계정에 권한을 준다.
 
 ```sql
+-- mysql -u root -p 로 접속한 뒤
 CREATE DATABASE kdsq_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+SELECT user, host FROM mysql.user WHERE user = 'boot';   -- host 값 확인 (예: % 또는 localhost)
+GRANT ALL PRIVILEGES ON kdsq_db.* TO 'boot'@'%';          -- 위에서 확인한 host로 바꿔 입력
+FLUSH PRIVILEGES;
 ```
 
-**2. 내 DB 계정 설정** — `root / 1234`가 아니면 `src/main/resources/application-local.properties`를 만든다 (GitHub에 올라가지 않음)
+**2. 내 DB 계정 설정** — 기본값은 실습 환경과 같은 `boot / boot`이다. 다른 계정을 쓰면 `src/main/resources/application-local.properties`를 만든다 (GitHub에 올라가지 않음)
 
 ```properties
 spring.datasource.username=내계정
@@ -84,14 +88,14 @@ Survey survey = surveyRepository.findById(id)
         .orElseThrow(() -> new BusinessException(ErrorCode.SURVEY_NOT_FOUND));
 ```
 
-**로그인 회원 id** — JWT 완성 전까지 `SecurityUtil.currentMemberId()`는 항상 `1`을 반환한다. 테스트 전에 회원가입 API로 회원 1명을 먼저 만들어 둔다. JWT가 들어오면 내부만 바뀌므로 호출 코드는 그대로 둔다.
+**로그인 회원 id** — JWT 완성 전까지 `SecurityUtil.currentMemberId()`는 항상 `2`를 반환한다. 서버를 처음 켜면 관리자 계정(`admin@kdsq.com`)이 1번으로 자동 등록되므로, 테스트 전에 회원가입 API로 회원 1명을 만들어 2번 회원을 준비한다 (`backend/http/member.http`의 첫 요청). JWT가 들어오면 내부만 바뀌므로 호출 코드는 그대로 둔다.
 
 ## 임시 코드 (정식본으로 교체 예정)
 
 | 파일 | 지금 | 교체 후 (담당) |
 |---|---|---|
 | `SecurityConfig` | 모든 요청 허용 | `/api/**` JWT, `/admin/**` formLogin (윤수연) |
-| `SecurityUtil` | 항상 1 반환 | 토큰의 회원 id (윤수연) |
+| `SecurityUtil` | 항상 2 반환 | 토큰의 회원 id (윤수연) |
 | `templates/layout`, `admin/login`, `admin.css` | 최소 뼈대 | UI 설계서 2.5·4장 (황지영) |
 | `admin/preview.html`, `WebConfig`의 `/admin/preview` | 레이아웃 확인용 | 관리자 화면 완성 후 삭제 |
 
