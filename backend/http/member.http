@@ -1,0 +1,72 @@
+### IntelliJ HTTP Client: 줄 왼쪽 ▶ 버튼으로 요청 1개씩 실행
+### 회원 API 테스트 케이스 (REST API 설계서 7.4 TC-AUTH-01~03-1, TC-MEM-01~02)
+### JWT 완성 전에는 /me 요청이 항상 회원 id 2 기준으로 동작한다 (SecurityUtil 임시, 1번은 자동 등록된 관리자)
+
+### TC-AUTH-01 회원가입 성공 → 201
+POST http://localhost:8080/api/members
+Content-Type: application/json
+
+{
+  "email": "hong@test.com",
+  "password": "Test1234!",
+  "name": "홍길동",
+  "gender": "MALE",
+  "birthYear": 1955
+}
+
+### TC-AUTH-02 같은 이메일로 다시 가입 → 409 DUPLICATE_EMAIL
+POST http://localhost:8080/api/members
+Content-Type: application/json
+
+{
+  "email": "hong@test.com",
+  "password": "Test1234!",
+  "name": "홍길동",
+  "gender": "MALE",
+  "birthYear": 1955
+}
+
+### TC-AUTH-03 이메일 형식 오류 + 출생년도 1800 → 400, fields에 email·birthYear
+POST http://localhost:8080/api/members
+Content-Type: application/json
+
+{
+  "email": "not-an-email",
+  "password": "Test1234!",
+  "name": "김철수",
+  "gender": "MALE",
+  "birthYear": 1800
+}
+
+### TC-AUTH-03-1 특수문자 없는 비밀번호 → 400, fields에 password
+POST http://localhost:8080/api/members
+Content-Type: application/json
+
+{
+  "email": "kim@test.com",
+  "password": "abcd1234",
+  "name": "김철수",
+  "gender": "MALE",
+  "birthYear": 1960
+}
+
+### 미래 출생년도 → 400, fields에 birthYear
+POST http://localhost:8080/api/members
+Content-Type: application/json
+
+{
+  "email": "kim@test.com",
+  "password": "Test1234!",
+  "name": "김철수",
+  "gender": "MALE",
+  "birthYear": 2999
+}
+
+### TC-MEM-01 내 정보 조회 → 200 (password 없음)
+GET http://localhost:8080/api/members/me
+
+### TC-MEM-02 회원 탈퇴 → 204 (테스트 후 DB에서 status를 ACTIVE로 되돌리면 다시 쓸 수 있음)
+DELETE http://localhost:8080/api/members/me
+
+### 탈퇴 후 내 정보 조회 → 404 MEMBER_NOT_FOUND
+GET http://localhost:8080/api/members/me
