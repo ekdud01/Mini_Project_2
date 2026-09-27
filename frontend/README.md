@@ -173,7 +173,12 @@ try {
 - **Props 검증:** Props를 받는 컴포넌트는 `propTypes`를 작성한다. 도메인 객체는 `@/types/propTypes`의 shape(`QuestionShape`, `SolutionShape`, `SurveyResultShape`, `MemberShape`, `RiskLevelType`)을 쓴다.
 - **날짜 표시:** 서버는 `2026-09-24T10:30:00`으로 보낸다. 화면에는 `formatDateTime()`(→ `2026-09-24 10:30`), 그래프 축에는 `formatDate()`(→ `09.24`)를 쓴다.
 - **스타일:** Tailwind 클래스로 작성한다. 색상 토큰은 `src/index.css`에 있다.
-- **shadcn/ui 컴포넌트 추가:** `npx shadcn@latest add button input card` — `src/components/ui/`에 생긴다. 이미 있는 컴포넌트는 다시 추가하지 않는다(덮어쓰기 됨). 추가한 파일도 함께 커밋한다.
+- **shadcn/ui 컴포넌트:** 설계서에 나온 컴포넌트는 이미 `src/components/ui/`에 있다. 바로 import해서 쓴다.
+  - `button`, `input`, `label`, `alert`, `card`, `badge`, `table`, `progress`, `radio-group`, `dialog`, `chart`
+  - 예: `import { Button } from '@/components/ui/button';`
+  - 이 파일들은 되도록 고치지 않는다. 모양을 바꿀 때는 사용하는 쪽에서 `className`을 넘긴다.
+  - 더 필요한 컴포넌트는 강찬식에게 요청한다. 추가 명령(`npx shadcn@latest add ...`)이 `package.json`을 바꾸기 때문이다.
+  - (추가하는 사람 참고) CLI가 `import { cn } from "cn"`과 `cn` 패키지를 넣으면, `@/lib/utils`로 바꾸고 `npm uninstall cn` 한다. `recharts` 버전이 내려가면 `^3.10.1`로 되돌린다.
 
 ### 4-6. 파일 주인
 
