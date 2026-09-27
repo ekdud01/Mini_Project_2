@@ -1,0 +1,97 @@
+### 실행: VS Code 확장 "REST Client"에서 각 요청 위의 Send Request 클릭
+### 인증 API 테스트 케이스 (REST API 설계서 7.4 TC-AUTH-04~07, 09~10)
+### 사전 준비: member.http로 hong@test.com(2번 회원, ACTIVE) 가입. 관리자(admin@kdsq.com)는 서버 시작 시 자동 등록
+### 로그인 요청(@name login)을 먼저 실행해야 아래 재발급 요청이 그 응답의 토큰을 가져다 쓴다
+
+### TC-AUTH-04 로그인 성공 → 200, accessToken·refreshToken·tokenType·expiresIn
+# @name login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "hong@test.com",
+  "password": "Test1234!"
+}
+
+### TC-AUTH-05 비밀번호 불일치 → 401 INVALID_CREDENTIALS
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "hong@test.com",
+  "password": "Wrong1234!"
+}
+
+### 없는 이메일 → 401 INVALID_CREDENTIALS (이메일 존재 여부를 알려 주지 않음)
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "nobody@test.com",
+  "password": "Test1234!"
+}
+
+### TC-AUTH-07 관리자 계정으로 사용자 로그인 → 401 INVALID_CREDENTIALS
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@kdsq.com",
+  "password": "admin1234!"
+}
+
+### 입력 누락 → 400 VALIDATION_ERROR, fields에 email·password
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "",
+  "password": ""
+}
+
+### TC-AUTH-09 재발급 성공 → 200, 새 accessToken (refreshToken은 응답에 없음)
+POST http://localhost:8080/api/auth/reissue
+Content-Type: application/json
+
+{
+  "refreshToken": "{{login.response.body.data.refreshToken}}"
+}
+
+### 위조된 리프레시 토큰 → 401 INVALID_REFRESH_TOKEN
+POST http://localhost:8080/api/auth/reissue
+Content-Type: application/json
+
+{
+  "refreshToken": "abc.def.ghi"
+}
+
+### 액세스 토큰을 리프레시 토큰 자리에 넣음 → 401 INVALID_REFRESH_TOKEN (저장된 토큰과 다름)
+POST http://localhost:8080/api/auth/reissue
+Content-Type: application/json
+
+{
+  "refreshToken": "{{login.response.body.data.accessToken}}"
+}
+
+### 로그아웃 → 204 (JWT 필터 완성 전에는 토큰 없이도 2번 회원 기준으로 동작)
+POST http://localhost:8080/api/auth/logout
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### TC-AUTH-10 로그아웃 후 같은 리프레시 토큰으로 재발급 → 401 INVALID_REFRESH_TOKEN
+POST http://localhost:8080/api/auth/reissue
+Content-Type: application/json
+
+{
+  "refreshToken": "{{login.response.body.data.refreshToken}}"
+}
+
+### TC-AUTH-06 탈퇴 회원 로그인 → 403 MEMBER_WITHDRAWN
+### 먼저 DB에서 UPDATE members SET status = 'WITHDRAWN' WHERE id = 2; 실행 후 요청,
+### 확인이 끝나면 UPDATE members SET status = 'ACTIVE' WHERE id = 2; 로 되돌린다
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "hong@test.com",
+  "password": "Test1234!"
+}
