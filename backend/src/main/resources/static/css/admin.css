@@ -141,3 +141,12 @@ a { color: var(--color-primary); }
 .breadcrumb ol { display: flex; gap: var(--space-sm); list-style: none; margin: 0 0 var(--space-md); padding: 0; font-size: var(--font-size-sm); color: var(--color-text-sub); }
 .breadcrumb li + li::before { content: "›"; margin-right: var(--space-sm); }
 .admin-footer { padding: var(--space-md); text-align: center; font-size: var(--font-size-sm); color: var(--color-text-sub); }
+
+/* ===== 10. 에러 페이지 ===== */
+.error-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+.error-box {
+  text-align: center; background: var(--color-surface); padding: var(--space-lg) calc(var(--space-lg) * 2);
+  border: 1px solid var(--color-border); border-radius: var(--radius);
+}
+.error-code { margin: 0; font-size: 48px; font-weight: var(--font-weight-bold); color: var(--color-primary); }
+.error-box .btn { margin-top: var(--space-lg); }
