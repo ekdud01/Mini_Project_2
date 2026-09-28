@@ -4,7 +4,7 @@
 //    사용: <form ... data-confirm="이 회원을 탈퇴 처리하시겠습니까?">
 document.addEventListener('submit', (e) => {
   const form = e.target;
-  const message = form.dataset.confirm;
+  const message = form.dataset.confirm || (e.submitter && e.submitter.dataset.confirm);
   if (message && !confirm(message)) {
     e.preventDefault();
     return;
