@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin-layout}">
+<!-- ADM-02 관리자 대시보드 (UI 4.2) | GET /admin/dashboard
+     Model: stats(DashboardStatsDto, Entity 설계서 8.5)
+     브레드크럼 표시 안 함(홈), 차트 아래 같은 수치를 표로 제공(8장 접근성) -->
+<head><title>대시보드</title></head>
+<body>
+<section layout:fragment="content">
+
+    <h1>대시보드</h1>
+
+    <!-- 1. 지표 카드 (1024px 미만 1열) -->
+    <div class="stat-cards">
+        <div class="stat-card">
+            <p class="stat-label">전체 회원 수(활성)</p>
+            <p class="stat-value"><span th:text="${#numbers.formatInteger(stats.totalMembers, 1, 'COMMA')}">128</span>명</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">전체 검사 건수(활성)</p>
+            <p class="stat-value"><span th:text="${#numbers.formatInteger(stats.totalResults, 1, 'COMMA')}">342</span>건</p>
+        </div>
+    </div>
+
+    <!-- 데이터 없음 (UI 4.2.3) -->
+    <div th:if="${stats.totalResults == 0}" class="card empty-message">검사 결과가 없습니다.</div>
+
+    <th:block th:unless="${stats.totalResults == 0}">
+
+        <div class="chart-grid">
+            <!-- 2. 위험도 분포: 도넛 차트 + 건수·비율 표 -->
+            <div class="card">
+                <h2>위험도 분포</h2>
+                <div class="chart-box chart-box-donut">
+                    <canvas id="riskChart" role="img" aria-label="위험도 분포 도넛 차트. 수치는 아래 표 참고"></canvas>
+                </div>
+                <table class="table table-compact">
+                    <caption class="sr-only">위험도별 검사 건수와 비율</caption>
+                    <thead><tr><th scope="col">위험도</th><th scope="col">건수</th><th scope="col">비율</th></tr></thead>
+                    <tbody>
+                    <!-- EnumMap이라 Normal → Borderline → HighRisk 순서로 나온다 -->
+                    <tr th:each="e : ${stats.riskLevelCounts}">
+                        <td><span class="badge" th:classappend="'badge-' + ${e.key.name()}"
+                                  th:text="${e.key.displayName}">정상</span></td>
+                        <td th:text="|${e.value}건|">154건</td>
+                        <td th:text="|${#numbers.formatDecimal(stats.riskLevelRatios.get(e.key), 1, 1)}%|">45.0%</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 3. 종합·영역별 평균 -->
+            <div class="card">
+                <h2>점수 평균</h2>
+                <p class="text-sub">KDSQ-C(2차)까지 수행한 검사 기준</p>
+                <dl class="detail-list">
+                    <dt>종합점수 평균</dt>     <dd class="avg-strong" th:text="|${stats.avgTotal}점|">8.4점</dd>
+                    <dt>기억력</dt>            <dd th:text="|${stats.avgMemory}점|">3.1점</dd>
+                    <dt>기타 인지기능</dt>     <dd th:text="|${stats.avgOther}점|">2.8점</dd>
+                    <dt>일상생활수행능력</dt>  <dd th:text="|${stats.avgAdl}점|">2.5점</dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- 4. 월별 추이 (최근 12개월): 단위가 다른 두 값은 차트를 나눠 표시 -->
+        <div class="card">
+            <h2>월별 추이 <span class="text-sub">(최근 12개월)</span></h2>
+            <h3 class="chart-title">검사 건수</h3>
+            <div class="chart-box">
+                <canvas id="countChart" role="img" aria-label="월별 검사 건수 막대 차트. 수치는 아래 표 참고"></canvas>
+            </div>
+            <h3 class="chart-title">KDSQ-C 평균 점수</h3>
+            <div class="chart-box">
+                <canvas id="avgChart" role="img" aria-label="월별 평균 점수 꺾은선 차트. 수치는 아래 표 참고"></canvas>
+            </div>
+
+            <details class="chart-table">
+                <summary>월별 수치 표로 보기</summary>
+                <div class="table-wrap">
+                    <table class="table table-compact">
+                        <caption class="sr-only">월별 검사 건수와 평균 점수</caption>
+                        <thead><tr><th scope="col">월</th><th scope="col">검사 건수</th><th scope="col">평균 점수</th></tr></thead>
+                        <tbody>
+                        <tr th:each="m : ${stats.monthly}">
+                            <td th:text="${m.month}">2026-09</td>
+                            <td th:text="|${m.resultCount}건|">12건</td>
+                            <td th:text="|${m.avgTotal}점|">7.2점</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        </div>
+
+    </th:block>
+
+    <!-- 5. 최근 위험 검사 목록 (5건) -->
+    <div class="card">
+        <div class="page-title">
+            <h2>최근 위험 검사</h2>
+            <a th:href="@{/admin/results(riskLevels='HighRisk')}" class="btn btn-sm">전체보기</a>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <caption class="sr-only">최근 위험 판정 검사 결과 5건</caption>
+                <thead>
+                <tr><th scope="col">날짜</th><th scope="col">회원</th><th scope="col">KDSQ-C</th><th scope="col">상세</th></tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(stats.recentHighRisk)}">
+                    <td colspan="4" class="empty-message">검사 결과가 없습니다.</td>
+                </tr>
+                <tr th:each="r : ${stats.recentHighRisk}">
+                    <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd')}">2026-09-21</td>
+                    <td th:text="${r.member.name}">김길동</td>
+                    <td th:text="|${r.totalScore}점/${r.riskLevel.displayName}|">9점/위험</td>
+                    <td><a th:href="@{/admin/results/{id}(id=${r.id})}" class="btn btn-sm">보기</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Chart.js: 대시보드에서만 CDN으로 불러옴 (UI 2.5·4.2.4) -->
+    <th:block th:unless="${stats.totalResults == 0}">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+        <script th:inline="javascript">
+            (() => {
+              const counts = /*[[${stats.riskLevelCounts}]]*/ {};   // { Normal: 154, Borderline: 103, HighRisk: 85 }
+              const trend  = /*[[${stats.monthly}]]*/ [];           // [{ month: '2026-09', resultCount: 12, avgTotal: 7.2 }, ...]
+
+              // 색은 admin.css 디자인 토큰에서 읽어 화면과 차트 색을 통일
+              const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+              const text = css('--color-text-sub'), grid = css('--color-border'), surface = css('--color-surface');
+              Chart.defaults.font.family = css('--font-family');
+              Chart.defaults.color = text;
+
+              // 위험도 분포 도넛 (상태 색 + 표의 배지 글자로 이중 표시)
+              const levels = [
+                { key: 'Normal',     label: '정상', color: css('--risk-normal') },
+                { key: 'Borderline', label: '주의', color: css('--risk-caution') },
+                { key: 'HighRisk',   label: '위험', color: css('--risk-high') }
+              ];
+              new Chart(document.getElementById('riskChart'), {
+                type: 'doughnut',
+                data: {
+                  labels: levels.map(l => l.label),
+                  datasets: [{
+                    data: levels.map(l => counts[l.key] ?? 0),
+                    backgroundColor: levels.map(l => l.color),
+                    borderColor: surface, borderWidth: 2          // 조각 사이 2px 간격
+                  }]
+                },
+                options: {
+                  maintainAspectRatio: false, cutout: '60%',
+                  plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: { callbacks: { label: (c) => ` ${c.label} ${c.parsed}건` } }
+                  }
+                }
+              });
+
+              // 월별 추이: 공통 축 스타일 (격자는 옅게)
+              const labels = trend.map(t => t.month);
+              const axes = (yTitle) => ({
+                x: { grid: { display: false } },
+                y: { beginAtZero: true, grid: { color: grid }, title: { display: true, text: yTitle } }
+              });
+              const noLegend = { legend: { display: false } };       // 차트 제목(h3)이 계열 이름 역할
+
+              // 검사 건수: 막대
+              new Chart(document.getElementById('countChart'), {
+                type: 'bar',
+                data: { labels, datasets: [{
+                  label: '검사 건수', data: trend.map(t => t.resultCount),
+                  backgroundColor: css('--color-primary'), borderRadius: 4, maxBarThickness: 24
+                }] },
+                options: {
+                  maintainAspectRatio: false,
+                  scales: { ...axes('건'), y: { ...axes('건').y, ticks: { precision: 0 } } },
+                  plugins: { ...noLegend, tooltip: { callbacks: { label: (c) => ` ${c.parsed.y}건` } } }
+                }
+              });
+
+              // KDSQ-C 평균 점수: 꺾은선 (총점 범위 0~30)
+              new Chart(document.getElementById('avgChart'), {
+                type: 'line',
+                data: { labels, datasets: [{
+                  label: '평균 점수', data: trend.map(t => t.avgTotal),
+                  borderColor: css('--color-primary'), backgroundColor: css('--color-primary'),
+                  borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, tension: 0
+                }] },
+                options: {
+                  maintainAspectRatio: false,
+                  interaction: { mode: 'index', intersect: false },   // 마우스를 올린 달의 값 표시
+                  scales: { ...axes('점'), y: { ...axes('점').y, max: 30 } },
+                  plugins: { ...noLegend, tooltip: { callbacks: { label: (c) => ` ${c.parsed.y}점` } } }
+                }
+              });
+            })();
+        </script>
+    </th:block>
+
+</section>
+</body>
+</html>

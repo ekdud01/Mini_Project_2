@@ -252,3 +252,13 @@ fieldset.form-group { margin-bottom: var(--space-md); }
 .detail-list dd .btn { margin-left: var(--space-sm); }
 .cutline ul { margin: 0; padding-left: var(--space-lg); color: var(--color-text-sub); }
 .cutline li + li { margin-top: var(--space-xs); }
+
+/* ===== 21. 대시보드 ===== */
+.chart-box-donut { height: 220px; margin-bottom: var(--space-md); }
+.chart-title { margin: var(--space-lg) 0 var(--space-sm); font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); }
+.chart-table { margin-top: var(--space-lg); }
+.chart-table summary { cursor: pointer; color: var(--color-primary); margin-bottom: var(--space-sm); }
+.table-compact th, .table-compact td { padding: var(--space-xs) var(--space-sm); }
+.avg-strong { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
+.card > .page-title { margin-bottom: var(--space-md); }
+.card > .page-title h2 { margin: 0; }
