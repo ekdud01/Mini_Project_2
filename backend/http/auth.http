@@ -1,6 +1,6 @@
 ### 실행: VS Code 확장 "REST Client"에서 각 요청 위의 Send Request 클릭
 ### 인증 API 테스트 케이스 (REST API 설계서 7.4 TC-AUTH-04~07, 09~10)
-### 사전 준비: member.http로 hong@test.com(2번 회원, ACTIVE) 가입. 관리자(admin@kdsq.com)는 서버 시작 시 자동 등록
+### 사전 준비: hong@test.com 회원이 있어야 한다 (member.http 첫 요청 또는 sample-data.sql). 관리자(admin@kdsq.com)는 서버 시작 시 자동 등록
 ### 로그인 요청(@name login)을 먼저 실행해야 아래 재발급 요청이 그 응답의 토큰을 가져다 쓴다
 
 ### TC-AUTH-04 로그인 성공 → 200, accessToken·refreshToken·tokenType·expiresIn
@@ -73,7 +73,23 @@ Content-Type: application/json
   "refreshToken": "{{login.response.body.data.accessToken}}"
 }
 
-### 로그아웃 → 204 (JWT 필터 완성 전에는 토큰 없이도 2번 회원 기준으로 동작)
+### TC-AUTH-11 토큰 없이 로그아웃 → 401 UNAUTHORIZED
+POST http://localhost:8080/api/auth/logout
+
+### 위조된 액세스 토큰 → 401 UNAUTHORIZED
+POST http://localhost:8080/api/auth/logout
+Authorization: Bearer abc.def.ghi
+
+### 리프레시 토큰을 액세스 토큰 자리에 넣음 → 401 UNAUTHORIZED (리프레시 토큰은 재발급에만 사용)
+GET http://localhost:8080/api/members/me
+Authorization: Bearer {{login.response.body.data.refreshToken}}
+
+### TC-AUTH-08 만료된 액세스 토큰 → 401 ACCESS_TOKEN_EXPIRED
+### application-local.properties에 app.jwt.access-token-validity-seconds=10 을 넣고 서버 재시작 → 로그인 → 10초 뒤 실행 (확인 후 그 줄은 지운다)
+GET http://localhost:8080/api/members/me
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### 로그아웃 → 204
 POST http://localhost:8080/api/auth/logout
 Authorization: Bearer {{login.response.body.data.accessToken}}
 
