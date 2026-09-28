@@ -2,6 +2,7 @@
 
 import { createJSONStorage, persist } from "zustand/middleware";
 import * as resultApi from '@/api/resultApi';
+import { create } from "zustand";
 
 export const useResultStore = create(
     persist(
@@ -16,7 +17,7 @@ export const useResultStore = create(
             submitResult: async ({ surveyId, firstAnswers, answers }) => {
                 set({ loading: true, error: null });
                 try {
-                    const body = firstAnswers ? { surveyId, firstAnswers, answers } : {surveyId, answers };
+                    const body = firstAnswers ? { surveyId, firstAnswers, answers } : { surveyId, answers };
                     const result = await resultApi.submitResult(body);
                     set({ currentResult: result, loading: false });
                     return result;
@@ -43,17 +44,17 @@ export const useResultStore = create(
             fetchMyResults: async () => {
                 set({ loading: true, error: null });
                 try {
-                const { content } = await resultApi.getMyResults({ page: 0, size: 100 });
-                set({ history: content, loading: false });
-                return content;
+                    const { content } = await resultApi.getMyResults({ page: 0, size: 100 });
+                    set({ history: content, loading: false });
+                    return content;
                 } catch (error) {
-                set({ loading: false, error });
-                throw error;
+                    set({ loading: false, error });
+                    throw error;
                 }
             },
 
-            setPendingFirstAnswers: (answers) => {},
-            clearPendingFirstAnswers: () => {},
+            setPendingFirstAnswers: (answers) => { },
+            clearPendingFirstAnswers: () => { },
 
             reset: () =>
                 set({
