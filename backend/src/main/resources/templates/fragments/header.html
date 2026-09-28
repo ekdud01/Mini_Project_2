@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<!-- 공통 헤더 | Model: 없음 (로그인 정보는 Security에서 가져옴) -->
+<!-- 공통 헤더 | Model: adminName (공통 @ControllerAdvice 제공) -->
 <header th:fragment="header" class="admin-header">
     <a th:href="@{/admin/dashboard}" class="admin-logo">KDSQ 관리자</a>
     <div class="admin-user" sec:authorize="hasRole('ADMIN')">
-        <span><strong sec:authentication="name">관리자</strong>님</span>
+        <span><strong th:text="${adminName} ?: '관리자'">관리자</strong>님</span>
         <form th:action="@{/logout}" method="post">
             <button type="submit" class="btn btn-sm">로그아웃</button>
         </form>
