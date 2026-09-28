@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- 페이지네이션 | 사용: pagination(${results}, 'searchForm') -->
+<nav th:fragment="pagination(page, formId)" th:if="${page != null and page.totalPages > 1}" aria-label="페이지 이동" class="pagination">
+    <button type="submit" name="page" th:attr="form=${formId}" th:value="${page.number - 1}"
+            th:disabled="${page.first}" aria-label="이전 페이지">◀</button>
+    <button th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+            type="submit" name="page" th:attr="form=${formId}, aria-current=${i == page.number} ? 'page'"
+            th:value="${i}" th:text="${i + 1}" th:classappend="${i == page.number} ? 'active'"></button>
+    <button type="submit" name="page" th:attr="form=${formId}" th:value="${page.number + 1}"
+            th:disabled="${page.last}" aria-label="다음 페이지">▶</button>
+</nav>
+</html>
