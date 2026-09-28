@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin-layout}">
+<!--
+  [임시 뼈대] ADM-02 관리자 대시보드 (UI 설계서 4.2) — 황지영 님이 디자인·차트를 완성한다.
+  서버가 넘겨주는 값을 모두 한 번씩 출력해 두었다. 표시 방법은 자유롭게 바꿔도 된다.
+
+  Model: stats (DashboardStatsDto)
+    stats.totalMembers, stats.totalResults
+    stats.riskLevelCounts / riskLevelRatios : 등급(Normal·Borderline·HighRisk) → 건수 / 비율. 값 꺼내기는 .get(등급) (map[변수]는 동작 안 함)
+    stats.avgTotal, stats.avgMemory, stats.avgOther, stats.avgAdl
+    stats.monthly     : [{ month, resultCount, avgTotal }] 12개월
+    stats.recentHighRisk : [{ resultId, memberName, examType, totalScore, riskLevel, createdAt }] 최대 5건
+-->
+<head>
+    <title>대시보드</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <h1>대시보드</h1>
+
+    <section class="card">
+        <h2>현황</h2>
+        <p>전체 회원 수(활성): <strong th:text="${stats.totalMembers}">26</strong>명</p>
+        <p>전체 검사 건수(활성): <strong th:text="${stats.totalResults}">119</strong>건</p>
+    </section>
+
+    <section class="card" th:if="${stats.totalResults == 0}">
+        <p>검사 결과가 없습니다.</p>
+    </section>
+
+    <th:block th:unless="${stats.totalResults == 0}">
+        <section class="card">
+            <h2>위험도 분포</h2>
+            <ul>
+                <li th:each="entry : ${stats.riskLevelCounts}">
+                    <span class="badge"
+                          th:classappend="${entry.key.name() == 'Normal'} ? 'badge-normal' : (${entry.key.name() == 'Borderline'} ? 'badge-caution' : 'badge-high')"
+                          th:text="${entry.key.displayName}">정상</span>
+                    <span th:text="${entry.value} + '건'">52건</span>
+                    (<span th:text="${stats.riskLevelRatios.get(entry.key)} + '%'">43.7%</span>)
+                </li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>점수 평균 (KDSQ-C)</h2>
+            <p>종합점수 평균: <strong th:text="${stats.avgTotal}">7.8</strong>점</p>
+            <p>기억력: <span th:text="${stats.avgMemory}">2.9</span>점</p>
+            <p>기타 인지기능: <span th:text="${stats.avgOther}">2.6</span>점</p>
+            <p>일상생활수행능력: <span th:text="${stats.avgAdl}">2.3</span>점</p>
+        </section>
+
+        <section class="card">
+            <h2>월별 검사 건수·평균 점수 (최근 12개월)</h2>
+            <table class="table">
+                <thead><tr><th scope="col">월</th><th scope="col">검사 건수</th><th scope="col">평균 점수</th></tr></thead>
+                <tbody>
+                <tr th:each="m : ${stats.monthly}">
+                    <td th:text="${m.month}">2026-09</td>
+                    <td th:text="${m.resultCount}">27</td>
+                    <td th:text="${m.avgTotal}">8.0</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>최근 위험 검사</h2>
+            <a th:href="@{/admin/results(riskLevels='HighRisk')}">전체보기</a>
+            <table class="table">
+                <thead><tr><th scope="col">검사일</th><th scope="col">이름</th><th scope="col">검사 종류</th><th scope="col">총점</th><th scope="col">판정</th><th scope="col">상세</th></tr></thead>
+                <tbody>
+                <tr th:each="e : ${stats.recentHighRisk}">
+                    <td th:text="${#temporals.format(e.createdAt, 'yyyy-MM-dd')}">2026-09-28</td>
+                    <td th:text="${e.memberName}">홍길동</td>
+                    <td th:text="${e.examType.label}">KDSQ-C</td>
+                    <td th:text="${e.totalScore}">14</td>
+                    <td><span class="badge badge-high" th:text="${e.riskLevel.displayName}">위험</span></td>
+                    <td><a th:href="@{/admin/results/{id}(id=${e.resultId})}">보기</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </th:block>
+
+    <!-- 차트 데이터 전달 확인용: 브라우저 콘솔(F12)에 12개월 배열이 찍히면 정상. 차트는 UI 설계서 4.2.4 참고 -->
+    <script th:inline="javascript">
+        const trend = /*[[${stats.monthly}]]*/ [];
+        console.log('monthly', trend);
+    </script>
+</div>
+</body>
+</html>
