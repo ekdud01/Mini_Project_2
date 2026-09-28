@@ -2,35 +2,41 @@
 
 /* ===== 1. 디자인 토큰 (UI 설계서 6장) ===== */
 :root {
-  /* 색상 */
-  --color-primary: #2563eb;        /* ← 설계서 */
-  --color-primary-dark: #1d4ed8;   /* ← 설계서 */
-  --color-danger: #dc2626;         /* ← 설계서 */
-  --color-success: #16a34a;        /* ← 설계서 */
-  --color-warning: #d97706;        /* ← 설계서 */
-  --color-text: #1f2937;
-  --color-text-sub: #6b7280;
-  --color-border: #e5e7eb;
-  --color-bg: #f5f6f8;
-  --color-surface: #ffffff;
+  /* 6.1 색상 */
+  --color-primary: #3b82f6;        /* Primary: 주요 버튼/링크 */
+  --color-success: #22c55e;        /* Success: 정상/성공 */
+  --color-warning: #f59e0b;        /* Warning: 주의 */
+  --color-danger: #ef4444;         /* Danger: 오류/위험 */
+  --color-neutral: #64748b;        /* Neutral: 배경/테두리/보조 텍스트 */
+
+  /* 파생 색상 (설계서 기본값에서 밝기만 조정) */
+  --color-primary-dark: #2563eb;   /* Primary 버튼 hover */
+  --color-text: #1e293b;           /* 본문 글자 */
+  --color-text-sub: var(--color-neutral);  /* 보조 텍스트 */
+  --color-border: #e2e8f0;         /* Neutral 계열 연한 테두리 */
+  --color-bg: #f8fafc;             /* Neutral 계열 연한 배경 */
+  --color-surface: #ffffff;        /* 카드·표 배경 */
 
   /* 위험도 배지: 정상 / 주의 / 위험 */
   --risk-normal: var(--color-success);
   --risk-caution: var(--color-warning);
   --risk-high: var(--color-danger);
 
-  /* 글자 */
-  --font-family: "Pretendard", "Noto Sans KR", sans-serif;  /* ← 설계서 */
-  --font-size-sm: 13px;
-  --font-size-base: 15px;
-  --font-size-lg: 18px;
-  --font-size-xl: 24px;
+  /* 6.2 타이포그래피 */
+  --font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  --font-size-xl: 24px;            /* 페이지 제목 */
+  --font-size-lg: 20px;            /* 섹션 제목 */
+  --font-size-base: 16px;          /* 본문 */
+  --font-size-sm: 14px;            /* 보조 텍스트 */
+  --font-weight-normal: 400;       /* Normal */
+  --font-weight-semibold: 600;     /* SemiBold */
+  --font-weight-bold: 700;         /* Bold */
 
-  /* 간격 (체크리스트 2-5 기준) */
-  --space-xs: 4px;
-  --space-sm: 8px;    /* 버튼 사이 */
-  --space-md: 16px;
-  --space-lg: 24px;   /* 카드 패딩, 섹션 간격 */
+  /* 6.3 간격 */
+  --space-xs: 4px;                 /* 배지 등 아주 작은 여백 */
+  --space-sm: 8px;                 /* 버튼 사이 간격 */
+  --space-md: 16px;                /* 컴포넌트 내부 패딩, 폼 필드 간격 */
+  --space-lg: 24px;                /* 섹션 간격, 카드 패딩 */
 
   --radius: 6px;
   --header-height: 60px;
@@ -43,8 +49,12 @@ body {
   margin: 0;
   font-family: var(--font-family);
   font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
   color: var(--color-text);
   background: var(--color-bg);
 }
+h1 { font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-lg); }       /* 페이지 제목 */
+h2 { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); margin: 0 0 var(--space-md); }    /* 섹션 제목 */
+.text-sub { font-size: var(--font-size-sm); color: var(--color-text-sub); }                                      /* 보조 텍스트 */
 a { color: var(--color-primary); }
 :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
