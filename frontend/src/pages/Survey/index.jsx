@@ -10,6 +10,7 @@ import ProgressBar from './components/ProgressBar';
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSurveyStore } from '@/store/surveyStore';
+import { useResultStore } from '@/store/resultStore';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -26,18 +27,14 @@ const SUBMIT_FAIL_MESSAGE = '검사 제출에 실패했습니다. 다시 시도�
 const NETWORK_ERROR_MESSAGE = '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
 const PAGE_TITLES = { P: 'KDSQ-P 1차 검사', C: 'KDSQ-C 2차 검사' };
 
-// fe-result 머지 전까지 쓰는 임시 대체 코드 (값을 실제로 기억함, 새로고침하면 사라짐)
-// TODO(fe-result 머지 후 삭제): useResultStore의 submitResult·pendingFirstAnswers 등으로 교체
-const submitResult = async () => ({ id: 'preview' });
-let tempPendingFirstAnswers = null;
-const setPendingFirstAnswers = (answers) => { tempPendingFirstAnswers = answers; };
-const clearPendingFirstAnswers = () => { tempPendingFirstAnswers = null; };
-
 export default function SurveyPage({ type }) {
   const navigate = useNavigate();
   const location = useLocation();
   const notice = location.state?.message ?? '';
-  const pendingFirstAnswers = tempPendingFirstAnswers;
+  const submitResult = useResultStore((s) => s.submitResult);
+  const pendingFirstAnswers = useResultStore((s) => s.pendingFirstAnswers);
+  const setPendingFirstAnswers = useResultStore((s) => s.setPendingFirstAnswers);
+  const clearPendingFirstAnswers = useResultStore((s) => s.clearPendingFirstAnswers);
   const questions = useSurveyStore((s) => s.questions);
   const questionsSurveyId = useSurveyStore((s) => s.questionsSurveyId);
   const survey = useSurveyStore((s) => s.surveys.find((x) => x.examType === EXAM_TYPE_BY_ROUTE[type]));

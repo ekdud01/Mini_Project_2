@@ -19,34 +19,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function ResultPage() {
   const navigate = useNavigate();
-
-  /** 구현 확인용, 이후에 삭제할 예정 */
-  const MOCK_RESULT = {
-    id: 1,
-    examType: 'KDSQ-C',
-    firstScore: 4,
-    memoryScore: 2,
-    otherScore: 2,
-    adlScore: 1,
-    totalScore: 5,
-    riskLevel: 'Borderline',
-    createdAt: '2026-09-22T10:00:00',
-    solutions: [
-      {
-        id: 1,
-        title: '정밀 검진 권고',
-        content: '가장 가까운 병원을 방문하여 정밀 검진을 받아보세요.'
-      },
-      {
-        id: 2,
-        title: '생활 습관 개선',
-        content: '규칙적인 인지 활동과 운동을 병행하는 것이 좋습니다.'
-      }
-    ]
-  };
-  const result = useResultStore((s) => s.currentResult) ?? MOCK_RESULT;
-  // const result = useResultStore((s) => s.currentResult);
-
+  const result = useResultStore((s) => s.currentResult);
   const handleHistory = useCallback(() => navigate('/mypage'), [navigate]);
 
   if (!result) {

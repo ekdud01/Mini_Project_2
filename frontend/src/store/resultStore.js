@@ -53,8 +53,8 @@ export const useResultStore = create(
                 }
             },
 
-            setPendingFirstAnswers: (answers) => { },
-            clearPendingFirstAnswers: () => { },
+            setPendingFirstAnswers: (answers) => set({ pendingFirstAnswers: answers }),
+            clearPendingFirstAnswers: () => set({ pendingFirstAnswers: null }),
 
             reset: () =>
                 set({

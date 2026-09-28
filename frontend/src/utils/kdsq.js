@@ -59,7 +59,7 @@ export const needsSecondTest = (firstSum) => firstSum >= SECOND_TEST_THRESHOLD;
 /** 
  * 결과의 최종 점수
  * KDSQ-P로 끝났으면 firstScore(10점 만점)
- * KDSQ-C까지 진행했으면 totalScroe(30점 만점)
+ * KDSQ-C까지 진행했으면 totalScore(30점 만점)
  */
 export const getDisplayScore = (result) =>
     result.examType === 'KDSQ-C' ? result.totalScore : result.firstScore;
