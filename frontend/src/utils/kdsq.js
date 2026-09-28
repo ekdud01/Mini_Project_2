@@ -44,6 +44,7 @@ export const ANSWER_OPTIONS = [
     { label: '가끔(조금) 그렇다', value: 1 },
     { label: '자주(많이) 그렇다', value: 2 },
 ];
+
  /** 답변의 점수 합계 */
 export const sumScores = (answerList) => answerList.reduce((sum, a) => sum + a.score, 0);
 
