@@ -1,5 +1,50 @@
 /* KDSQ 관리자 화면 공통 스타일 */
-body { margin: 0; font-family: sans-serif; font-size: 16px; color: #1f2937; }
-.admin-header, .admin-footer { padding: 16px 24px; background: #f1f5f9; }
-.admin-main { padding: 24px; }
-.admin-login { max-width: 360px; margin: 80px auto; display: flex; flex-direction: column; gap: 8px; }
+
+/* ===== 1. 디자인 토큰 (UI 설계서 6장) ===== */
+:root {
+  /* 색상 */
+  --color-primary: #2563eb;        /* ← 설계서 */
+  --color-primary-dark: #1d4ed8;   /* ← 설계서 */
+  --color-danger: #dc2626;         /* ← 설계서 */
+  --color-success: #16a34a;        /* ← 설계서 */
+  --color-warning: #d97706;        /* ← 설계서 */
+  --color-text: #1f2937;
+  --color-text-sub: #6b7280;
+  --color-border: #e5e7eb;
+  --color-bg: #f5f6f8;
+  --color-surface: #ffffff;
+
+  /* 위험도 배지: 정상 / 주의 / 위험 */
+  --risk-normal: var(--color-success);
+  --risk-caution: var(--color-warning);
+  --risk-high: var(--color-danger);
+
+  /* 글자 */
+  --font-family: "Pretendard", "Noto Sans KR", sans-serif;  /* ← 설계서 */
+  --font-size-sm: 13px;
+  --font-size-base: 15px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+
+  /* 간격 (체크리스트 2-5 기준) */
+  --space-xs: 4px;
+  --space-sm: 8px;    /* 버튼 사이 */
+  --space-md: 16px;
+  --space-lg: 24px;   /* 카드 패딩, 섹션 간격 */
+
+  --radius: 6px;
+  --header-height: 60px;
+  --sidebar-width: 220px;
+}
+
+/* ===== 2. 기본 ===== */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+a { color: var(--color-primary); }
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
