@@ -10,12 +10,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import ResultHeader from './components/ResultHeader';
 import ResultStatus from './components/ResultStatus';
 import TotalScore from './components/TotalScore';
+import ScoreSummary from './components/ScoreSummary';
 
 export default function ResultPage() {
   const MOCK_RESULT = { id: 1, examType: 'KDSQ_C', firstScore: 4, memoryScore: 2, otherScore: 2, adlScore: 1, totalScore: 5, riskLevel: 'Borderline', createdAt: '2026-09-22T10:00:00' };
 
   // const result = useResultStore((s) => s.currentResult);
-  const result = useResultStore((s) => s.currentResult) ?? MOCK_RESULT; 
+  const result = useResultStore((s) => s.currentResult) ?? MOCK_RESULT;
 
   if (!result) {
     return (
@@ -31,7 +32,7 @@ export default function ResultPage() {
   }
 
   return (
-    <section>
+    <section className="mx-auto max-w-2xl space-y-6">
       <ResultHeader />
 
       <Card>
@@ -40,6 +41,12 @@ export default function ResultPage() {
           <TotalScore score={getDisplayScore(result)} maxScore={MAX_SCORE[result.examType]} />
         </CardContent>
       </Card>
+
+      <ScoreSummary
+        memoryScore={result.memoryScore ?? 0}
+        otherScore={result.otherScore ?? 0}
+        adlScore={result.adlScore ?? 0}
+      />
 
       <p className="text-center text-xs text-muted-foreground">
         이 결과는 선별검사 결과이며 의학적 진단이 아닙니다.
