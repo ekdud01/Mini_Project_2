@@ -35,7 +35,8 @@ const fail = (status, code, message, fields) =>
 
 // ── 인증 ─────────────────────────────────────────────────
 // 액세스 토큰: "mock-access-token-{회원id}"
-// 만료 테스트: localStorage의 accessToken 값을 "expired"로 바꾸면 401 ACCESS_TOKEN_EXPIRED
+// 재발급 성공 테스트: devLogin() → devExpireToken() → API 호출 (새로고침 금지).
+// localStorage의 accessToken을 "expired"로 바꾸고 새로고침하면 refreshTokens도 초기화되어 재발급 실패.
 function authMember(request) {
   const header = request.headers.get('Authorization') ?? '';
   const token = header.replace(/^Bearer\s+/, '');

@@ -68,7 +68,11 @@ MSW는 브라우저에서 API 요청을 가로채 Mock 응답을 돌려줍니다
 | `GET /api/results/{id}` | 본인·활성 결과만, `solutions` 포함, 그 외 404 |
 | `GET /api/members/me/results` | 본인·활성 결과 최신순, `page`·`size` 페이징 |
 
-**토큰 만료 테스트:** 개발자 도구에서 localStorage에 저장된 `auth-storage`의 `accessToken` 값을 `expired`로 바꾸면 다음 요청이 401 `ACCESS_TOKEN_EXPIRED`로 응답합니다. axios 인터셉터가 재발급 후 재시도하는지 확인할 수 있습니다.
+**재발급 성공 테스트:** 콘솔에서 `await devLogin()` → `devExpireToken()` → API 호출 순서로 실행합니다. 주소창 이동·새로고침을 하면 메모리의 리프레시 토큰이 사라지므로 Header 링크로 이동하세요. 코드 수정으로 새로고침되었다면 다시 로그인합니다.
+
+**재발급 실패 테스트:** localStorage의 `auth-storage` 안 `accessToken`을 `expired`로 바꾸고 새로고침한 뒤 API를 호출합니다. 리프레시 토큰이 초기화되어 `INVALID_REFRESH_TOKEN`으로 실패하는 것이 정상입니다.
+
+지연·오류 응답을 덮어쓰는 콘솔 도구와 시나리오는 [프론트 인증 검증 가이드](../frontend/tests/AUTH_TESTING.md)에 있습니다. `devWorker.resetHandlers()`는 핸들러만 복원하며, 로그인 상태·회원 데이터·이벤트 리스너는 초기화하지 않습니다.
 
 > 새로고침하면 가입·제출·탈퇴한 내용은 초기 데이터로 돌아갑니다.
 
