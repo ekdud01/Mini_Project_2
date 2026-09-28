@@ -7,8 +7,16 @@
 <head>
     <title>레이아웃 확인</title>
 </head>
-<section layout:fragment="content">
-    <h1>레이아웃 확인용 페이지</h1>
-    <p>이 문장이 헤더와 푸터 사이에 보이면 Thymeleaf 레이아웃이 정상 동작하는 것입니다.</p>
-</section>
+<body>
+<div layout:fragment="breadcrumb">
+    <nav th:replace="~{fragments/breadcrumb :: breadcrumb('회원 관리', '/admin/members', '레이아웃 확인')}"></nav>
+</div>
+<div layout:fragment="content">
+    <div class="card">
+        <h1>레이아웃 확인용 화면</h1>
+        <button class="btn btn-primary">저장</button><button class="btn">취소</button><button class="btn btn-danger">삭제</button>
+        <p><span class="badge badge-normal">정상</span> <span class="badge badge-caution">주의</span> <span class="badge badge-high">위험</span></p>
+    </div>
+</div>
+</body>
 </html>
