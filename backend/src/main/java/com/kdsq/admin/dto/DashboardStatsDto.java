@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
  * | riskLevelCounts / riskLevelRatios       | 위험도 분포 건수 / 비율(%). 세 등급 모두 항상 들어 있음 |
  * | avgTotal, avgMemory, avgOther, avgAdl   | 종합점수 평균, 영역별 평균 (소수점 첫째 자리)      |
  * | monthly                                 | 최근 12개월 추이 (데이터 없는 달은 0)            |
- * | recentHighRisk                          | 최근 위험 검사 5건                             |
+ * | recentHighRisk                          | 최근 위험 검사 5건 (SurveyResult, member·survey 함께 조회됨) |
  */
 @Getter
 @RequiredArgsConstructor
@@ -34,15 +34,14 @@ public class DashboardStatsDto {
     private final double avgOther;
     private final double avgAdl;
     private final List<MonthlyPointDto> monthly;
-    private final List<RecentHighRiskDto> recentHighRisk;
+    private final List<SurveyResult> recentHighRisk;   // 템플릿: r.id, r.member.name, r.totalScore, r.riskLevel, r.createdAt
 
-    /** AdminStatisticsService에서 조립 (Entity 설계서 8.5 코드와 같은 순서). 최근 위험 목록은 여기서 DTO로 변환한다 */
+    /** AdminStatisticsService에서 조립 (Entity 설계서 8.5 코드와 같은 순서) */
     public static DashboardStatsDto of(long totalMembers, long totalResults,
                                        Map<RiskLevel, Long> riskLevelCounts, Map<RiskLevel, Double> riskLevelRatios,
                                        double avgTotal, double avgMemory, double avgOther, double avgAdl,
                                        List<MonthlyPointDto> monthly, List<SurveyResult> recentHighRisk) {
         return new DashboardStatsDto(totalMembers, totalResults, riskLevelCounts, riskLevelRatios,
-                avgTotal, avgMemory, avgOther, avgAdl, monthly,
-                recentHighRisk.stream().map(RecentHighRiskDto::from).toList());
+                avgTotal, avgMemory, avgOther, avgAdl, monthly, recentHighRisk);
     }
 }

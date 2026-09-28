@@ -1,6 +1,5 @@
 package com.kdsq.admin;
 
-import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.EnumMap;
 import java.util.List;
@@ -13,15 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kdsq.admin.dto.DashboardStatsDto;
 import com.kdsq.admin.dto.MonthlyPointDto;
-import com.kdsq.admin.dto.RecentHighRiskDto;
 import com.kdsq.result.RiskLevel;
-import com.kdsq.survey.ExamType;
 
 /**
  * 관리자 대시보드 통계 (Entity 설계서 8.5).
  *
  * [임시] 지금은 화면 작업용 샘플 값을 돌려준다.
  * 결과 Repository(이주혁)가 develop에 머지되면 내부를 설계서 8.5 코드(실제 집계)로 교체한다.
+ * 최근 위험 목록은 샘플을 만들 수 없어(저장된 엔티티가 필요) 빈 목록으로 둔다 → 화면에는 "검사 결과가 없습니다."
  * 반환 타입(DashboardStatsDto)과 필드는 그대로이므로 컨트롤러·템플릿은 고칠 필요 없다.
  */
 @Service
@@ -53,15 +51,7 @@ public class AdminStatisticsService {
                 .mapToObj(i -> new MonthlyPointDto(start.plusMonths(i).toString(), monthCounts[i], monthAvgs[i]))
                 .toList();
 
-        LocalDateTime now = LocalDateTime.now();
-        List<RecentHighRiskDto> recent = List.of(
-                new RecentHighRiskDto(411L, "홍길동", ExamType.KDSQ_C, 14, RiskLevel.HighRisk, now.minusHours(3)),
-                new RecentHighRiskDto(405L, "김영희", ExamType.KDSQ_C, 9, RiskLevel.HighRisk, now.minusDays(1)),
-                new RecentHighRiskDto(398L, "이철수", ExamType.KDSQ_C, 11, RiskLevel.HighRisk, now.minusDays(2)),
-                new RecentHighRiskDto(390L, "박순자", ExamType.KDSQ_C, 7, RiskLevel.HighRisk, now.minusDays(4)),
-                new RecentHighRiskDto(377L, "최민수", ExamType.KDSQ_C, 17, RiskLevel.HighRisk, now.minusDays(6)));
-
         return new DashboardStatsDto(26, 119, counts, ratios,
-                7.8, 2.9, 2.6, 2.3, monthly, recent);
+                7.8, 2.9, 2.6, 2.3, monthly, List.of());
     }
 }
