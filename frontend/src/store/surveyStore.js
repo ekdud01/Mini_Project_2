@@ -1,5 +1,7 @@
 /** 설문 문항 */
 
+import { create } from "zustand";
+
 export const useSurveyStore = create((set, get) => ({
     surveys: [],
     questions: [],

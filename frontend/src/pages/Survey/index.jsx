@@ -6,14 +6,19 @@
 
 import PropTypes from 'prop-types';
 import SurveyHeader from './components/SurveyHeader';
+import ProgressBar from './components/ProgressBar';
+import { useState } from 'react';
+import { useSurveyStore } from '@/store/surveyStore';
 
 export default function SurveyPage({ type }) {
-
+  const questions = useSurveyStore((s) => s.questions);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   return (
     <section className="mx-auto max-w-2xl space-y-6 pb-24 md:pb-0">
-      <SurveyHeader type={type} />
+      <SurveyHeader type={type}  />
 
+      <ProgressBar current={currentIndex + 1} total={questions.length} />
     </section>
   );
 }
