@@ -13,8 +13,8 @@ mock-data/
 │   ├── surveys.json      설문 2개 (KDSQ-P id 1, KDSQ-C id 2)
 │   ├── questions.json    문항 20개 (KDSQ-P id 1~5, KDSQ-C id 6~20, 원문)
 │   ├── solutions.json    관리 안내 2개 (Borderline id 1, HighRisk id 2)
-│   ├── members.json      테스트 회원 5명 (아래 표)
-│   └── results.json      검사 결과 8건 (삭제된 결과·다른 회원 결과 포함)
+│   ├── members.json      테스트 회원 27명 (아래 표 + 일반 회원 testuser6~27)
+│   └── results.json      검사 결과 119건 (삭제된 결과·다른 회원 결과 포함)
 ├── requests/      # 요청 본문 예시 (Postman·테스트에 그대로 사용)
 ├── responses/     # API별 정상·오류 응답 예시 (파일명 = 상황.상태코드)
 └── msw/           # React용 MSW 핸들러 (data/를 읽어 서버 규칙대로 동작)
@@ -31,6 +31,10 @@ mock-data/
 | lee@test.com | Test1234! | 탈퇴 | 로그인 시 403 `MEMBER_WITHDRAWN` |
 | park@test.com | Test1234! | 정상 | 결과 id 201 보유 — 홍길동으로 `/results/201` 접근 시 404 확인 |
 | admin@kdsq.com | admin1234! | 관리자 | 사용자 로그인 시 401 `INVALID_CREDENTIALS` |
+| testuser26@test.com | Test1234! | 정상 | 검사 이력 23건 — 이력 표 3페이지(10·10·3), 총점 30점(그래프 최댓값)·같은 날 2건 포함 |
+| testuser27@test.com | Test1234! | 정상 | 검사 이력 11건 — 이력 표 2페이지 경계(10·1) |
+
+그 밖의 `testuser6~25@test.com`(비밀번호 `Test1234!`)은 이력 1~5건을 가진 일반 회원이며, 관리자 화면 목록·검색·대시보드 데이터로도 사용합니다. `testuser10`은 탈퇴 회원입니다. 회원별 이력 구성은 `members.json`의 `_note`를 참고합니다.
 
 > `members.json`의 `password`와 `_note`는 Mock 전용 필드입니다. 실제 API 응답에는 비밀번호가 포함되지 않습니다.
 
@@ -40,15 +44,16 @@ mock-data/
 - 1차 4점 이상 → 2차(KDSQ-C)까지 완료해야 저장, 총점 0\~5 Borderline / 6\~30 HighRisk
 - 영역: 기억력 1\~5번, 기타 인지기능 6\~10번, 일상생활 수행능력 11\~15번
 - 날짜는 한국 시간 `yyyy-MM-ddTHH:mm:ss` (Z 없음)
-- 결과 id 107은 관리자가 삭제한 결과(`active: false`)라 이력·상세에서 제외
+- `active: false`인 결과(107 등)는 관리자가 삭제한 결과라 이력·상세에서 제외 (`_note`의 건수도 삭제된 결과를 뺀 마이페이지 기준)
+- 결과 id 301번부터는 실제 DB처럼 `createdAt` 순서대로 부여
 
 ## React에서 사용하기 (MSW)
 
 MSW는 브라우저에서 API 요청을 가로채 Mock 응답을 돌려줍니다. 화면 코드는 실제 API를 호출하는 것과 똑같이 작성하면 됩니다.
 
-**이미 `frontend` 프로젝트에 연결되어 있습니다.** `data/`와 `msw/`는 `frontend/src/mocks/`에 복사되어 있고, `npm run dev`로 실행하면 기본으로 Mock 모드로 동작합니다. 켜고 끄는 방법과 테스트 로그인(`devLogin()`)은 [`../frontend/README.md`](../frontend/README.md)를 참고하세요.
+**이미 `frontend` 프로젝트에 연결되어 있습니다.** 프론트엔드는 복사본 없이 이 폴더의 `data/`와 `msw/`를 직접 읽습니다 (`frontend/vite.config.js`의 `@mock` 별칭). `npm run dev`로 실행하면 기본으로 Mock 모드로 동작합니다. 켜고 끄는 방법과 테스트 로그인(`devLogin()`)은 [`../frontend/README.md`](../frontend/README.md)를 참고하세요.
 
-> 이 폴더의 JSON을 고치면 `frontend/src/mocks/`의 같은 파일도 함께 고칩니다. 이 폴더는 백엔드 테스트·Postman용 원본입니다.
+> 이 폴더가 프론트엔드 MSW·백엔드 테스트·Postman이 함께 쓰는 유일한 원본입니다. JSON을 고치면 개발 서버에 바로 반영됩니다.
 
 ## MSW 핸들러가 흉내 내는 동작
 
@@ -63,7 +68,7 @@ MSW는 브라우저에서 API 요청을 가로채 Mock 응답을 돌려줍니다
 | `GET /api/results/{id}` | 본인·활성 결과만, `solutions` 포함, 그 외 404 |
 | `GET /api/members/me/results` | 본인·활성 결과 최신순, `page`·`size` 페이징 |
 
-**토큰 만료 테스트:** 개발자 도구에서 localStorage에 저장된 `authStore`의 `accessToken` 값을 `expired`로 바꾸면 다음 요청이 401 `ACCESS_TOKEN_EXPIRED`로 응답합니다. axios 인터셉터가 재발급 후 재시도하는지 확인할 수 있습니다.
+**토큰 만료 테스트:** 개발자 도구에서 localStorage에 저장된 `auth-storage`의 `accessToken` 값을 `expired`로 바꾸면 다음 요청이 401 `ACCESS_TOKEN_EXPIRED`로 응답합니다. axios 인터셉터가 재발급 후 재시도하는지 확인할 수 있습니다.
 
 > 새로고침하면 가입·제출·탈퇴한 내용은 초기 데이터로 돌아갑니다.
 
