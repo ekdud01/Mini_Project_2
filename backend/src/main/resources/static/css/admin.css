@@ -150,3 +150,13 @@ a { color: var(--color-primary); }
 }
 .error-code { margin: 0; font-size: 48px; font-weight: var(--font-weight-bold); color: var(--color-primary); }
 .error-box .btn { margin-top: var(--space-lg); }
+
+/* ===== 11. 로그인 ===== */
+.login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+.login-box {
+  width: 100%; max-width: 400px; margin: var(--space-md);
+  background: var(--color-surface); padding: var(--space-lg);
+  border: 1px solid var(--color-border); border-radius: var(--radius);
+}
+.login-box h1 { text-align: center; color: var(--color-primary); }
+.btn-block { display: block; width: 100%; }
