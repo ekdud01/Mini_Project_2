@@ -15,7 +15,7 @@ export const getResult = (resultId) =>
     api.get(`/results/${resultId}`).then((res) => res.data.data);
 
 /** 
- * GET /api/members/me/results 
+ * GET /api/members/me/results?size=100 
  * 검사 이력 조회 
 */
 export const getMyResults = ({ page = 0, size = 100 } = {}) =>
