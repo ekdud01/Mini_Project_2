@@ -115,11 +115,13 @@ a { color: var(--color-primary); }
 
 /* ===== 8. 페이지네이션 ===== */
 .pagination { display: flex; justify-content: center; gap: var(--space-xs); margin-top: var(--space-lg); }
-.pagination button {
-  min-width: 36px; padding: var(--space-xs) var(--space-sm);
-  border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); cursor: pointer;
+.pagination a, .pagination span {
+  min-width: 36px; padding: var(--space-xs) var(--space-sm); text-align: center;
+  border: 1px solid var(--color-border); border-radius: var(--radius);
+  background: var(--color-surface); color: var(--color-text); text-decoration: none;
 }
-.pagination button.active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.pagination a.active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.pagination .disabled { color: var(--color-border); }
 
 /* ===== 9. 레이아웃 ===== */
 .admin-header {

@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!-- 페이지네이션 | 사용: pagination(${results}, 'searchForm') -->
-<nav th:fragment="pagination(page, formId)" th:if="${page != null and page.totalPages > 1}" aria-label="페이지 이동" class="pagination">
-    <button type="submit" name="page" th:attr="form=${formId}" th:value="${page.number - 1}"
-            th:disabled="${page.first}" aria-label="이전 페이지">◀</button>
-    <button th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
-            type="submit" name="page" th:attr="form=${formId}, aria-current=${i == page.number} ? 'page'"
-            th:value="${i}" th:text="${i + 1}" th:classappend="${i == page.number} ? 'active'"></button>
-    <button type="submit" name="page" th:attr="form=${formId}" th:value="${page.number + 1}"
-            th:disabled="${page.last}" aria-label="다음 페이지">▶</button>
+<!-- 페이지네이션 | 사용: pagination(${members}) | URL은 @pageUrl.to(i)가 검색 조건 포함해 생성 -->
+<nav th:fragment="pagination(page)" th:if="${page != null and page.totalPages > 1}"
+     class="pagination" aria-label="페이지 이동">
+    <a th:unless="${page.first}" th:href="${@pageUrl.to(page.number - 1)}" aria-label="이전 페이지">◀</a>
+    <span th:if="${page.first}" class="disabled" aria-hidden="true">◀</span>
+
+    <a th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+       th:href="${@pageUrl.to(i)}" th:text="${i + 1}"
+       th:classappend="${i == page.number} ? 'active'"
+       th:attr="aria-current=${i == page.number} ? 'page'">1</a>
+
+    <a th:unless="${page.last}" th:href="${@pageUrl.to(page.number + 1)}" aria-label="다음 페이지">▶</a>
+    <span th:if="${page.last}" class="disabled" aria-hidden="true">▶</span>
 </nav>
 </html>
+<!-- 사용 예: <div th:replace="~{fragments/pagination :: pagination(${members})}"></div> -->
