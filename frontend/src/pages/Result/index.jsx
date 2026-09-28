@@ -13,8 +13,13 @@ import TotalScore from './components/TotalScore';
 import ScoreSummary from './components/ScoreSummary';
 import ExamDate from './components/ExamDate';
 import Recommendation from './components/Recommendation';
+import HistoryButton from './components/HistoryButton';
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function ResultPage() {
+  const navigate = useNavigate();
+
   /** 구현 확인용, 이후에 삭제할 예정 */
   const MOCK_RESULT = {
     id: 1,
@@ -41,6 +46,8 @@ export default function ResultPage() {
   };
   const result = useResultStore((s) => s.currentResult) ?? MOCK_RESULT;
   // const result = useResultStore((s) => s.currentResult);
+
+  const handleHistory = useCallback(() => navigate('/mypage'), [navigate]);
 
   if (!result) {
     return (
@@ -83,6 +90,9 @@ export default function ResultPage() {
         이 결과는 선별검사 결과이며 의학적 진단이 아닙니다.
       </p>
 
+      <div className="flex justify-center">
+        <HistoryButton onClick={handleHistory} />
+      </div>
     </section>
   );
 }
