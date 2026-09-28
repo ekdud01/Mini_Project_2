@@ -55,8 +55,7 @@
                     <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd')}">2026-09-22</td>
                     <td th:text="|${r.firstScore}점/${r.examType.name() == 'KDSQ_C' ? '2차대상' : '정상'}|">4점/2차대상</td>
                     <td th:text="${r.totalScore == null} ? '-' : |${r.totalScore}점/${r.riskLevel.displayName}|">5점/주의</td>
-                    <!-- returnUrl: 결과 상세의 [목록] 버튼이 이 회원 상세로 돌아오게 함 -->
-                    <td><a th:href="@{/admin/results/{id}(id=${r.id}, returnUrl=${@pageUrl.current()})}" class="btn btn-sm">보기</a></td>
+                    <td><a th:href="@{/admin/results/{id}(id=${r.id})}" class="btn btn-sm">보기</a></td>
                 </tr>
                 </tbody>
             </table>
