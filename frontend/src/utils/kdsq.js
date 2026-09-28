@@ -24,6 +24,13 @@ export const RISK_LEVEL = {
     HighRisk: '위험',
 };
 
+/** 판정 색상 */
+export const RISK_COLOR = {
+    Normal: '#22c55e',
+    Borderline: '#f59e0b',
+    HighRisk: '#ef4444',
+};
+
 /** 결과 화면 판정 문구 */
 export const RISK_MESSAGE = {
     Normal: '정상 범위입니다.',
