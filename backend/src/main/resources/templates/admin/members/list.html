@@ -44,8 +44,8 @@
             </tr>
             <tr th:each="m : ${members.content}">
                 <!-- th:utext는 @highlight.mark 결과에만 사용 (UI 2.5) -->
-                <td th:utext="${@highlight.mark(m.name, keyword)}">홍길동</td>
-                <td th:utext="${@highlight.mark(m.email, keyword)}">hong@example.com</td>
+                <td th:with="h=${@highlight.mark(m.name, keyword)}" th:utext="${h}">홍길동</td>
+                <td th:with="h=${@highlight.mark(m.email, keyword)}" th:utext="${h}">hong@example.com</td>
                 <td th:text="${m.gender.description}">남성</td>
                 <td th:text="${m.birthYear}">1960</td>
                 <td th:text="${#temporals.format(m.createdAt, 'yyyy-MM-dd')}">2026-01-10</td>

@@ -74,7 +74,7 @@
             </tr>
             <tr th:each="r : ${results.content}">
                 <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd')}">2026-09-22</td>
-                <td th:utext="${@highlight.mark(r.member.name, cond?.name)}">홍길동</td>
+                <td th:with="h=${@highlight.mark(r.member.name, cond?.name)}" th:utext="${h}">홍길동</td>
                 <!-- KDSQ-P: "4점/2차대상"(2차까지 진행) 또는 "2점/정상"(1차 종료) -->
                 <td th:text="|${r.firstScore}점/${r.examType.name() == 'KDSQ_C' ? '2차대상' : '정상'}|">4점/2차대상</td>
                 <!-- KDSQ-C: 1차에서 끝난 결과는 totalScore가 null → "-" -->

@@ -10,10 +10,12 @@
               start=${T(java.lang.Math).max(0, cur - 2)},
               end=${T(java.lang.Math).min(page.totalPages - 1, cur + 2)}">
     <!-- cur: 범위를 벗어난 페이지(삭제 후 사라진 마지막 페이지 등)면 마지막 페이지로 간주 -->
-    <a th:if="${cur > 0}" th:href="${@pageUrl.to(page.number > cur ? cur : cur - 1)}" aria-label="이전 페이지">◀</a>
-    <a th:each="i : ${#numbers.sequence(start, end)}"
-       th:href="${@pageUrl.to(i)}" th:text="${i + 1}"
+    <a th:if="${cur > 0}" th:with="u=${@pageUrl.to(page.number > cur ? cur : cur - 1)}"
+       th:href="${u}" aria-label="이전 페이지">◀</a>
+    <a th:each="i : ${#numbers.sequence(start, end)}" th:with="u=${@pageUrl.to(i)}"
+       th:href="${u}" th:text="${i + 1}"
        th:attr="aria-current=${i == page.number} ? 'page' : null"></a>
-    <a th:if="${cur < page.totalPages - 1}" th:href="${@pageUrl.to(cur + 1)}" aria-label="다음 페이지">▶</a>
+    <a th:if="${cur < page.totalPages - 1}" th:with="u=${@pageUrl.to(cur + 1)}"
+       th:href="${u}" aria-label="다음 페이지">▶</a>
 </nav>
 </html>
