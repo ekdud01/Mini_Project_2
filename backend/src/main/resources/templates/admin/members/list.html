@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin-layout}">
+<!-- ADM-03 회원 관리 목록 (UI 4.3) | GET /admin/members?keyword=&page=
+     Model: members(Page), keyword -->
+<head><title>회원 관리</title></head>
+<body>
+<section layout:fragment="content">
+
+    <div class="page-title">
+        <h1>회원 관리</h1>
+        <p class="list-summary">총 <strong th:text="${members.totalElements}">131</strong>명</p>
+    </div>
+
+    <!-- 검색 폼: page는 넣지 않는다 (UI 2.5) -->
+    <form class="search-form" th:action="@{/admin/members}" method="get" role="search">
+        <div class="form-group">
+            <label for="keyword">이름/이메일</label>
+            <input type="search" id="keyword" name="keyword" class="form-control"
+                   th:value="${keyword}" placeholder="이름 또는 이메일">
+        </div>
+        <button type="submit" class="btn btn-primary">검색</button>
+        <a th:href="@{/admin/members}" class="btn">초기화</a>
+    </form>
+
+    <div class="table-wrap">
+        <table class="table">
+            <caption class="sr-only">회원 목록</caption>
+            <thead>
+            <tr>
+                <th scope="col">이름</th>
+                <th scope="col">이메일</th>
+                <th scope="col">성별</th>
+                <th scope="col">출생년도</th>
+                <th scope="col">가입일</th>
+                <th scope="col">상태</th>
+                <th scope="col">상세</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${members.empty}">
+                <td colspan="7" class="empty-message">검색 결과가 없습니다.</td>
+            </tr>
+            <tr th:each="m : ${members.content}">
+                <!-- th:utext는 @highlight.mark 결과에만 사용 (UI 2.5) -->
+                <td th:utext="${@highlight.mark(m.name, keyword)}">홍길동</td>
+                <td th:utext="${@highlight.mark(m.email, keyword)}">hong@example.com</td>
+                <td th:text="${m.gender.description}">남성</td>
+                <td th:text="${m.birthYear}">1960</td>
+                <td th:text="${#temporals.format(m.createdAt, 'yyyy-MM-dd')}">2026-01-10</td>
+                <td><span class="badge" th:classappend="'badge-' + ${m.status.name()}"
+                          th:text="${m.status.displayName}">활성</span></td>
+                <td><a th:href="@{/admin/members/{id}(id=${m.id})}" class="btn btn-sm">보기</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:replace="~{fragments/pagination :: pagination(${members})}"></div>
+</section>
+</body>
+</html>
