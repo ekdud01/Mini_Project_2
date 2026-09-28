@@ -14,7 +14,7 @@
  */
 
 /** 검사 종류 라벨  */
-export const EXAM_TYPE_LABEL = { 'KDSQ-P' : 'KDSQ-P', 'KDSQ-C' : 'KDSQ-C' };
+export const EXAM_TYPE_LABEL = { 'KDSQ_P' : 'KDSQ-P', 'KDSQ_C' : 'KDSQ-C' };
 export const EXAM_TYPE_BY_ROUTE = { P: 'KDSQ_P', C: 'KDSQ_C' };
 
 /** 판정 라벨 */
