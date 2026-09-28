@@ -239,3 +239,11 @@ fieldset.form-group { border: none; padding: 0; margin: 0; }
 fieldset.form-group legend { font-weight: var(--font-weight-semibold); margin-bottom: var(--space-xs); padding: 0; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .login-note { margin-top: var(--space-md); text-align: center; }
+
+/* ===== 19. 상세·수정 화면 ===== */
+.page-title .page-actions { margin-top: 0; }               /* 제목 오른쪽 버튼 */
+.card h2 .text-sub { font-weight: var(--font-weight-normal); }
+.form-card { max-width: 640px; }                            /* 입력 폼 폭 제한 */
+.form-card .detail-list { margin: var(--space-lg) 0 var(--space-md); }
+.input-short { max-width: 160px; }                          /* 출생년도 */
+fieldset.form-group { margin-bottom: var(--space-md); }

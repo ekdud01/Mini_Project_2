@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin-layout}">
+<!-- ADM-04-1 회원 정보 수정 (UI 4.5) | GET·POST /admin/members/{id}/edit
+     Model: form(name, email, gender, birthYear), memberId, member(가입일·상태 표시용) -->
+<head><title>회원 정보 수정</title></head>
+<body>
+<section layout:fragment="content">
+
+    <h1>회원 정보 수정</h1>
+
+    <div class="card form-card">
+        <form th:action="@{/admin/members/{id}/edit(id=${memberId})}" th:object="${form}" method="post" novalidate>
+
+            <!-- 특정 입력칸이 아닌 오류 (서버 오류 등) -->
+            <div th:if="${#fields.hasGlobalErrors()}" class="flash flash-error" role="alert">
+                <span th:each="err : ${#fields.globalErrors()}" th:text="${err}">처리 중 오류가 발생했습니다.</span>
+            </div>
+
+            <div class="form-group">
+                <label for="name">이름 <span class="required" aria-hidden="true">*</span></label>
+                <input type="text" id="name" th:field="*{name}" class="form-control" th:errorclass="is-invalid"
+                       aria-required="true" th:attr="aria-describedby=${#fields.hasErrors('name')} ? 'name-error' : null">
+                <p id="name-error" class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">이름을 입력해주세요.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="email">이메일 <span class="required" aria-hidden="true">*</span></label>
+                <input type="email" id="email" th:field="*{email}" class="form-control" th:errorclass="is-invalid"
+                       aria-required="true" th:attr="aria-describedby=${#fields.hasErrors('email')} ? 'email-error' : null">
+                <p id="email-error" class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">이미 사용 중인 이메일입니다.</p>
+            </div>
+
+            <fieldset class="form-group">
+                <legend>성별 <span class="required" aria-hidden="true">*</span></legend>
+                <div class="radio-group">
+                    <label for="gender-male"><input type="radio" id="gender-male" th:field="*{gender}" value="MALE"> 남성</label>
+                    <label for="gender-female"><input type="radio" id="gender-female" th:field="*{gender}" value="FEMALE"> 여성</label>
+                </div>
+                <p class="field-error" th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}">성별을 선택해주세요.</p>
+            </fieldset>
+
+            <div class="form-group">
+                <label for="birthYear">출생년도 <span class="required" aria-hidden="true">*</span></label>
+                <input type="number" id="birthYear" th:field="*{birthYear}" class="form-control input-short" th:errorclass="is-invalid"
+                       aria-required="true" th:attr="aria-describedby=${#fields.hasErrors('birthYear')} ? 'birthYear-error' : null">
+                <p id="birthYear-error" class="field-error" th:if="${#fields.hasErrors('birthYear')}" th:errors="*{birthYear}">출생년도를 확인해주세요.</p>
+            </div>
+
+            <!-- 읽기 전용 정보 (UI 4.5.2) -->
+            <dl class="detail-list">
+                <dt>가입일</dt> <dd th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd')}">2026-01-10</dd>
+                <dt>상태</dt>   <dd th:text="${member.status.displayName}">활성</dd>
+            </dl>
+
+            <p class="form-note"><span class="required" aria-hidden="true">*</span> 필수 입력 항목</p>
+
+            <div class="page-actions">
+                <a th:href="@{/admin/members/{id}(id=${memberId})}" class="btn">취소</a>
+                <button type="submit" class="btn btn-primary">저장</button>
+            </div>
+        </form>
+    </div>
+
+</section>
+</body>
+</html>
