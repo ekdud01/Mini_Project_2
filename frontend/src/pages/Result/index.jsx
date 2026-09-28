@@ -1,13 +1,98 @@
 /**
- * [뼈대] SCR-05 검사 결과 — 담당: 서다영
+ * SCR-05 검사 결과 — 담당: 서다영
  * 참고: UI 설계서 3.5, React 설계서 3장
  * 이 페이지에서만 쓰는 컴포넌트는 ./components/ 에 만든다.
  */
+
+import { getDisplayScore, MAX_SCORE } from '@/utils/kdsq';
+import { useResultStore } from '@/store/resultStore';
+import { Card, CardContent } from '@/components/ui/card';
+import ResultHeader from './components/ResultHeader';
+import ResultStatus from './components/ResultStatus';
+import TotalScore from './components/TotalScore';
+import ScoreSummary from './components/ScoreSummary';
+import ExamDate from './components/ExamDate';
+import Recommendation from './components/Recommendation';
+import HistoryButton from './components/HistoryButton';
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 export default function ResultPage() {
+  const navigate = useNavigate();
+
+  /** 구현 확인용, 이후에 삭제할 예정 */
+  const MOCK_RESULT = {
+    id: 1,
+    examType: 'KDSQ-C',
+    firstScore: 4,
+    memoryScore: 2,
+    otherScore: 2,
+    adlScore: 1,
+    totalScore: 5,
+    riskLevel: 'Borderline',
+    createdAt: '2026-09-22T10:00:00',
+    solutions: [
+      {
+        id: 1,
+        title: '정밀 검진 권고',
+        content: '가장 가까운 병원을 방문하여 정밀 검진을 받아보세요.'
+      },
+      {
+        id: 2,
+        title: '생활 습관 개선',
+        content: '규칙적인 인지 활동과 운동을 병행하는 것이 좋습니다.'
+      }
+    ]
+  };
+  const result = useResultStore((s) => s.currentResult) ?? MOCK_RESULT;
+  // const result = useResultStore((s) => s.currentResult);
+
+  const handleHistory = useCallback(() => navigate('/mypage'), [navigate]);
+
+  if (!result) {
+    return (
+      <section className="p-6 text-center">
+        <ResultHeader />
+        <Card>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground">저장된 검사 결과가 없습니다.</p>
+          </CardContent>
+        </Card>
+      </section>
+    );
+  }
+
+  const isSecondTest = result.examType === 'KDSQ-C';
+
   return (
-    <section>
-      <h1 className="text-2xl font-bold">SCR-05 검사 결과</h1>
-      <p className="mt-2 text-muted-foreground">준비 중인 화면입니다.</p>
+    <section className="mx-auto max-w-2xl space-y-6">
+      <ResultHeader />
+
+      <Card>
+        <CardContent className="space-y-4">
+          <ResultStatus result={result} />
+          <TotalScore score={getDisplayScore(result)} maxScore={MAX_SCORE[result.examType]} />
+          <ExamDate date={result.createdAt} />
+        </CardContent>
+      </Card>
+
+      {isSecondTest && (
+        <ScoreSummary
+          memoryScore={result.memoryScore ?? 0}
+          otherScore={result.otherScore ?? 0}
+          adlScore={result.adlScore ?? 0}
+        />
+      )}
+
+      <Recommendation solutions={result.solutions ?? []} />
+
+      <p className="text-center text-xs text-muted-foreground">
+        이 결과는 선별검사 결과이며 의학적 진단이 아닙니다.
+      </p>
+
+      <div className="flex justify-center">
+        <HistoryButton onClick={handleHistory} />
+      </div>
     </section>
   );
 }
