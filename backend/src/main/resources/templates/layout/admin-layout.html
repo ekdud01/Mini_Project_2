@@ -14,10 +14,10 @@
     <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
-<header class="admin-header">KDSQ 관리자</header>
+<header th:replace="~{fragments/header :: header}"></header>
 <main class="admin-main">
     <section layout:fragment="content"></section>
 </main>
-<footer class="admin-footer">ⓒ 2026 마음 기억</footer>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>
