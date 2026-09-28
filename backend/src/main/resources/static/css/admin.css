@@ -40,7 +40,6 @@
 
   --radius: 6px;
   --header-height: 60px;
-  --sidebar-width: 220px;
 }
 
 /* ===== 2. 기본 ===== */
@@ -197,7 +196,7 @@ mark { background: rgba(245, 158, 11, .25); color: inherit; padding: 0 2px; bord
 .form-note { font-size: var(--font-size-sm); color: var(--color-text-sub); }
 
 /* ===== 14. 대시보드: 지표 카드 · 차트 ===== */
-.stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-lg); margin-bottom: var(--space-lg); }
+.stat-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-lg); margin-bottom: var(--space-lg); }
 .stat-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); padding: var(--space-lg); }
 .stat-label { margin: 0; color: var(--color-text-sub); font-size: var(--font-size-sm); }
 .stat-value { margin: var(--space-xs) 0 0; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); }
@@ -221,18 +220,14 @@ mark { background: rgba(245, 158, 11, .25); color: inherit; padding: 0 2px; bord
   .admin-logo { font-size: var(--font-size-base); }
 }
 
-/* ===== 16. 헤더 상단 메뉴 ===== */
-.header-menu a { padding: var(--space-sm) var(--space-md); color: var(--color-text); text-decoration: none; border-radius: var(--radius); }
-.header-menu a.active { color: var(--color-primary); font-weight: var(--font-weight-semibold); background: var(--color-bg); }
-
-/* ===== 17. 배지: enum 값 기준 (UI 2.5 공통 표기) ===== */
+/* ===== 16. 배지: enum 값 기준 (UI 2.5 공통 표기) ===== */
 .badge-Normal { background: var(--risk-normal); }         /* 정상 */
 .badge-Borderline { background: var(--risk-caution); }    /* 주의 */
 .badge-HighRisk { background: var(--risk-high); }         /* 위험 */
 .badge-ACTIVE { background: var(--color-primary); }       /* 활성 */
 .badge-WITHDRAWN { background: var(--color-neutral); }    /* 탈퇴 */
 
-/* ===== 18. 목록 화면 제목줄 · 필터 묶음 · 화면낭독기 전용 ===== */
+/* ===== 17. 목록 화면 제목줄 · 필터 묶음 · 화면낭독기 전용 ===== */
 .page-title { display: flex; justify-content: space-between; align-items: baseline; }
 .page-title .list-summary { margin: 0; }
 fieldset.form-group { border: none; padding: 0; margin: 0; }
@@ -240,7 +235,7 @@ fieldset.form-group legend { font-weight: var(--font-weight-semibold); margin-bo
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .login-note { margin-top: var(--space-md); text-align: center; }
 
-/* ===== 19. 상세·수정 화면 ===== */
+/* ===== 18. 상세·수정 화면 ===== */
 .page-title .page-actions { margin-top: 0; }               /* 제목 오른쪽 버튼 */
 .card h2 .text-sub { font-weight: var(--font-weight-normal); }
 .form-card { max-width: 640px; }                            /* 입력 폼 폭 제한 */
@@ -248,12 +243,12 @@ fieldset.form-group legend { font-weight: var(--font-weight-semibold); margin-bo
 .input-short { max-width: 160px; }                          /* 출생년도 */
 fieldset.form-group { margin-bottom: var(--space-md); }
 
-/* ===== 20. 검사 상세 결과 ===== */
+/* ===== 19. 검사 상세 결과 ===== */
 .detail-list dd .btn { margin-left: var(--space-sm); }
 .cutline ul { margin: 0; padding-left: var(--space-lg); color: var(--color-text-sub); }
 .cutline li + li { margin-top: var(--space-xs); }
 
-/* ===== 21. 대시보드 ===== */
+/* ===== 20. 대시보드 ===== */
 .chart-box-donut { height: 220px; margin-bottom: var(--space-md); }
 .chart-title { margin: var(--space-lg) 0 var(--space-sm); font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); }
 .chart-table { margin-top: var(--space-lg); }
