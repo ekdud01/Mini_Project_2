@@ -196,16 +196,36 @@ mark { background: rgba(245, 158, 11, .25); color: inherit; padding: 0 2px; bord
 
 /* ===== 15. 반응형 (1024px 미만) ===== */
 @media (max-width: 1023px) {
-  .admin-body { flex-direction: column; }
-  .admin-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--color-border); padding: 0; }
-  .admin-sidebar ul { display: flex; overflow-x: auto; }
-  .admin-sidebar a { white-space: nowrap; }
-  .stat-cards { grid-template-columns: repeat(2, 1fr); }
-  .chart-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 640px) {
-  .stat-cards { grid-template-columns: 1fr; }
+  .admin-sidebar { display: none; }              /* 사이드바 숨김 → 헤더 메뉴 사용 */
+  .admin-header { flex-wrap: wrap; height: auto; min-height: var(--header-height); gap: var(--space-sm); padding: var(--space-sm) var(--space-md); }
+  .admin-body { min-height: auto; }
+  .stat-cards, .chart-grid { grid-template-columns: 1fr; }   /* 지표 카드 2열 → 1열 */
   .search-form .form-control { width: 100%; }
   .detail-list { grid-template-columns: 1fr; }
   .detail-list dt { border-bottom: none; padding-bottom: 0; }
 }
+@media (max-width: 640px) {
+  .stat-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-lg); margin-bottom: var(--space-lg); }
+  .search-form .form-control { width: 100%; }
+  .detail-list { grid-template-columns: 1fr; }
+  .detail-list dt { border-bottom: none; padding-bottom: 0; }
+}
+/* ===== 16. 헤더 상단 메뉴 ===== */
+.header-menu { display: flex; gap: var(--space-xs); }
+.header-menu a { padding: var(--space-sm) var(--space-md); color: var(--color-text); text-decoration: none; border-radius: var(--radius); }
+.header-menu a.active { color: var(--color-primary); font-weight: var(--font-weight-semibold); background: var(--color-bg); }
+
+/* ===== 17. 배지: enum 값 기준 (UI 2.5 공통 표기) ===== */
+.badge-Normal { background: var(--risk-normal); }         /* 정상 */
+.badge-Borderline { background: var(--risk-caution); }    /* 주의 */
+.badge-HighRisk { background: var(--risk-high); }         /* 위험 */
+.badge-ACTIVE { background: var(--color-primary); }       /* 활성 */
+.badge-WITHDRAWN { background: var(--color-neutral); }    /* 탈퇴 */
+
+/* ===== 18. 목록 화면 제목줄 · 필터 묶음 · 화면낭독기 전용 ===== */
+.page-title { display: flex; justify-content: space-between; align-items: baseline; }
+.page-title .list-summary { margin: 0; }
+fieldset.form-group { border: none; padding: 0; margin: 0; }
+fieldset.form-group legend { font-weight: var(--font-weight-semibold); margin-bottom: var(--space-xs); padding: 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.login-note { margin-top: var(--space-md); text-align: center; }
