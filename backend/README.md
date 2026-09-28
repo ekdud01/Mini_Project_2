@@ -238,6 +238,7 @@ LocalDateTime createdAt
 - `backend/http/` 폴더에 `.http` 파일을 만들어 두면 VS Code REST Client로 실행할 수 있고, 팀원도 같은 요청을 그대로 쓸 수 있다. `member.http`가 예시다.
 - 요청 본문과 기대 응답은 [`../mock-data/requests/`](../mock-data/requests), [`../mock-data/responses/`](../mock-data/responses)에 API별로 있다. Postman에 그대로 붙여 넣어도 된다.
 - 설계서 7.4의 테스트 케이스(TC-...)를 기준으로 확인한다.
+- 관리자 목록·검색·대시보드처럼 데이터가 많아야 확인되는 화면은 `backend/http/sample-data.sql`로 샘플 회원 26명·검사 결과 119건(Mock 데이터와 같은 내용)을 넣는다. 실행 방법은 파일 맨 위 주석에 있고, 여러 번 실행해도 된다.
 
 ---
 
