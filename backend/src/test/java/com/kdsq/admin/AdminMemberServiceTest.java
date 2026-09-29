@@ -1,5 +1,6 @@
 package com.kdsq.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.kdsq.admin.dto.AdminMemberUpdateForm;
 import com.kdsq.global.exception.BusinessException;
 import com.kdsq.global.exception.ErrorCode;
 import com.kdsq.member.Gender;
@@ -72,5 +74,43 @@ class AdminMemberServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
+    }
+
+    // ───────────────────── 수정 ─────────────────────
+
+    @Test
+    @DisplayName("다른 회원이 쓰는 이메일로 바꾸면 DUPLICATE_EMAIL")
+    void update_duplicateEmail() {
+        given(memberRepository.findById(2L)).willReturn(Optional.of(member()));
+        given(memberRepository.existsByEmailAndIdNot("kim@test.com", 2L)).willReturn(true);
+
+        AdminMemberUpdateForm form = form("홍길동", "kim@test.com");
+
+        assertThatThrownBy(() -> adminMemberService.update(2L, form))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.DUPLICATE_EMAIL);
+    }
+
+    @Test
+    @DisplayName("정상 수정: Entity 값이 바뀐다 (save 없이 변경 감지로 저장)")
+    void update_success() {
+        Member member = member();
+        given(memberRepository.findById(2L)).willReturn(Optional.of(member));
+        given(memberRepository.existsByEmailAndIdNot("new@test.com", 2L)).willReturn(false);
+
+        adminMemberService.update(2L, form("홍길순", "new@test.com"));
+
+        assertThat(member.getName()).isEqualTo("홍길순");
+        assertThat(member.getEmail()).isEqualTo("new@test.com");
+    }
+
+    private AdminMemberUpdateForm form(String name, String email) {
+        AdminMemberUpdateForm form = new AdminMemberUpdateForm();
+        form.setName(name);
+        form.setEmail(email);
+        form.setGender(Gender.MALE);
+        form.setBirthYear(1960);
+        return form;
     }
 }

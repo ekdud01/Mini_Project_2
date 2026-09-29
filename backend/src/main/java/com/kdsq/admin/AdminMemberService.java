@@ -2,6 +2,7 @@ package com.kdsq.admin;
 
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.kdsq.admin.dto.AdminMemberUpdateForm;
 import com.kdsq.global.exception.BusinessException;
 import com.kdsq.global.exception.ErrorCode;
 import com.kdsq.member.Member;
@@ -41,7 +43,7 @@ public class AdminMemberService {
         return memberRepository.searchMembers(Role.MEMBER, kw, pageable);
     }
 
-    /** ADM-04 회원 상세 */
+    /** ADM-04 회원 상세 / ADM-04-1 수정 폼 */
     public Member getMember(Long id) {
         return findMember(id);
     }
@@ -50,6 +52,30 @@ public class AdminMemberService {
     public List<SurveyResult> getResults(Long memberId) {
         findMember(memberId);   // 관리자 id·없는 id면 여기서 404
         return surveyResultRepository.findActiveByMemberId(memberId);
+    }
+
+    /**
+     * ADM-04-1 수정 저장.
+     * 이메일이 다른 회원과 겹치면 BusinessException(DUPLICATE_EMAIL) → 컨트롤러가 받아서 입력칸 아래에 표시
+     */
+    @Transactional
+    public void update(Long id, AdminMemberUpdateForm form) {
+        Member member = findMember(id);
+
+        // "나(id)를 제외한 다른 회원이 이 이메일을 쓰고 있는지" 확인
+        if (memberRepository.existsByEmailAndIdNot(form.getEmail(), id)) {
+            throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
+        }
+
+        member.updateInfo(form.getName(), form.getEmail(), form.getGender(), form.getBirthYear());
+        // save()를 부르지 않아도 된다: 변경 감지(dirty checking)로 트랜잭션이 끝날 때 UPDATE
+
+        try {
+            // 두 관리자가 동시에 같은 이메일로 바꾸는 경우 → DB unique 제약 위반도 같은 오류로 바꾼다
+            memberRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
+        }
     }
 
     /** 일반 회원만 찾는다. 없는 id·관리자 id면 MEMBER_NOT_FOUND → AdminExceptionHandler가 404 화면으로 */
