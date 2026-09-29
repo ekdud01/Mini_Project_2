@@ -33,7 +33,7 @@ function SurveyHeader({ type, title = TITLES[type], description = DEFAULT_SURVEY
       {type === 'C' && (
         <p
           role="status"
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+          className="rounded-md bg-amber-100 px-4 py-3 text-sm font-bold text-amber-800"
         >
           {SECOND_TEST_NOTICE}
         </p>
