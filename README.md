@@ -57,15 +57,15 @@
 | 1차 검사 (KDSQ-P) | 5문항. 0\~3점이면 정상으로 결과 저장, 4점 이상이면 저장하지 않고 2차 검사로 이동 |
 | 2차 검사 (KDSQ-C) | 15문항(기억력·기타 인지기능·일상생활 수행능력 각 5문항). 1차 답변과 함께 제출해 결과 1건 저장 |
 | 검사 결과 | 판정(정상·주의·위험), 총점과 영역별 점수, 주의·위험일 때 관리 안내 |
-| 마이페이지 | 회원 정보(조회 전용), 검사 이력 표, 점수 추이 그래프, 회원 탈퇴 |
+| 마이페이지 | 회원 정보(조회 전용), 검사 이력 표, 점수 추이 그래프, 회원 비활성화 |
 
 ### 관리자 (Thymeleaf)
 
 | 기능 | 설명 |
 |---|---|
 | 관리자 로그인 | 사전 등록된 관리자 계정만 사용 (세션 + CSRF) |
-| 대시보드 | 활성·탈퇴 회원 수, 전체 검사 건수, 위험도 분포(건수·%), 종합·영역별 평균, 최근 12개월 추이(Chart.js), 최근 위험 검사 5건 |
-| 회원 관리 | 이름·이메일 검색(검색어 강조), 상태 필터, 페이징, 상세(검사 이력), 정보 수정, 탈퇴 처리 |
+| 대시보드 | 활성·비활성 회원 수, 전체 검사 건수, 위험도 분포(건수·%), 종합·영역별 평균, 최근 12개월 추이(Chart.js), 최근 위험 검사 5건 |
+| 회원 관리 | 이름·이메일 검색(검색어 강조), 상태 필터, 페이징, 상세(검사 이력), 정보 수정, 비활성 처리 |
 | 검사 결과 관리 | 이름·기간·검사 종류·판정 복합 검색, 상세 조회, 삭제(소프트 삭제) |
 
 ---
@@ -200,7 +200,7 @@ erDiagram
 - 모든 테이블에 `created_at`, `updated_at`(JPA Auditing)이 있습니다.
 - `solutions`는 결과와 외래키로 연결하지 않고 **판정 등급(risk_level)이 같은 안내**를 조회합니다.
 - 총점과 검사 종류는 저장하지 않고 계산합니다 (`memory + other + adl`, 연결된 설문의 `exam_type`).
-- 회원 탈퇴와 결과 삭제는 모두 **소프트 삭제**입니다(상태값 변경). 탈퇴해도 검사 결과는 통계를 위해 보존합니다.
+- 회원 비활성화와 결과 삭제는 모두 **소프트 삭제**입니다(상태값 변경). 비활성화해도 검사 결과는 통계를 위해 보존합니다.
 
 ---
 
@@ -215,7 +215,7 @@ erDiagram
 | 토큰 재발급 | POST | `/api/auth/reissue` | - | 200 |
 | 로그아웃 | POST | `/api/auth/logout` | JWT | 204 |
 | 내 정보 조회 | GET | `/api/members/me` | JWT | 200 |
-| 회원 탈퇴 | DELETE | `/api/members/me` | JWT | 204 |
+| 회원 비활성화 | DELETE | `/api/members/me` | JWT | 204 |
 | 설문 목록 | GET | `/api/surveys?examType=` | JWT | 200 |
 | 문항 조회 | GET | `/api/surveys/{surveyId}/questions` | JWT | 200 |
 | 검사 결과 제출 | POST | `/api/results` | JWT | 201 |
@@ -312,12 +312,12 @@ DB·서버 없이 실행되는 단위 테스트입니다. Repository 등 의존 
 
 | 테스트 | 확인 내용 |
 |---|---|
-| `MemberServiceTest` | 회원가입(비밀번호 암호화, 이메일 중복 409), 내 정보, 탈퇴(소프트 삭제·토큰 폐기) |
+| `MemberServiceTest` | 회원가입(비밀번호 암호화, 이메일 중복 409), 내 정보, 비활성화(소프트 삭제·토큰 폐기) |
 | `AuthServiceTest` | 로그인 성공·실패(401·403), 관리자 계정 차단, 토큰 재발급 실패 5가지, 로그아웃 |
 | `JwtTokenProviderTest` | 토큰 발급·검증, 만료·위조·변조 토큰, 짧은 비밀키 |
 | `SignupRequestValidationTest` | 회원가입 입력 규칙과 오류 문구 (비밀번호 규칙 위반 7가지 등) |
 | `AdminStatisticsServiceTest` | 대시보드 위험도 비율(%)·반올림, 빈 등급·빈 달 처리 |
-| `AdminMemberServiceTest` | 관리자 회원 조회·수정·탈퇴 처리 규칙 |
+| `AdminMemberServiceTest` | 관리자 회원 조회·수정·비활성화 처리 규칙 |
 
 API 단위 시나리오는 REST 설계서 7.4의 테스트 케이스(TC-AUTH·TC-SURV·TC-RES)를 `backend/http/*.http`로 확인합니다.
 프론트엔드 인증 흐름(토큰 재발급·동시 요청) 테스트: `cd frontend && npm run test:auth`
@@ -331,7 +331,7 @@ Mini_Project_2/
 ├── backend/                     Spring Boot (REST API + 관리자 화면)
 │   ├── src/main/java/com/kdsq/
 │   │   ├── auth/                로그인·토큰 재발급·로그아웃, RefreshToken
-│   │   ├── member/              회원가입·내 정보·탈퇴, Member
+│   │   ├── member/              회원가입·내 정보·비활성화, Member
 │   │   ├── survey/              설문·문항 조회
 │   │   ├── result/              결과 제출·채점(ScoringService)·상세·이력
 │   │   ├── admin/               관리자 대시보드·회원·검사 결과 관리
