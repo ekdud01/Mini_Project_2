@@ -1,4 +1,6 @@
-/* KDSQ 관리자 화면 공통 스타일 */
+/* KDSQ 관리자 화면 공통 스타일 (마음 기억 · 사용자 화면 디자인과 통일)
+   - 색·글자·간격은 UI 설계서 6장 토큰 + 사용자 화면(index.css) 값
+   - 인라인 style 사용 금지: 모든 모양은 이 파일의 클래스로 */
 
 /* ===== 1. 디자인 토큰 ===== */
 :root {
@@ -464,7 +466,7 @@ select.form-control { padding-right: 32px; }
   .brand-name { font-size: 18px; }
 }
 
-/* ===== 16. 회원 정보 수정 폼 ===== */
+/* ===== 16. 회원 정보 수정 폼 (STEP 3 추가) ===== */
 .form-card { max-width: 840px; }
 .form-card .card { margin-bottom: 0; }
 .grid-2 > .form-group, .grid-2 > fieldset.form-group { margin-bottom: 4px; }
@@ -474,13 +476,13 @@ select.form-control { padding-right: 32px; }
 .empty-state .btn { margin-top: 12px; }
 .card > h2 + .detail-list { margin-top: 6px; }
 
-/* ===== 17. 검사 결과 상세 간격 보정 ===== */
+/* ===== 17. 검사 결과 상세 간격 보정 (STEP 4 추가) ===== */
 .grid-side, .grid-side-wide, .grid-main-side { margin-bottom: 20px; }
 .card > h2 + .domains, .card > h2 + dl { margin-top: 14px; }
 .domain dd .badge { margin-left: 4px; vertical-align: middle; }
 .meta-strip dd .text-sub { font-weight: var(--font-weight-normal); }
 .meta-right .btn .icon { width: 16px; height: 16px; }
 
-/* ===== 18. 헤더 이메일 ===== */
+/* ===== 18. 헤더 이메일 (보류 항목 반영) ===== */
 .admin-email { margin-left: 4px; color: var(--color-text-sub); font-size: var(--font-size-sm); }
 @media (max-width: 1023px) { .admin-email { display: none; } }   /* 좁은 화면에서는 이름만 */

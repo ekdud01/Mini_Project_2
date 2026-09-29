@@ -11,101 +11,101 @@
          th:with="inactive=${member.status.name() == 'WITHDRAWN'},
                   hasResults=${!#lists.isEmpty(results)}">
 
-    <!-- 제목: 회원 이름 + 상태 배지 -->
-    <div class="page-title">
-        <div class="title-group">
-            <h1 th:text="${member.name}">홍길동</h1>
-            <span class="badge" th:classappend="'badge-' + ${member.status.name()}"
-                  th:text="${inactive} ? '비활성' : '활성'">활성</span>
+  <!-- 제목: 회원 이름 + 상태 배지 -->
+  <div class="page-title">
+    <div class="title-group">
+      <h1 th:text="${member.name}">홍길동</h1>
+      <span class="badge" th:classappend="'badge-' + ${member.status.name()}"
+            th:text="${inactive} ? '비활성' : '활성'">활성</span>
+    </div>
+    <div class="page-actions">
+      <a th:href="@{/admin/members/{id}/edit(id=${member.id})}" class="btn">
+        <svg th:replace="~{fragments/icons :: pencil}"></svg>정보 수정
+      </a>
+      <form th:unless="${inactive}"
+            th:action="@{/admin/members/{id}/withdraw(id=${member.id})}" method="post">
+        <button type="submit" class="btn btn-danger-soft"
+                data-confirm-title="이 회원을 비활성 처리할까요?"
+                th:attr="data-confirm=|${member.name} 회원은 더 이상 로그인할 수 없습니다. 검사 이력은 보존됩니다|"
+                data-confirm-ok="비활성 처리">
+          <svg th:replace="~{fragments/icons :: trash}"></svg>비활성 처리
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 비활성 회원 안내 -->
+  <div th:if="${inactive}" class="alert alert-info" role="status">
+    <svg th:replace="~{fragments/icons :: info}"></svg>
+    <span>비활성 회원입니다. 로그인할 수 없으며, 검사 이력은 보존됩니다</span>
+  </div>
+
+  <div class="grid-side">
+    <!-- 회원 정보 -->
+    <div class="card">
+      <h2>회원 정보</h2>
+      <dl class="detail-list">
+        <div><dt>이메일</dt>   <dd th:text="${member.email}">hong@test.com</dd></div>
+        <div><dt>성별</dt>     <dd th:text="${member.gender.description}">남성</dd></div>
+        <div><dt>출생년도</dt> <dd th:text="${member.birthYear}">1960</dd></div>
+        <div><dt>가입일</dt>   <dd th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd')}">2026-03-02</dd></div>
+      </dl>
+      <!-- 최근 판정 요약: 이력은 최신순이므로 첫 번째 결과 -->
+      <div class="summary-box" th:if="${hasResults}" th:with="latest=${results[0]}">
+        <div>
+          <span class="text-sub">최근 판정</span><br>
+          <strong th:text="${#temporals.format(latest.createdAt, 'yyyy-MM-dd')}">2026-09-24</strong>
         </div>
-        <div class="page-actions">
-            <a th:href="@{/admin/members/{id}/edit(id=${member.id})}" class="btn">
-                <svg th:replace="~{fragments/icons :: pencil}"></svg>정보 수정
-            </a>
-            <form th:unless="${inactive}"
-                  th:action="@{/admin/members/{id}/withdraw(id=${member.id})}" method="post">
-                <button type="submit" class="btn btn-danger-soft"
-                        data-confirm-title="이 회원을 비활성 처리할까요?"
-                        th:attr="data-confirm=|${member.name} 회원은 더 이상 로그인할 수 없습니다. 검사 이력은 보존됩니다.|"
-                        data-confirm-ok="비활성 처리">
-                    <svg th:replace="~{fragments/icons :: trash}"></svg>비활성 처리
-                </button>
-            </form>
-        </div>
+        <span class="badge" th:classappend="'badge-' + ${latest.riskLevel.name()}"
+              th:text="${latest.totalScore != null} ? |${latest.riskLevel.displayName} · ${latest.totalScore}점| : ${latest.riskLevel.displayName}">위험 · 9점</span>
+      </div>
     </div>
 
-    <!-- 비활성 회원 안내 -->
-    <div th:if="${inactive}" class="alert alert-info" role="status">
-        <svg th:replace="~{fragments/icons :: info}"></svg>
-        <span>비활성 회원입니다. 로그인할 수 없으며, 검사 이력은 보존됩니다.</span>
-    </div>
+    <!-- 검사 이력 -->
+    <div class="card card-flush">
+      <div class="card-head">
+        <h2>검사 이력 <span class="text-sub" th:text="|총 ${#lists.size(results)}건|">총 5건</span></h2>
+      </div>
 
-    <div class="grid-side">
-        <!-- 회원 정보 -->
-        <div class="card">
-            <h2>회원 정보</h2>
-            <dl class="detail-list">
-                <div><dt>이메일</dt>   <dd th:text="${member.email}">hong@test.com</dd></div>
-                <div><dt>성별</dt>     <dd th:text="${member.gender.description}">남성</dd></div>
-                <div><dt>출생년도</dt> <dd th:text="${member.birthYear}">1960</dd></div>
-                <div><dt>가입일</dt>   <dd th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd')}">2026-03-02</dd></div>
-            </dl>
-            <!-- 최근 판정 요약: 이력은 최신순이므로 첫 번째 결과 -->
-            <div class="summary-box" th:if="${hasResults}" th:with="latest=${results[0]}">
-                <div>
-                    <span class="text-sub">최근 판정</span><br>
-                    <strong th:text="${#temporals.format(latest.createdAt, 'yyyy-MM-dd')}">2026-09-24</strong>
-                </div>
-                <span class="badge" th:classappend="'badge-' + ${latest.riskLevel.name()}"
-                      th:text="${latest.totalScore != null} ? |${latest.riskLevel.displayName} · ${latest.totalScore}점| : ${latest.riskLevel.displayName}">위험 · 9점</span>
-            </div>
-        </div>
+      <div class="empty-state" th:unless="${hasResults}">
+        <svg th:replace="~{fragments/icons :: clipboard}"></svg>
+        <strong>검사 이력이 없습니다</strong>
+        <span>회원이 검사를 완료하면 여기에 표시됩니다</span>
+      </div>
 
-        <!-- 검사 이력 -->
-        <div class="card card-flush">
-            <div class="card-head">
-                <h2>검사 이력 <span class="text-sub" th:text="|총 ${#lists.size(results)}건|">총 5건</span></h2>
-            </div>
-
-            <div class="empty-state" th:unless="${hasResults}">
-                <svg th:replace="~{fragments/icons :: clipboard}"></svg>
-                <strong>검사 이력이 없습니다.</strong>
-                <span>회원이 검사를 완료하면 여기에 표시됩니다.</span>
-            </div>
-
-            <div class="table-wrap" th:if="${hasResults}">
-                <table class="table">
-                    <caption class="sr-only">검사 이력</caption>
-                    <thead>
-                    <tr>
-                        <th scope="col">검사일</th>
-                        <th scope="col" class="num">1차 (KDSQ-P)</th>
-                        <th scope="col" class="num">2차 (KDSQ-C)</th>
-                        <th scope="col" class="center">위험도</th>
-                        <th scope="col" class="center">상세</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="r : ${results}">
-                        <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd')}">2026-09-24</td>
-                        <td class="num"><span class="score"><b th:text="${r.firstScore}">7</b> <span>/ 10</span></span></td>
-                        <td class="num">
-                            <span class="score" th:if="${r.totalScore != null}"><b th:text="${r.totalScore}">9</b> <span>/ 30</span></span>
-                            <span class="muted" th:if="${r.totalScore == null}">— 1차 종료</span>
-                        </td>
-                        <td class="center">
+      <div class="table-wrap" th:if="${hasResults}">
+        <table class="table">
+          <caption class="sr-only">검사 이력</caption>
+          <thead>
+            <tr>
+              <th scope="col">검사일</th>
+              <th scope="col" class="num">1차 (KDSQ-P)</th>
+              <th scope="col" class="num">2차 (KDSQ-C)</th>
+              <th scope="col" class="center">위험도</th>
+              <th scope="col" class="center">상세</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="r : ${results}">
+              <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd')}">2026-09-24</td>
+              <td class="num"><span class="score"><b th:text="${r.firstScore}">7</b> <span>/ 10</span></span></td>
+              <td class="num">
+                <span class="score" th:if="${r.totalScore != null}"><b th:text="${r.totalScore}">9</b> <span>/ 30</span></span>
+                <span class="muted" th:if="${r.totalScore == null}">— 1차 종료</span>
+              </td>
+              <td class="center">
                 <span class="badge" th:classappend="'badge-' + ${r.riskLevel.name()}"
                       th:text="${r.riskLevel.displayName}">위험</span>
-                        </td>
-                        <td class="center">
-                            <a th:href="@{/admin/results/{id}(id=${r.id})}" class="btn btn-sm">보기</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+              </td>
+              <td class="center">
+                <a th:href="@{/admin/results/{id}(id=${r.id})}" class="btn btn-sm">보기</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
 
 </section>
 </body>
