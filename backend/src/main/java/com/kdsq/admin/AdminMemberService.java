@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.kdsq.admin.dto.AdminMemberUpdateForm;
+import com.kdsq.auth.RefreshTokenRepository;
 import com.kdsq.global.exception.BusinessException;
 import com.kdsq.global.exception.ErrorCode;
 import com.kdsq.member.Member;
@@ -34,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminMemberService {
 
     private final MemberRepository memberRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final SurveyResultRepository surveyResultRepository;
 
     /** ADM-03 회원 목록: 일반 회원만, 이름/이메일 검색 + 페이징 */
@@ -76,6 +78,18 @@ public class AdminMemberService {
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
         }
+    }
+
+    /** 탈퇴 처리: 소프트 삭제(ACTIVE → WITHDRAWN) + 리프레시 토큰 폐기. 검사 결과는 보존 */
+    @Transactional
+    public void withdraw(Long id) {
+        Member member = findMember(id);
+        if (!member.getStatus().isActive()) {
+            throw new BusinessException(ErrorCode.MEMBER_WITHDRAWN);   // 이미 탈퇴한 회원 → 컨트롤러가 실패 플래시
+        }
+        member.withdraw();
+        // 지우지 않으면 탈퇴 후에도 남은 토큰으로 Access Token을 재발급받을 수 있다
+        refreshTokenRepository.deleteByMemberId(id);
     }
 
     /** 일반 회원만 찾는다. 없는 id·관리자 id면 MEMBER_NOT_FOUND → AdminExceptionHandler가 404 화면으로 */

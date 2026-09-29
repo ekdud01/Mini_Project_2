@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
  * | GET  /admin/members?keyword=&page=    | admin/members/list     | members(Page), keyword                |
  * | GET  /admin/members/{id}              | admin/members/detail   | member, results                       |
  * | GET·POST /admin/members/{id}/edit     | admin/members/edit     | form, memberId, member                |
+ * | POST /admin/members/{id}/withdraw     | → 상세로 redirect      | 플래시 successMessage / errorMessage  |
  *
  * 없는 회원·관리자 id → 서비스의 BusinessException(MEMBER_NOT_FOUND) → AdminExceptionHandler가 error/404
  */
@@ -91,6 +92,21 @@ public class AdminMemberController {
 
         // PRG 패턴: 저장 후 redirect, 메시지는 플래시로 1회만 전달
         redirectAttributes.addFlashAttribute("successMessage", "회원 정보가 수정되었습니다.");
+        return "redirect:/admin/members/" + id;
+    }
+
+    /** 탈퇴 처리 (소프트 삭제 + 리프레시 토큰 폐기) */
+    @PostMapping("/{id}/withdraw")
+    public String withdraw(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            adminMemberService.withdraw(id);
+            redirectAttributes.addFlashAttribute("successMessage", "탈퇴 처리되었습니다.");
+        } catch (BusinessException e) {
+            if (e.getErrorCode() == ErrorCode.MEMBER_NOT_FOUND) {
+                throw e;   // 없는 회원·관리자 id → 404 화면
+            }
+            redirectAttributes.addFlashAttribute("errorMessage", "처리 중 오류가 발생했습니다.");  // 이미 탈퇴한 회원 등 (UI 4.4)
+        }
         return "redirect:/admin/members/" + id;
     }
 

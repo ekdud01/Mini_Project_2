@@ -2,7 +2,10 @@ package com.kdsq.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
 
@@ -14,11 +17,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.kdsq.admin.dto.AdminMemberUpdateForm;
+import com.kdsq.auth.RefreshTokenRepository;
 import com.kdsq.global.exception.BusinessException;
 import com.kdsq.global.exception.ErrorCode;
 import com.kdsq.member.Gender;
 import com.kdsq.member.Member;
 import com.kdsq.member.MemberRepository;
+import com.kdsq.member.UserStatus;
 import com.kdsq.result.SurveyResultRepository;
 
 /**
@@ -38,9 +43,12 @@ class AdminMemberServiceTest {
     MemberRepository memberRepository;
 
     @Mock
+    RefreshTokenRepository refreshTokenRepository;
+
+    @Mock
     SurveyResultRepository surveyResultRepository;
 
-    @InjectMocks   // 위의 가짜 Repository 2개를 생성자에 넣어서 진짜 서비스를 만든다
+    @InjectMocks   // 위의 가짜 Repository 3개를 생성자에 넣어서 진짜 서비스를 만든다
     AdminMemberService adminMemberService;
 
     private Member member() {
@@ -103,6 +111,37 @@ class AdminMemberServiceTest {
 
         assertThat(member.getName()).isEqualTo("홍길순");
         assertThat(member.getEmail()).isEqualTo("new@test.com");
+    }
+
+    // ───────────────────── 탈퇴 ─────────────────────
+
+    @Test
+    @DisplayName("탈퇴 처리: 상태가 WITHDRAWN이 되고 리프레시 토큰을 삭제한다")
+    void withdraw_success() {
+        Member member = member();
+        given(memberRepository.findById(2L)).willReturn(Optional.of(member));
+
+        adminMemberService.withdraw(2L);
+
+        assertThat(member.getStatus()).isEqualTo(UserStatus.WITHDRAWN);
+        // 리프레시 토큰 삭제 메서드가 2L로 호출됐는지 확인
+        verify(refreshTokenRepository).deleteByMemberId(2L);
+    }
+
+    @Test
+    @DisplayName("이미 탈퇴한 회원이면 MEMBER_WITHDRAWN, 토큰 삭제는 호출하지 않는다")
+    void withdraw_alreadyWithdrawn() {
+        Member member = member();
+        member.withdraw();   // 이미 탈퇴한 상태로 준비
+        given(memberRepository.findById(2L)).willReturn(Optional.of(member));
+
+        assertThatThrownBy(() -> adminMemberService.withdraw(2L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.MEMBER_WITHDRAWN);
+
+        // 이미 탈퇴한 회원이면 토큰 삭제를 한 번도 호출하지 않는다
+        verify(refreshTokenRepository, never()).deleteByMemberId(anyLong());
     }
 
     private AdminMemberUpdateForm form(String name, String email) {
