@@ -26,7 +26,7 @@
     <div class="stat-card">
       <p class="stat-label">전체 회원 (활성)</p>
       <p class="stat-value"><span th:text="${#numbers.formatInteger(stats.totalMembers, 1, 'COMMA')}">24</span><small> 명</small></p>
-      <p class="stat-sub" th:text="|비활성 ${stats.withdrawnMembers}명 별도|">비활성 3명 별도</p>
+      <p class="stat-sub" th:text="|비활성 회원 ${stats.withdrawnMembers}명 제외|">비활성 회원 3명 제외</p>
     </div>
     <div class="stat-card">
       <p class="stat-label">전체 검사 건수</p>
@@ -54,7 +54,7 @@
 
   <th:block th:unless="${stats.totalResults == 0}">
 
-  <div class="grid-2">
+  <div class="grid-2 section-row">
     <!-- 2. 위험도 분포: 도넛 + 건수·비율 표 (표의 배지가 범례 역할) -->
     <div class="card">
       <div class="card-head">
@@ -65,7 +65,7 @@
         <div class="chart-box chart-box-donut">
           <canvas id="riskChart" role="img" aria-label="위험도 분포 도넛 차트. 수치는 옆 표 참고"></canvas>
         </div>
-        <table class="table table-compact">
+        <table class="table table-compact table-center">
           <caption class="sr-only">위험도별 검사 건수와 비율</caption>
           <thead><tr><th scope="col">위험도</th><th scope="col" class="num">건수</th><th scope="col" class="num">비율</th></tr></thead>
           <tbody>
@@ -79,25 +79,26 @@
       </div>
     </div>
 
-    <!-- 3. 영역별 점수 평균: <meter> 막대 (영역별 만점 10점) -->
+    <!-- 3. 영역별 점수 평균: <meter> 막대 (영역별 만점 10점), data-animate = 처음 열 때 채워지는 효과 (admin.js 7) -->
     <div class="card">
       <div class="card-head">
-        <h2>영역별 점수 평균 <span class="text-sub">KDSQ-C(2차)까지 수행한 검사 기준</span></h2>
+        <h2>영역별 점수 평균</h2>
+        <span class="text-sub">KDSQ-C(2차) 수행 검사 기준</span>
       </div>
       <div class="meter-row">
         <div class="meter-top"><span id="m-memory">기억력</span>
           <span><span th:text="${stats.avgMemory}">3.2</span> <span class="text-sub">/ 10점</span></span></div>
-        <meter min="0" max="10" th:value="${stats.avgMemory}" aria-labelledby="m-memory"></meter>
+        <meter min="0" max="10" th:value="${stats.avgMemory}" aria-labelledby="m-memory" data-animate></meter>
       </div>
       <div class="meter-row">
         <div class="meter-top"><span id="m-other">기타 인지기능</span>
           <span><span th:text="${stats.avgOther}">3.0</span> <span class="text-sub">/ 10점</span></span></div>
-        <meter min="0" max="10" th:value="${stats.avgOther}" aria-labelledby="m-other"></meter>
+        <meter min="0" max="10" th:value="${stats.avgOther}" aria-labelledby="m-other" data-animate></meter>
       </div>
       <div class="meter-row">
         <div class="meter-top"><span id="m-adl">일상생활 수행능력</span>
           <span><span th:text="${stats.avgAdl}">3.7</span> <span class="text-sub">/ 10점</span></span></div>
-        <meter min="0" max="10" th:value="${stats.avgAdl}" aria-labelledby="m-adl"></meter>
+        <meter min="0" max="10" th:value="${stats.avgAdl}" aria-labelledby="m-adl" data-animate></meter>
       </div>
     </div>
   </div>
@@ -105,7 +106,7 @@
   <div class="grid-main-side">
     <!-- 4. 월별 추이 (최근 12개월): 단위가 다른 두 값은 차트를 나눠 표시 -->
     <div class="card">
-      <h2>월별 추이 <span class="text-sub">(최근 12개월)</span></h2>
+      <h2>월별 추이 <span class="text-sub">최근 12개월</span></h2>
 
       <h3 class="chart-title">검사 건수 <span class="text-sub">(1차에서 종료된 검사 포함)</span></h3>
       <div class="chart-box">
@@ -146,15 +147,15 @@
       <div class="empty-state" th:if="${#lists.isEmpty(stats.recentHighRisk)}">
         <strong>최근 위험 판정이 없습니다</strong>
       </div>
-      <table class="table" th:unless="${#lists.isEmpty(stats.recentHighRisk)}">
+      <table class="table table-center" th:unless="${#lists.isEmpty(stats.recentHighRisk)}">
         <caption class="sr-only">최근 위험 판정 검사 결과 5건</caption>
-        <thead><tr><th scope="col">날짜</th><th scope="col">회원</th><th scope="col" class="num">총점</th></tr></thead>
+        <thead><tr><th scope="col">성명</th><th scope="col">검사일</th><th scope="col" class="num">총점</th></tr></thead>
         <tbody>
           <tr th:each="r : ${stats.recentHighRisk}">
-            <td th:text="${#temporals.format(r.createdAt, 'MM-dd')}">09-24</td>
             <td><a class="link-name" th:href="@{/admin/results/{id}(id=${r.id})}"
                    th:text="${r.member.name}"
                    th:attr="aria-label=|${r.member.name} 검사 상세 보기|">박은희</a></td>
+            <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd')}">2026-09-24</td>
             <td class="num"><span class="badge badge-HighRisk" th:text="|${r.totalScore}점|">19점</span></td>
           </tr>
         </tbody>

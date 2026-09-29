@@ -1,6 +1,6 @@
 // KDSQ 관리자 화면 공통 스크립트
 // 1. 확인 모달   2. 제출 중 표시·중복 제출 방지   3. 알림 닫기
-// 4. 비밀번호 보기   5. 에러 페이지 버튼   6. 기간 빠른 선택
+// 4. 비밀번호 보기   5. 에러 페이지 버튼   6. 기간 빠른 선택   7. 막대 채우기 효과
 (() => {
   'use strict';
 
@@ -145,4 +145,23 @@
     from.value = ymd(start);
     to.value = ymd(today);
   });
+
+  // ---------- 7. 막대 채우기 효과 (대시보드 영역별 점수) ----------
+  // 사용: <meter ... data-animate> → 처음 열 때 0에서 실제 값까지 0.8초 동안 채움
+  //       "동작 줄이기" 설정 사용자는 바로 최종 값 표시. 값 자체는 서버가 넣은 그대로 유지
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('meter[data-animate]').forEach((m) => {
+      const target = m.value;
+      const start = performance.now();
+      const duration = 800;
+      m.value = 0;
+      const step = (now) => {
+        const p = Math.min((now - start) / duration, 1);
+        m.value = target * (1 - Math.pow(1 - p, 3));      // 끝으로 갈수록 천천히
+        if (p < 1) requestAnimationFrame(step);
+        else m.value = target;                             // 마지막은 정확한 값으로
+      };
+      requestAnimationFrame(step);
+    });
+  }
 })();

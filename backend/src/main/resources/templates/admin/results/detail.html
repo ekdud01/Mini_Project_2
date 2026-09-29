@@ -34,7 +34,7 @@
 
   <!-- 회원 · 검사 정보 -->
   <div class="card meta-strip">
-    <dl class="meta"><dt>회원</dt><dd th:text="${result.member.name}">홍길동</dd></dl>
+    <dl class="meta"><dt>성명</dt><dd th:text="${result.member.name}">홍길동</dd></dl>
     <dl class="meta"><dt>검사 종류</dt>
       <dd><span th:text="${result.examType.label}">KDSQ-C</span>
           <span class="text-sub" th:text="${secondDone} ? '(1차 → 2차 진행)' : '(1차에서 종료)'">(1차 → 2차 진행)</span></dd></dl>
@@ -51,7 +51,7 @@
   <div class="grid-side-wide">
     <!-- 1차 KDSQ-P: 4점 이상이면 빨강 + "2차 대상" -->
     <div class="card">
-      <h2>1차 · KDSQ-P</h2>
+      <h2>1차 | KDSQ-P</h2>
       <p class="big-score" th:classappend="${secondTarget} ? 'is-alert'">
         <span th:text="${result.firstScore}">7</span> <small>/ 10점</small></p>
       <span th:if="${secondTarget}" class="badge badge-HighRisk">2차 대상 (4점 이상)</span>
@@ -60,7 +60,7 @@
 
     <!-- 2차 KDSQ-C: 영역 점수 + 총점(위험도 색) -->
     <div class="card" th:if="${secondDone}">
-      <h2>2차 · KDSQ-C</h2>
+      <h2>2차 | KDSQ-C</h2>
       <div class="domains">
         <dl class="domain"><dt>기억력</dt>
             <dd><span th:text="${result.memoryScore}">4</span> <small>/ 10</small></dd></dl>

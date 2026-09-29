@@ -18,7 +18,8 @@
     <div class="page-title"><h1>검사 결과</h1></div>
 
     <div class="card">
-        <form class="search-form" th:action="@{/admin/results}" method="get" role="search">
+        <!-- 필터 2줄: 윗줄 = 검사 종류·위험도·성명, 아랫줄 = 기간(윗줄 오른쪽 끝까지) + 검색·초기화 -->
+        <form class="search-form search-grid" th:action="@{/admin/results}" method="get" role="search">
             <div class="form-group">
                 <label for="examType">검사 종류</label>
                 <select id="examType" name="examType" class="form-control">
@@ -42,11 +43,11 @@
             </fieldset>
 
             <div class="form-group">
-                <label for="name">회원 이름</label>
-                <input type="search" id="name" name="name" class="form-control" th:value="${cond?.name}" placeholder="회원 이름">
+                <label for="name">성명</label>
+                <input type="search" id="name" name="name" class="form-control" th:value="${cond?.name}" placeholder="성명">
             </div>
 
-            <fieldset class="form-group">
+            <fieldset class="form-group period">
                 <legend>기간</legend>
                 <div class="date-range">
                     <label for="from" class="sr-only">시작일</label>
@@ -59,15 +60,17 @@
                 </div>
             </fieldset>
 
-            <button type="submit" class="btn btn-primary btn-control" data-loading-text="검색 중">검색</button>
-            <a th:href="@{/admin/results}" class="btn btn-control">초기화</a>
+            <div class="search-actions">
+                <button type="submit" class="btn btn-primary btn-control" data-loading-text="검색 중">검색</button>
+                <a th:href="@{/admin/results}" class="btn btn-control">초기화</a>
+            </div>
         </form>
     </div>
 
     <div class="card card-flush">
         <div class="card-head">
-            <p class="list-summary">총 <strong th:text="|${results.totalElements}건|">55건</strong>
-                <span class="text-sub">· 검사일 최신순</span></p>
+            <p class="list-summary">총 <strong th:text="|${results.totalElements}건|">108건</strong></p>
+            <span class="text-sub">검사일 최신순</span>
         </div>
 
         <div class="empty-state" th:if="${results.empty}">
@@ -76,12 +79,12 @@
         </div>
 
         <div class="table-wrap" th:unless="${results.empty}">
-            <table class="table">
+            <table class="table table-center">
                 <caption class="sr-only">검사 결과 목록</caption>
                 <thead>
                 <tr>
+                    <th scope="col">성명</th>
                     <th scope="col">검사일</th>
-                    <th scope="col">회원</th>
                     <th scope="col" class="num">1차 (P)</th>
                     <th scope="col" class="num">2차 (C)</th>
                     <th scope="col" class="center">위험도</th>
@@ -92,9 +95,9 @@
                 <tr th:each="r : ${results.content}"
                     th:with="day=${#temporals.format(r.createdAt, 'yyyy-MM-dd')},
                        rurl=${@pageUrl.current()}">
-                    <td th:text="${day}">2026-09-24</td>
                     <!-- th:utext는 @highlight.mark 결과에만 사용 -->
                     <td class="strong" th:with="h=${@highlight.mark(r.member.name, cond?.name)}" th:utext="${h}">홍길동</td>
+                    <td th:text="${day}">2026-09-24</td>
                     <td class="num"><span class="score"><b th:text="${r.firstScore}">7</b> <span>/ 10</span></span></td>
                     <td class="num">
                         <span class="score" th:if="${r.totalScore != null}"><b th:text="${r.totalScore}">9</b> <span>/ 30</span></span>
