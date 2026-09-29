@@ -1,10 +1,10 @@
 package com.kdsq.admin.dto;
 
+import com.kdsq.global.validation.NotFutureYear;
 import com.kdsq.member.Gender;
 import com.kdsq.member.Member;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +16,7 @@ import lombok.Setter;
 /**
  * ADM-04-1 회원 정보 수정 폼 (Model 이름: form)
  * 수정 가능한 4개 필드만 둔다. 가입일·상태는 읽기 전용이라 넣지 않는다 (폼에 있으면 요청으로 조작될 수 있음).
+ * 검증 규칙·오류 문구는 회원가입(SignupRequest, REST 설계서 3.1.1 표)과 같다. 입력칸 아래 문구라 마침표 없음 (UI 설계서 2.4)
  * @ModelAttribute 바인딩은 기본 생성자 + setter로 값을 채우므로 @NoArgsConstructor + @Setter가 필요하다.
  */
 @Getter
@@ -23,21 +24,21 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AdminMemberUpdateForm {
 
-    @NotBlank(message = "이름을 입력해 주세요.")
-    @Size(max = 50, message = "이름은 50자 이하로 입력해 주세요.")      // members.name length = 50
+    @NotBlank(message = "이름을 입력해주세요")
+    @Size(max = 50, message = "이름은 50자 이하여야 합니다")          // members.name length = 50
     private String name;
 
-    @NotBlank(message = "이메일을 입력해 주세요.")
-    @Email(message = "이메일 형식이 올바르지 않습니다.")
-    @Size(max = 100, message = "이메일은 100자 이하로 입력해 주세요.")  // members.email length = 100
+    @NotBlank(message = "이메일을 입력해주세요")
+    @Email(message = "이메일 형식이 올바르지 않습니다")
+    @Size(max = 100, message = "이메일은 100자 이하여야 합니다")       // members.email length = 100
     private String email;
 
-    @NotNull(message = "성별을 선택해 주세요.")
+    @NotNull(message = "성별을 선택해주세요")
     private Gender gender;
 
-    @NotNull(message = "출생년도를 입력해 주세요.")
-    @Min(value = 1900, message = "출생년도를 올바르게 입력해 주세요.")
-    @Max(value = 2100, message = "출생년도를 올바르게 입력해 주세요.")
+    @NotNull(message = "출생년도를 입력해주세요")
+    @Min(value = 1900, message = "출생년도는 1900년 이후여야 합니다")
+    @NotFutureYear(message = "출생년도는 올해까지만 입력할 수 있습니다")   // 미래 연도(예: 2050) 차단
     private Integer birthYear;
 
     /** 앞뒤 공백 제거 — " hong@test.com"처럼 공백으로 중복 검사를 피해 가지 못하게 */
