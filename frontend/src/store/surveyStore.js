@@ -2,6 +2,7 @@
 
 import { create } from 'zustand';
 import * as surveyApi from '@/api/surveyApi';
+import { registerStoreReset } from './resetStores';
 
 const initialState = {
   surveys: [],
@@ -46,3 +47,5 @@ export const useSurveyStore = create((set, get) => ({
 
   reset: () => set(initialState),
 }));
+
+registerStoreReset('survey', () => useSurveyStore.getState().reset());

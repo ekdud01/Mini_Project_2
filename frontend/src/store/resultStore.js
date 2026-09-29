@@ -7,6 +7,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import * as resultApi from '@/api/resultApi';
+import { registerStoreReset } from './resetStores';
 
 const initialState = {
   currentResult: null,
@@ -73,3 +74,5 @@ export const useResultStore = create(
     },
   ),
 );
+
+registerStoreReset('result', () => useResultStore.getState().reset());
