@@ -487,15 +487,88 @@ select.form-control { padding-right: 32px; }
 .admin-email { margin-left: 4px; color: var(--color-text-sub); font-size: var(--font-size-sm); }
 @media (max-width: 1023px) { .admin-email { display: none; } }   /* 좁은 화면에서는 이름만 */
 
-/* ===== 상태 필터 칩: 선택 표시 (활성 = 파랑, 비활성 = 회색) ===== */
+/* ===== 상태 필터 칩: 선택 표시 (전체 = 파랑, 활성 = 초록, 비활성 = 빨강 → 20장에서 지정) ===== */
 .chip-check input[type="radio"]:checked + span {
   border-color: var(--color-primary); background: var(--color-primary-soft); color: var(--color-primary); font-weight: var(--font-weight-bold);
-}
-.chip-check input[value="WITHDRAWN"]:checked + span {
-  border-color: var(--color-border-strong); background: var(--inactive-bg); color: var(--inactive-fg);
 }
 
 /* ===== 19. 터치 기기 클릭 영역 44px (가이드 6.1) ===== */
 @media (pointer: coarse) {
   .btn, .btn-sm, .btn-icon, .pagination a { min-height: 44px; min-width: 44px; }
+}
+
+/* ===== 20. 화면 보완 (9/29 최종 시안 반영) ===== */
+/* 대시보드: 위험도 분포 줄과 월별 추이 줄 사이 간격 */
+.section-row { margin-bottom: 20px; }
+/* 대시보드: 월별 추이 · 최근 위험 판정 반응형 (차트가 좁아질 수 있게, 1280px 미만 1열) */
+.grid-main-side { grid-template-columns: minmax(0, 1fr) 380px; }
+.grid-main-side > *, .grid-2 > * { min-width: 0; }
+@media (max-width: 1279px) { .grid-main-side { grid-template-columns: 1fr; } }
+
+/* 회원 상태 색: 활성 = 초록, 비활성 = 빨강 (필터 칩 · 배지 · 버튼 통일) */
+.badge-WITHDRAWN { background: var(--high-bg); color: var(--high-fg); }
+.chip-check input[value="ACTIVE"]:checked + span    { border-color: #86efac; background: var(--normal-bg); color: var(--normal-fg); }
+.chip-check input[value="WITHDRAWN"]:checked + span { border-color: #fca5a5; background: var(--high-bg);   color: var(--high-fg); }
+.btn-success-soft { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+.btn-success-soft:hover { background: #dcfce7; }
+/* 비활성화 · 삭제 완료 알림: 빨강 (동작은 성공 알림과 같이 3초 후 자동 닫힘) */
+.flash-danger { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+
+/* 표 가운데 정렬 (회원 목록은 이메일만 왼쪽) */
+.table-center th, .table-center td, .table-center .num { text-align: center; }
+.table-center .text-left { text-align: left; }
+
+/* 검색 폼 줄 맞춤: 칩 묶음 · legend 높이 차이 보정 */
+.search-form fieldset.form-group legend { float: left; width: 100%; margin-bottom: var(--space-sm); }
+.search-form fieldset.form-group legend + * { clear: both; }
+.chip-check { display: flex; }
+.form-group .chip-check { margin-bottom: 0; }          /* 라벨용 아래 여백이 칩에 붙지 않게 */
+.search-form .date-range { gap: 8px; }
+
+/* 검사 결과 필터: 2줄 격자 (기간 줄은 윗줄 오른쪽 끝까지, 검색 · 초기화는 바로 옆) */
+.search-form.search-grid { display: grid; grid-template-columns: auto auto 280px auto; justify-content: start; align-items: end; gap: var(--space-md); }
+.search-grid .form-control { min-width: 0; }
+.search-grid input[type="search"] { width: 100%; }
+.search-grid .period { grid-column: 1 / 4; }
+.search-grid .period .date-range .form-control { flex: 1; }
+.search-grid .search-actions { grid-column: 4; display: flex; gap: 8px; }
+@media (max-width: 1023px) {
+  .search-form.search-grid { grid-template-columns: 1fr; }
+  .search-grid .period, .search-grid .search-actions { grid-column: auto; }
+  .search-grid .form-control { width: 100%; }
+}
+
+/* 회원 정보 수정: 필수 입력 항목 안내 빨강 */
+.required-note { color: #dc2626; }
+
+/* ===== 21. 대시보드 월별 추이 통합 차트 (9/30 시안 반영) ===== */
+:root {
+  --chart-bar: #cbd5e1;                        /* 검사 건수 막대: 빨간 선이 먼저 보이도록 연한 회색 */
+  --chart-score-axis: rgba(185, 28, 28, 0.8);  /* 점수 축 숫자: 선과 같은 계열, 대비 4.5:1 이상 유지 */
+  --chart-pill-bg: #fef2f2;                    /* 점수 알약 바탕 */
+  --chart-pill-border: #fecaca;
+  --color-danger-text: #b91c1c;                /* 점수 알약 글자 */
+}
+.chart-box-trend { height: 320px; margin-top: var(--space-sm); }
+.chart-note { margin: var(--space-sm) 0 0; font-size: var(--font-size-sm); color: var(--color-text-sub); }
+
+/* 범례: 카드 제목 오른쪽 (색 + 글자) */
+.chart-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; list-style: none;
+                font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text); }
+.chart-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.legend-bar  { width: 12px; height: 12px; border-radius: 3px; background: var(--chart-bar); }
+.legend-line { width: 18px; height: 3px; border-radius: 2px; background: var(--color-danger); }
+
+/* 최근 위험 판정: 열 폭 균등 */
+.table-even { table-layout: fixed; }
+.table-even th, .table-even td { width: 33.333%; }
+
+/* 넓은 화면: 월별 추이 · 최근 위험 판정 카드 높이 맞춤, 5건일 때 표의 행이 높이를 고르게 나눔 */
+@media (min-width: 1280px) {
+  .grid-main-side { align-items: stretch; }
+  .recent-card { display: flex; flex-direction: column; }
+  .recent-card .table-fill { flex: 1; height: 100%; }
+}
+@media (max-width: 639px) {
+  .chart-box-trend { height: 280px; }
 }

@@ -4,7 +4,7 @@
       layout:decorate="~{layout/admin-layout}">
 <!-- ADM-04 회원 상세 (UI 4.4) | GET /admin/members/{id}
      Model: member(회원정보), results(검사 이력 List, 최신순)
-     비활성 처리: POST /admin/members/{id}/withdraw + 확인 모달 (활성 회원에게만 표시)
+     비활성화: POST /admin/members/{id}/withdraw + 확인 모달 (활성 회원에게만 표시)
      활성화 처리: POST /admin/members/{id}/activate (비활성 회원에게만 표시, 되돌리기 쉬워 확인 모달 없음) -->
 <head><title>회원 상세</title></head>
 <body>
@@ -12,7 +12,7 @@
          th:with="inactive=${member.status.name() == 'WITHDRAWN'},
                   hasResults=${!#lists.isEmpty(results)}">
 
-  <!-- 제목: 회원 이름 + 상태 배지 -->
+  <!-- 제목: 회원 성명 + 상태 배지 (활성 = 초록, 비활성 = 빨강) -->
   <div class="page-title">
     <div class="title-group">
       <h1 th:text="${member.name}">홍길동</h1>
@@ -26,22 +26,22 @@
       <form th:unless="${inactive}"
             th:action="@{/admin/members/{id}/withdraw(id=${member.id})}" method="post">
         <button type="submit" class="btn btn-danger-soft"
-                data-confirm-title="이 회원을 비활성 처리할까요?"
+                data-confirm-title="이 회원을 비활성화할까요?"
                 th:attr="data-confirm=|${member.name} 회원은 더 이상 로그인할 수 없습니다. 검사 이력은 보존됩니다|"
-                data-confirm-ok="비활성 처리">
-          <svg th:replace="~{fragments/icons :: trash}"></svg>비활성 처리
+                data-confirm-ok="비활성화">
+          <svg th:replace="~{fragments/icons :: trash}"></svg>비활성화
         </button>
       </form>
       <form th:if="${inactive}"
             th:action="@{/admin/members/{id}/activate(id=${member.id})}" method="post">
-        <button type="submit" class="btn btn-primary" data-loading-text="처리 중...">
+        <button type="submit" class="btn btn-success-soft" data-loading-text="처리 중...">
           <svg th:replace="~{fragments/icons :: check}"></svg>활성화
         </button>
       </form>
     </div>
   </div>
 
-  <!-- 비활성 회원 안내 -->
+  <!-- 비활성 회원 안내 (진한 회색 안내 상자) -->
   <div th:if="${inactive}" class="alert alert-info" role="status">
     <svg th:replace="~{fragments/icons :: info}"></svg>
     <span>비활성 회원입니다. 로그인할 수 없으며, 검사 이력은 보존됩니다. [활성화]를 누르면 다시 로그인할 수 있습니다</span>
@@ -81,7 +81,7 @@
       </div>
 
       <div class="table-wrap" th:if="${hasResults}">
-        <table class="table">
+        <table class="table table-center">
           <caption class="sr-only">검사 이력</caption>
           <thead>
             <tr>
@@ -98,7 +98,7 @@
               <td class="num"><span class="score"><b th:text="${r.firstScore}">7</b> <span>/ 10</span></span></td>
               <td class="num">
                 <span class="score" th:if="${r.totalScore != null}"><b th:text="${r.totalScore}">9</b> <span>/ 30</span></span>
-                <span class="muted" th:if="${r.totalScore == null}">— 1차 종료</span>
+                <span class="muted" th:if="${r.totalScore == null}" aria-label="2차 검사 없음">—</span>
               </td>
               <td class="center">
                 <span class="badge" th:classappend="'badge-' + ${r.riskLevel.name()}"

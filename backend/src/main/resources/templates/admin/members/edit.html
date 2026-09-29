@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/admin-layout}">
 <!-- ADM-04-1 회원 정보 수정 (UI 4.5) | GET·POST /admin/members/{id}/edit
-     Model: form(name, email, gender, birthYear), memberId, member(이름·가입일·상태 표시용)
+     Model: form(name, email, gender, birthYear), memberId, member(성명·가입일·상태 표시용)
      검증: @Valid + BindingResult → 입력칸 아래 th:errors, 상단 오류 요약 -->
 <head><title>회원 정보 수정</title></head>
 <body>
@@ -35,13 +35,13 @@
     <div class="card">
       <div class="grid-2">
         <div class="form-group">
-          <label for="name">이름 <span class="required" aria-hidden="true">*</span></label>
+          <label for="name">성명 <span class="required" aria-hidden="true">*</span></label>
           <input type="text" id="name" th:field="*{name}" class="form-control" th:errorclass="is-invalid"
                  aria-required="true"
                  th:attr="aria-invalid=${#fields.hasErrors('name')} ? 'true' : null,
                           aria-describedby=${#fields.hasErrors('name')} ? 'name-error' : null">
           <p id="name-error" class="field-error" th:if="${#fields.hasErrors('name')}">
-            <svg th:replace="~{fragments/icons :: alert}"></svg><span th:errors="*{name}">이름을 입력해주세요</span>
+            <svg th:replace="~{fragments/icons :: alert}"></svg><span th:errors="*{name}">성명을 입력해주세요</span>
           </p>
         </div>
 
@@ -83,15 +83,16 @@
       <!-- 수정할 수 없는 정보 -->
       <dl class="readonly-box">
         <div><dt>가입일</dt>
-             <dd th:text="|${#temporals.format(member.createdAt, 'yyyy-MM-dd')} (수정 불가)|">2026-03-02 (수정 불가)</dd></div>
+             <dd><span th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd')}">2026-03-02</span>
+                 <span class="text-sub">| 수정 불가</span></dd></div>
         <div><dt>상태</dt>
              <dd><span class="badge" th:classappend="'badge-' + ${member.status.name()}"
                        th:text="${inactive} ? '비활성' : '활성'">활성</span>
-                 <span class="text-sub">(비활성 처리는 상세 화면에서)</span></dd></div>
+                 <span class="text-sub">상태 변경은 회원 상세 페이지에서 진행</span></dd></div>
       </dl>
 
       <div class="form-foot">
-        <span class="form-note"><span class="required" aria-hidden="true">*</span> 필수 입력 항목</span>
+        <span class="form-note required-note"><span aria-hidden="true">*</span> 필수 입력 항목</span>
         <div class="page-actions">
           <a th:href="@{/admin/members/{id}(id=${memberId})}" class="btn">취소</a>
           <button type="submit" class="btn btn-primary" data-loading-text="저장 중...">저장</button>

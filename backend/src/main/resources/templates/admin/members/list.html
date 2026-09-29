@@ -18,22 +18,24 @@
   <div class="card">
     <form class="search-form" th:action="@{/admin/members}" method="get" role="search">
       <div class="form-group">
-        <label for="keyword">이름/이메일</label>
+        <label for="keyword">성명/이메일</label>
         <input type="search" id="keyword" name="keyword" class="form-control search-keyword"
-               th:value="${keyword}" placeholder="이름 또는 이메일">
+               th:value="${keyword}" placeholder="성명 또는 이메일">
       </div>
-      <!-- 상태 필터: status는 enum이므로 st(글자)로 바꿔 비교. 전체 = 빈 값 → 서버에서 null -->
-        <fieldset class="form-group">
-            <legend>회원 상태</legend>
-            <div class="chip-group">
-                <label class="chip-check"><input type="radio" name="status" value=""
-                                                 th:checked="${st == ''}"><span>전체</span></label>
-                <label class="chip-check"><input type="radio" name="status" value="ACTIVE"
-                                                 th:checked="${st == 'ACTIVE'}"><span>활성</span></label>
-                <label class="chip-check"><input type="radio" name="status" value="WITHDRAWN"
-                                                 th:checked="${st == 'WITHDRAWN'}"><span>비활성</span></label>
-            </div>
-        </fieldset>      <button type="submit" class="btn btn-primary btn-control" data-loading-text="검색 중">검색</button>
+      <!-- 상태 필터: status는 enum이므로 st(글자)로 바꿔 비교. 전체 = 빈 값 → 서버에서 null
+           선택 색: 활성 = 초록, 비활성 = 빨강 (표의 상태 배지와 같은 색) -->
+      <fieldset class="form-group">
+        <legend>회원 상태</legend>
+        <div class="chip-group">
+          <label class="chip-check"><input type="radio" name="status" value=""
+                                           th:checked="${st == ''}"><span>전체</span></label>
+          <label class="chip-check"><input type="radio" name="status" value="ACTIVE"
+                                           th:checked="${st == 'ACTIVE'}"><span>활성</span></label>
+          <label class="chip-check"><input type="radio" name="status" value="WITHDRAWN"
+                                           th:checked="${st == 'WITHDRAWN'}"><span>비활성</span></label>
+        </div>
+      </fieldset>
+      <button type="submit" class="btn btn-primary btn-control" data-loading-text="검색 중">검색</button>
       <a th:href="@{/admin/members}" class="btn btn-control">초기화</a>
     </form>
   </div>
@@ -59,12 +61,13 @@
     </div>
 
     <div class="table-wrap" th:unless="${members.empty}">
-      <table class="table">
+      <!-- 이메일 열만 왼쪽 정렬, 나머지는 가운데 정렬 -->
+      <table class="table table-center">
         <caption class="sr-only">회원 목록</caption>
         <thead>
           <tr>
-            <th scope="col">이름</th>
-            <th scope="col">이메일</th>
+            <th scope="col">성명</th>
+            <th scope="col" class="text-left">이메일</th>
             <th scope="col">성별</th>
             <th scope="col" class="num">출생년도</th>
             <th scope="col">가입일</th>
@@ -75,10 +78,10 @@
         <tbody>
           <tr th:each="m : ${members.content}"
               th:with="inactive=${m.status.name() == 'WITHDRAWN'}">
-            <!-- 이름을 눌러도 상세로 이동. th:utext는 @highlight.mark 결과에만 사용 -->
+            <!-- 성명을 눌러도 상세로 이동. th:utext는 @highlight.mark 결과에만 사용 -->
               <td><a class="link-name" th:href="@{/admin/members/{id}(id=${m.id})}"
                      th:with="h=${@highlight.mark(m.name, keyword)}" th:utext="${h}">홍길동</a></td>
-              <td class="muted" th:with="h=${@highlight.mark(m.email, keyword)}" th:utext="${h}">hong@example.com</td>
+              <td class="muted text-left" th:with="h=${@highlight.mark(m.email, keyword)}" th:utext="${h}">hong@example.com</td>
               <td th:text="${m.gender.description}">남성</td>
             <td class="num" th:text="${m.birthYear}">1960</td>
             <td th:text="${#temporals.format(m.createdAt, 'yyyy-MM-dd')}">2026-01-10</td>
