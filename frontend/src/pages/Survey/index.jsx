@@ -30,7 +30,7 @@ const PAGE_TITLES = { P: 'KDSQ-P 1차 검사', C: 'KDSQ-C 2차 검사' };
 export default function SurveyPage({ type }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const notice = location.state?.message ?? '';
+  const [notice, setNotice] = useState('');
   const submitResult = useResultStore((s) => s.submitResult);
   const pendingFirstAnswers = useResultStore((s) => s.pendingFirstAnswers);
   const setPendingFirstAnswers = useResultStore((s) => s.setPendingFirstAnswers);
@@ -43,6 +43,7 @@ export default function SurveyPage({ type }) {
   const [submitting, setSubmitting] = useState(false);
   const [validationMessage, setValidationMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [noQuestions, setNoQuestions] = useState(false);
   const currentQuestion = questions[currentIndex];
   const currentQuestionId = currentQuestion?.id;
   const isLast = currentIndex === questions.length - 1;
@@ -50,13 +51,30 @@ export default function SurveyPage({ type }) {
   const fetchQuestions = useSurveyStore((s) => s.fetchQuestions);
   const loading = useSurveyStore((s) => s.loading);
   const loadError = useSurveyStore((s) => s.error);
+  const resetSurveys = useSurveyStore((s) => s.reset);
 
   // 검사 종류(P/C)에 맞는 설문의 문항 불러오기 (조회 실패 시 재시도에도 사용)
   const loadQuestions = useCallback(async () => {
+    setNoQuestions(false);
     const surveys = await fetchSurveys();
     const target = surveys.find((s) => s.examType === EXAM_TYPE_BY_ROUTE[type]);
-    if (target) await fetchQuestions(target.id);
-  }, [type, fetchSurveys, fetchQuestions]);
+    if (!target) {
+      resetSurveys(); // 다시 시도할 때 설문 목록을 새로 받도록 캐시 비움
+      setNoQuestions(true);
+      return;
+    }
+    const list = await fetchQuestions(target.id);
+    if (list.length === 0) setNoQuestions(true);
+  }, [type, fetchSurveys, fetchQuestions, resetSurveys]);
+
+  // 다른 화면에서 전달한 안내 문구를 로컬 상태로 옮기고 기록(history)에서는 지운다
+  // (지우지 않으면 새로고침해도 문구가 남는다)
+  useEffect(() => {
+    const message = location.state?.message;
+    if (!message) return;
+    setNotice(message);
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.state, location.pathname, navigate]);
 
   // 검사 화면 진입 (pendingFirstAnswers는 진입 시 한 번만 확인하므로 의존성에서 제외)
   useEffect(() => {
@@ -77,6 +95,7 @@ export default function SurveyPage({ type }) {
     (score) => {
       setAnswers((prev) => ({ ...prev, [currentQuestionId]: score }));
       setValidationMessage('');
+      setNotice(''); // 검사를 다시 시작했으므로 안내 숨김
     },
     [currentQuestionId],
   );
@@ -155,8 +174,8 @@ export default function SurveyPage({ type }) {
     }
   };
 
-  // 문항 조회 실패: 오류 메시지 + 재시도
-  if (loadError) {
+  // 문항 조회 실패 또는 문항 없음: 오류 메시지 + 재시도
+  if (loadError || noQuestions) {
     return (
       <div className="mx-auto max-w-2xl space-y-4 py-10 text-center">
         <Alert variant="destructive">
