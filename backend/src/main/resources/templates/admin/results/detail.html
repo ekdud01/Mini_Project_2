@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin-layout}">
+<!-- ADM-06 검사 상세 결과 (UI 4.7) | GET /admin/results/{id}?returnUrl=
+     Model: result(점수·판정·회원), returnUrl(컨트롤러가 검증한 목록 주소)
+     솔루션(관리 안내)은 표시하지 않음 (UI 4.7.4) -->
+<head><title>검사 상세 결과</title></head>
+<body>
+<section layout:fragment="content"
+         th:with="secondDone=${result.examType.name() == 'KDSQ_C'}">
+
+    <div class="page-title">
+        <h1>검사 상세 결과</h1>
+        <div class="page-actions">
+            <!-- 들어왔던 목록(검색 조건·페이지 유지)으로 이동 -->
+            <a th:href="${returnUrl}" class="btn">목록</a>
+            <!-- 삭제: POST 폼 + 확인창, returnUrl 포함 (UI 2.5) -->
+            <form th:action="@{/admin/results/{id}/delete(id=${result.id})}" method="post">
+                <input type="hidden" name="returnUrl" th:value="${returnUrl}">
+                <button type="submit" class="btn btn-danger"
+                        data-confirm="이 검사 결과를 삭제하시겠습니까?">삭제</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 회원·검사 정보 -->
+    <div class="card">
+        <dl class="detail-list">
+            <dt>회원</dt>
+            <dd>
+                <span th:text="|${result.member.name} (${result.member.email})|">홍길동 (hong@example.com)</span>
+                <a th:href="@{/admin/members/{id}(id=${result.member.id})}" class="btn btn-sm">회원 상세 보기</a>
+            </dd>
+            <dt>검사종류</dt> <dd th:text="${result.examType.label}">KDSQ-C</dd>
+            <dt>검사일시</dt> <dd th:text="${#temporals.format(result.createdAt, 'yyyy-MM-dd HH:mm')}">2026-09-22 10:30</dd>
+        </dl>
+    </div>
+
+    <!-- 점수 정보 -->
+    <div class="card">
+        <h2>KDSQ-P 1차 검사</h2>
+        <dl class="detail-list">
+            <dt>1차 점수</dt> <dd th:text="|${result.firstScore}점|">4점</dd>
+        </dl>
+    </div>
+
+    <div class="card">
+        <h2>KDSQ-C 2차 상세검사
+            <span th:unless="${secondDone}" class="text-sub">(2차 검사 대상 아님)</span>
+        </h2>
+        <!-- KDSQ-P로 끝난 결과는 영역별 점수·총점을 "-"로 표시 (UI 4.7.2) -->
+        <dl class="detail-list">
+            <dt>기억력</dt>           <dd th:text="${secondDone} ? |${result.memoryScore}점| : '-'">2점</dd>
+            <dt>기타 인지기능</dt>    <dd th:text="${secondDone} ? |${result.otherScore}점| : '-'">2점</dd>
+            <dt>일상생활수행능력</dt> <dd th:text="${secondDone} ? |${result.adlScore}점| : '-'">1점</dd>
+            <dt>총점</dt>             <dd th:text="${secondDone} ? |${result.totalScore}점| : '-'">5점</dd>
+            <dt>위험도</dt>
+            <dd><span class="badge" th:classappend="'badge-' + ${result.riskLevel.name()}"
+                      th:text="${result.riskLevel.displayName}">주의</span></dd>
+        </dl>
+    </div>
+
+    <!-- 판정 기준: 고정 문구 (UI 4.7.3) -->
+    <div class="card cutline">
+        <h2>결과 cut-line</h2>
+        <ul>
+            <li>KDSQ-P : 0~3점 정상 / 4~10점 2차 대상</li>
+            <li>KDSQ-C : 0~5점 주의 / 6~30점 위험</li>
+        </ul>
+    </div>
+
+</section>
+</body>
+</html>
