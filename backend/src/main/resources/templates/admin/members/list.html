@@ -2,13 +2,15 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/admin-layout}">
-<!-- ADM-03 회원 관리 목록 (UI 4.3) | GET /admin/members?keyword=&page=
-     Model: members(Page), keyword
+<!-- ADM-03 회원 관리 목록 (UI 4.3) | GET /admin/members?keyword=&status=&page=
+     Model: members(Page), keyword(String 또는 null), status(UserStatus enum 또는 null = 전체)
      상태 표기: WITHDRAWN → "비활성" (템플릿에서 변환, 백엔드 수정 없음) -->
 <head><title>회원 관리</title></head>
 <body>
 <section layout:fragment="content"
-         th:with="hasKeyword=${keyword != null and !#strings.isEmpty(keyword)}">
+         th:with="hasKeyword=${keyword != null and !#strings.isEmpty(keyword)},
+                  st=${status != null} ? ${status.name()} : '',
+                  hasFilter=${hasKeyword or status != null}">
 
   <div class="page-title"><h1>회원 관리</h1></div>
 
@@ -20,18 +22,31 @@
         <input type="search" id="keyword" name="keyword" class="form-control search-keyword"
                th:value="${keyword}" placeholder="이름 또는 이메일">
       </div>
-        <button type="submit" class="btn btn-primary btn-control" data-loading-text="검색 중">검색</button>
+      <!-- 상태 필터: status는 enum이므로 st(글자)로 바꿔 비교. 전체 = 빈 값 → 서버에서 null -->
+        <fieldset class="form-group">
+            <legend>회원 상태</legend>
+            <div class="chip-group">
+                <label class="chip-check"><input type="radio" name="status" value=""
+                                                 th:checked="${st == ''}"><span>전체</span></label>
+                <label class="chip-check"><input type="radio" name="status" value="ACTIVE"
+                                                 th:checked="${st == 'ACTIVE'}"><span>활성</span></label>
+                <label class="chip-check"><input type="radio" name="status" value="WITHDRAWN"
+                                                 th:checked="${st == 'WITHDRAWN'}"><span>비활성</span></label>
+            </div>
+        </fieldset>      <button type="submit" class="btn btn-primary btn-control" data-loading-text="검색 중">검색</button>
       <a th:href="@{/admin/members}" class="btn btn-control">초기화</a>
     </form>
   </div>
 
   <div class="card card-flush">
     <div class="card-head">
-      <!-- 검색어가 있으면 무엇으로 검색했는지 함께 표시 -->
-      <p class="list-summary" th:if="${hasKeyword}">
-        "<strong th:text="${keyword}">홍</strong>" 검색 결과 <strong th:text="|${members.totalElements}명|">1명</strong>
+      <!-- 검색어·상태 필터가 있으면 무엇으로 검색했는지 함께 표시 -->
+      <p class="list-summary" th:if="${hasFilter}">
+        <th:block th:if="${hasKeyword}">"<strong th:text="${keyword}">홍</strong>"</th:block>
+        <th:block th:if="${st != ''}" th:text="${st == 'WITHDRAWN'} ? ' 비활성 회원' : ' 활성 회원'"> 활성 회원</th:block>
+        검색 결과 <strong th:text="|${members.totalElements}명|">1명</strong>
       </p>
-      <p class="list-summary" th:unless="${hasKeyword}">
+      <p class="list-summary" th:unless="${hasFilter}">
         총 <strong th:text="|${members.totalElements}명|">24명</strong>
       </p>
       <span class="text-sub">가입일 최신순</span>
@@ -40,7 +55,7 @@
     <!-- 결과 없음: 표 머리글 대신 안내 + 초기화 -->
     <div class="empty-state" th:if="${members.empty}">
       <strong>조건에 맞는 회원이 없습니다</strong>
-      <a th:if="${hasKeyword}" th:href="@{/admin/members}" class="btn btn-sm">검색 초기화</a>
+      <a th:if="${hasFilter}" th:href="@{/admin/members}" class="btn btn-sm">검색 초기화</a>
     </div>
 
     <div class="table-wrap" th:unless="${members.empty}">
@@ -61,10 +76,10 @@
           <tr th:each="m : ${members.content}"
               th:with="inactive=${m.status.name() == 'WITHDRAWN'}">
             <!-- 이름을 눌러도 상세로 이동. th:utext는 @highlight.mark 결과에만 사용 -->
-            <td><a class="link-name" th:href="@{/admin/members/{id}(id=${m.id})}"
-                   th:utext="${@highlight.mark(m.name, keyword)}">홍길동</a></td>
-            <td class="muted" th:utext="${@highlight.mark(m.email, keyword)}">hong@example.com</td>
-            <td th:text="${m.gender.description}">남성</td>
+              <td><a class="link-name" th:href="@{/admin/members/{id}(id=${m.id})}"
+                     th:with="h=${@highlight.mark(m.name, keyword)}" th:utext="${h}">홍길동</a></td>
+              <td class="muted" th:with="h=${@highlight.mark(m.email, keyword)}" th:utext="${h}">hong@example.com</td>
+              <td th:text="${m.gender.description}">남성</td>
             <td class="num" th:text="${m.birthYear}">1960</td>
             <td th:text="${#temporals.format(m.createdAt, 'yyyy-MM-dd')}">2026-01-10</td>
             <td class="center">

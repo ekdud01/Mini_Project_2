@@ -487,6 +487,14 @@ select.form-control { padding-right: 32px; }
 .admin-email { margin-left: 4px; color: var(--color-text-sub); font-size: var(--font-size-sm); }
 @media (max-width: 1023px) { .admin-email { display: none; } }   /* 좁은 화면에서는 이름만 */
 
+/* ===== 상태 필터 칩: 선택 표시 (활성 = 파랑, 비활성 = 회색) ===== */
+.chip-check input[type="radio"]:checked + span {
+  border-color: var(--color-primary); background: var(--color-primary-soft); color: var(--color-primary); font-weight: var(--font-weight-bold);
+}
+.chip-check input[value="WITHDRAWN"]:checked + span {
+  border-color: var(--color-border-strong); background: var(--inactive-bg); color: var(--inactive-fg);
+}
+
 /* ===== 19. 터치 기기 클릭 영역 44px (가이드 6.1) ===== */
 @media (pointer: coarse) {
   .btn, .btn-sm, .btn-icon, .pagination a { min-height: 44px; min-width: 44px; }
