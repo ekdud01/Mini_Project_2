@@ -45,6 +45,7 @@ public class AdminStatisticsService {
 
     public DashboardStatsDto getDashboard() {
         long totalMembers = memberRepository.countByRoleAndStatus(Role.MEMBER, UserStatus.ACTIVE);
+        long withdrawnMembers = memberRepository.countByRoleAndStatus(Role.MEMBER, UserStatus.WITHDRAWN);   // "탈퇴 N명 별도"
         long totalResults = surveyResultRepository.countByActiveTrue();
 
         // 위험도 분포: 등급별 건수(결과가 없는 등급은 0) → 비율(%). 화면은 건수와 비율을 함께 표시
@@ -66,7 +67,7 @@ public class AdminStatisticsService {
         List<SurveyResult> recentHighRisk = surveyResultRepository
                 .findRecentByRiskLevel(RiskLevel.HighRisk, PageRequest.of(0, RECENT_HIGH_RISK));
 
-        return DashboardStatsDto.of(totalMembers, totalResults, counts, ratios,
+        return DashboardStatsDto.of(totalMembers, withdrawnMembers, totalResults, counts, ratios,
                 round1(nvl(avg.getAvgTotal())), round1(nvl(avg.getAvgMemory())),
                 round1(nvl(avg.getAvgOther())), round1(nvl(avg.getAvgAdl())),
                 monthly, recentHighRisk);
