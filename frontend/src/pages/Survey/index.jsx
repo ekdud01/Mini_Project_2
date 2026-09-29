@@ -184,18 +184,19 @@ export default function SurveyPage({ type }) {
 
       <ProgressBar current={currentIndex + 1} total={questions.length} />
 
-      <QuestionCard question={currentQuestion}>
+      <div className="space-y-3">
+        <QuestionCard question={currentQuestion} />
         <AnswerOptions
           value={answers[currentQuestionId] ?? null}
           onChange={handleSelect}
           invalid={Boolean(validationMessage)}
         />
         {validationMessage && (
-          <p role="alert" className="mt-3 text-sm font-medium text-destructive">
+          <p role="alert" className="text-sm font-medium text-destructive">
             {validationMessage}
           </p>
         )}
-      </QuestionCard>
+      </div>
 
       {errorMessage && (
         <Alert variant="destructive">
