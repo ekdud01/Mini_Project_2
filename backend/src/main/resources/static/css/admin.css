@@ -540,3 +540,35 @@ select.form-control { padding-right: 32px; }
 
 /* 회원 정보 수정: 필수 입력 항목 안내 빨강 */
 .required-note { color: #dc2626; }
+
+/* ===== 21. 대시보드 월별 추이 통합 차트 (9/30 시안 반영) ===== */
+:root {
+  --chart-bar: #cbd5e1;                        /* 검사 건수 막대: 빨간 선이 먼저 보이도록 연한 회색 */
+  --chart-score-axis: rgba(185, 28, 28, 0.8);  /* 점수 축 숫자: 선과 같은 계열, 대비 4.5:1 이상 유지 */
+  --chart-pill-bg: #fef2f2;                    /* 점수 알약 바탕 */
+  --chart-pill-border: #fecaca;
+  --color-danger-text: #b91c1c;                /* 점수 알약 글자 */
+}
+.chart-box-trend { height: 320px; margin-top: var(--space-sm); }
+.chart-note { margin: var(--space-sm) 0 0; font-size: var(--font-size-sm); color: var(--color-text-sub); }
+
+/* 범례: 카드 제목 오른쪽 (색 + 글자) */
+.chart-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; list-style: none;
+                font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text); }
+.chart-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.legend-bar  { width: 12px; height: 12px; border-radius: 3px; background: var(--chart-bar); }
+.legend-line { width: 18px; height: 3px; border-radius: 2px; background: var(--color-danger); }
+
+/* 최근 위험 판정: 열 폭 균등 */
+.table-even { table-layout: fixed; }
+.table-even th, .table-even td { width: 33.333%; }
+
+/* 넓은 화면: 월별 추이 · 최근 위험 판정 카드 높이 맞춤, 5건일 때 표의 행이 높이를 고르게 나눔 */
+@media (min-width: 1280px) {
+  .grid-main-side { align-items: stretch; }
+  .recent-card { display: flex; flex-direction: column; }
+  .recent-card .table-fill { flex: 1; height: 100%; }
+}
+@media (max-width: 639px) {
+  .chart-box-trend { height: 280px; }
+}
