@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!-- 플래시 메시지 | Model: successMessage, errorMessage -->
+<!-- 플래시 메시지 | Model: successMessage, errorMessage (RedirectAttributes)
+     성공 = 초록·3초 후 자동 닫힘, 오류 = 빨강·× 버튼으로 닫기 (admin.js) -->
+<body>
 <div th:fragment="flash">
-    <div th:if="${successMessage}" class="flash flash-success" role="alert" th:text="${successMessage}">처리되었습니다.</div>
-    <div th:if="${errorMessage}" class="flash flash-error" role="alert">
-        <span th:text="${errorMessage}">오류가 발생했습니다.</span>
-        <button type="button" class="flash-close" aria-label="알림 닫기">×</button>
-    </div>
+  <div th:if="${successMessage}" class="flash flash-success" role="status">
+    <svg th:replace="~{fragments/icons :: check}"></svg>
+    <span th:text="${successMessage}">처리되었습니다</span>
+  </div>
+  <div th:if="${errorMessage}" class="flash flash-error" role="alert">
+    <svg th:replace="~{fragments/icons :: alert}"></svg>
+    <span th:text="${errorMessage}">오류가 발생했습니다</span>
+    <button type="button" class="flash-close" aria-label="알림 닫기">×</button>
+  </div>
 </div>
+</body>
 </html>
