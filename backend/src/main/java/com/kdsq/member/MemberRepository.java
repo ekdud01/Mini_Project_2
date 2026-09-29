@@ -22,11 +22,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     long countByRoleAndStatus(Role role, UserStatus status);  // 대시보드 전체 회원 수(활성)
 
-    /** ADM-03 회원 목록: 일반 회원만, 이름/이메일 검색 + 페이징. 빈 검색어는 서비스에서 null로 바꿔 넘긴다 */
+    /** ADM-03 회원 목록: 일반 회원만, 상태 필터 + 이름/이메일 검색 + 페이징. 빈 값은 서비스·컨트롤러에서 null로 넘긴다 */
     @Query("SELECT m FROM Member m WHERE m.role = :role "
+            + "AND (:status IS NULL OR m.status = :status) "
             + "AND (:keyword IS NULL OR m.name LIKE CONCAT('%', :keyword, '%') "
             + "OR m.email LIKE CONCAT('%', :keyword, '%'))")
     Page<Member> searchMembers(@Param("role") Role role,
                                @Param("keyword") String keyword,
+                               @Param("status") UserStatus status,
                                Pageable pageable);
 }
