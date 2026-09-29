@@ -14,6 +14,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useResultStore } from '@/store/resultStore';
 import { useSurveyStore } from '@/store/surveyStore';
+import { getErrorCode } from '@/utils/apiError';
 import { EXAM_TYPE_BY_ROUTE, needsSecondTest, sumScores } from '@/utils/kdsq';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -202,7 +203,7 @@ export default function SurveyPage({ type }) {
       if (type === 'C') clearPendingFirstAnswers();
     } catch (error) {
       setSubmitting(false);
-      const code = error.response?.data?.error?.code;
+      const code = getErrorCode(error);
 
       if (RESTART_ERROR_CODES.includes(code)) {
         restartFromFirst();

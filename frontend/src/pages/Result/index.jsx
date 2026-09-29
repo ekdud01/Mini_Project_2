@@ -12,6 +12,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useResultStore } from '@/store/resultStore';
+import { getErrorCode } from '@/utils/apiError';
 import { getDisplayScore, MAX_SCORE } from '@/utils/kdsq';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -36,7 +37,7 @@ const MESSAGES = {
 
 /** 조회 실패 오류 → 화면 문구 */
 function getLoadErrorMessage(error) {
-  const code = error.response?.data?.error?.code;
+  const code = getErrorCode(error);
   if (code === 'RESULT_NOT_FOUND') return MESSAGES.notFound;
   if (!error.response) return MESSAGES.network; // 서버 응답 자체가 없음
   return MESSAGES.loadFail;
