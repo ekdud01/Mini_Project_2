@@ -486,3 +486,8 @@ select.form-control { padding-right: 32px; }
 /* ===== 18. 헤더 이메일 (보류 항목 반영) ===== */
 .admin-email { margin-left: 4px; color: var(--color-text-sub); font-size: var(--font-size-sm); }
 @media (max-width: 1023px) { .admin-email { display: none; } }   /* 좁은 화면에서는 이름만 */
+
+/* ===== 19. 터치 기기 클릭 영역 44px (가이드 6.1) ===== */
+@media (pointer: coarse) {
+  .btn, .btn-sm, .btn-icon, .pagination a { min-height: 44px; min-width: 44px; }
+}

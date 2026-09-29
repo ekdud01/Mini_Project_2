@@ -20,7 +20,7 @@
         <input type="search" id="keyword" name="keyword" class="form-control search-keyword"
                th:value="${keyword}" placeholder="이름 또는 이메일">
       </div>
-      <button type="submit" class="btn btn-primary btn-control">검색</button>
+        <button type="submit" class="btn btn-primary btn-control" data-loading-text="검색 중">검색</button>
       <a th:href="@{/admin/members}" class="btn btn-control">초기화</a>
     </form>
   </div>
