@@ -1,6 +1,7 @@
 // KDSQ 관리자 화면 공통 스크립트
 // 1. 확인 모달   2. 제출 중 표시·중복 제출 방지   3. 알림 닫기
 // 4. 비밀번호 보기   5. 에러 페이지 버튼   6. 기간 빠른 선택   7. 막대 채우기 효과
+// 8. 입력 오류 시 첫 번째 오류 입력칸으로 포커스
 (() => {
   'use strict';
 
@@ -163,5 +164,15 @@
       };
       requestAnimationFrame(step);
     });
+  }
+
+  // ---------- 8. 입력 오류 시 첫 번째 오류 입력칸으로 포커스 (UI 설계서 8장) ----------
+  // 서버 검증 실패로 폼이 다시 그려지면, 화면 위에서 첫 번째 오류 문구(.field-error)가 있는 입력칸으로 이동
+  // (성별처럼 라디오 묶음이면 첫 번째 선택지로 이동)
+  const firstError = document.querySelector('.field-error');
+  if (firstError) {
+    const group = firstError.closest('.form-group');
+    const field = group && group.querySelector('input, select, textarea');
+    if (field) field.focus();
   }
 })();

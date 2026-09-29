@@ -82,7 +82,6 @@ a { color: var(--color-primary); }
 .num { text-align: right; font-variant-numeric: tabular-nums; }
 .center { text-align: center; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.stack > * + * { margin-top: 20px; }
 
 /* 아이콘 (fragments/icons.html) */
 .icon {
@@ -163,7 +162,6 @@ a { color: var(--color-primary); }
 .link-name:hover { color: var(--color-primary); text-decoration: underline; }
 .table-actions { display: flex; gap: var(--space-sm); align-items: center; justify-content: center; }
 .table-actions form { margin: 0; }
-.empty-message { padding: 40px var(--space-lg); text-align: center; color: var(--color-text-sub); }
 mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; }
 
 /* 빈 상태 안내 (아이콘 + 제목 + 설명) */
@@ -173,7 +171,7 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 
 /* ===== 6. 폼 ===== */
 .form-group { margin-bottom: var(--space-md); }
-.form-group label, .form-group legend, .field-label {
+.form-group label, .form-group legend {
   display: block; margin-bottom: var(--space-sm);
   font-size: 15px; font-weight: var(--font-weight-semibold);
 }
@@ -188,7 +186,6 @@ fieldset.form-group legend { padding: 0; }
 .form-control::placeholder { color: #94a3b8; }
 .form-control.is-invalid { border-color: #f87171; background: #fef2f2; }
 select.form-control { padding-right: 32px; }
-.input-short { max-width: 180px; }
 .field-error { display: flex; align-items: center; gap: 5px; margin: 6px 0 0; color: #dc2626; font-size: var(--font-size-sm); }
 .required { color: #dc2626; }
 .form-note { font-size: var(--font-size-sm); color: var(--color-text-sub); }
@@ -274,7 +271,7 @@ select.form-control { padding-right: 32px; }
   min-height: var(--header-height); padding: 0 var(--space-xl);
   background: var(--color-surface); border-bottom: 1px solid var(--color-border);
 }
-.admin-logo, .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; white-space: nowrap; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; white-space: nowrap; }
 .brand-mark {
   display: grid; place-items: center; flex: none;
   width: 34px; height: 34px; border-radius: 10px; background: var(--color-primary); color: #fff;
@@ -374,7 +371,6 @@ select.form-control { padding-right: 32px; }
 .risk-dist { display: flex; align-items: center; gap: var(--space-lg); }
 .chart-box { position: relative; height: 240px; }
 .chart-box-donut { flex: none; width: 200px; height: 200px; }
-.chart-title { margin: var(--space-md) 0 6px; }
 .chart-table { margin-top: var(--space-md); }
 .chart-table summary { cursor: pointer; color: var(--color-primary); font-size: var(--font-size-sm); margin-bottom: var(--space-sm); }
 
@@ -461,7 +457,6 @@ select.form-control { padding-right: 32px; }
   .login-box { padding: 32px 22px 26px; }
 }
 @media (max-width: 479px) {
-  .admin-user-role { display: none; }                     /* "홍길동 관리자님" → "홍길동님" */
   .brand-tag { display: none; }
   .brand-name { font-size: 18px; }
 }
