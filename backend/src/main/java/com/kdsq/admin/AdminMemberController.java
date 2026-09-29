@@ -33,6 +33,7 @@ import lombok.RequiredArgsConstructor;
  * | GET  /admin/members/{id}              | admin/members/detail   | member, results                       |
  * | GET·POST /admin/members/{id}/edit     | admin/members/edit     | form, memberId, member                |
  * | POST /admin/members/{id}/withdraw     | → 상세로 redirect      | 플래시 successMessage / errorMessage   |
+ * | POST /admin/members/{id}/activate     | → 상세로 redirect      | 플래시 successMessage / errorMessage   |
  *
  * 없는 회원·관리자 id → 서비스의 BusinessException(MEMBER_NOT_FOUND) → AdminExceptionHandler가 error/404
  */
@@ -98,19 +99,37 @@ public class AdminMemberController {
         return "redirect:/admin/members/" + id;
     }
 
-    /** 탈퇴 처리 (소프트 삭제 + 리프레시 토큰 폐기) */
+    /** 비활성 처리 (소프트 삭제 WITHDRAWN + 리프레시 토큰 폐기). 화면 표기는 "비활성" */
     @PostMapping("/{id}/withdraw")
     public String withdraw(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             adminMemberService.withdraw(id);
-            redirectAttributes.addFlashAttribute("successMessage", "탈퇴 처리되었습니다");
+            redirectAttributes.addFlashAttribute("successMessage", "비활성 처리되었습니다");
         } catch (BusinessException e) {
             if (e.getErrorCode() == ErrorCode.MEMBER_NOT_FOUND) {
                 throw e;   // 없는 회원·관리자 id → 404 화면
             }
-            // 실패 플래시 (UI 4.4): 이미 탈퇴한 회원은 이유를 알려주고, 그 밖의 실패는 공통 문구
+            // 실패 플래시 (UI 4.4): 이미 비활성인 회원은 이유를 알려주고, 그 밖의 실패는 공통 문구
             String message = (e.getErrorCode() == ErrorCode.MEMBER_WITHDRAWN)
-                    ? "이미 탈퇴한 회원입니다"
+                    ? "이미 비활성 상태인 회원입니다"
+                    : "처리 중 오류가 발생했습니다";
+            redirectAttributes.addFlashAttribute("errorMessage", message);
+        }
+        return "redirect:/admin/members/" + id;
+    }
+
+    /** 활성화 처리: 비활성 회원을 다시 로그인할 수 있게 되돌린다 */
+    @PostMapping("/{id}/activate")
+    public String activate(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            adminMemberService.activate(id);
+            redirectAttributes.addFlashAttribute("successMessage", "활성화되었습니다");
+        } catch (BusinessException e) {
+            if (e.getErrorCode() == ErrorCode.MEMBER_NOT_FOUND) {
+                throw e;   // 없는 회원·관리자 id → 404 화면
+            }
+            String message = (e.getErrorCode() == ErrorCode.MEMBER_ALREADY_ACTIVE)
+                    ? "이미 활성 상태인 회원입니다"
                     : "처리 중 오류가 발생했습니다";
             redirectAttributes.addFlashAttribute("errorMessage", message);
         }
