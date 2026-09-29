@@ -465,3 +465,13 @@ select.form-control { padding-right: 32px; }
   .brand-tag { display: none; }
   .brand-name { font-size: 18px; }
 }
+
+/* ===== 16. 회원 정보 수정 폼 (STEP 3 추가) ===== */
+.form-card { max-width: 840px; }
+.form-card .card { margin-bottom: 0; }
+.grid-2 > .form-group, .grid-2 > fieldset.form-group { margin-bottom: 4px; }
+.form-foot { display: flex; justify-content: space-between; align-items: center; gap: var(--space-md); margin-top: var(--space-lg); }
+.field-error .icon { width: 15px; height: 15px; }
+.empty-state span { display: block; }
+.empty-state .btn { margin-top: 12px; }
+.card > h2 + .detail-list { margin-top: 6px; }
