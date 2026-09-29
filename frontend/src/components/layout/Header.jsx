@@ -13,7 +13,7 @@ export default function Header() {
     <header className="border-b bg-white">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-8">
         <Link to="/surveys/p" className="flex items-center gap-2">
-          <span className="text-2xl font-extrabold text-primary">KDSQ</span>
+          <span className="text-2xl font-extrabold text-primary">MEMORY ATTACK</span>
         </Link>
         <div className="flex items-center gap-6 md:gap-8">
           <NavLink to="/surveys/p" className={navClass}>검사하기</NavLink>
