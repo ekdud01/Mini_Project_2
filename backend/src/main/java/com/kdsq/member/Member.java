@@ -75,6 +75,11 @@ public class Member extends BaseEntity {
         this.status = UserStatus.WITHDRAWN;
     }
 
+    /** 관리자 활성화 처리 (ADM-04): 비활성(WITHDRAWN) 회원을 다시 로그인할 수 있게 되돌린다 */
+    public void activate() {
+        this.status = UserStatus.ACTIVE;
+    }
+
     /** 관리자 화면(ADM-04-1)에서만 호출. 이메일 중복 검사는 서비스에서 먼저 수행 */
     public void updateInfo(String name, String email, Gender gender, Integer birthYear) {
         this.name = name;

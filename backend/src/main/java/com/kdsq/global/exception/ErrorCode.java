@@ -28,6 +28,7 @@ public enum ErrorCode {
     // 5.2 도메인별 에러 코드
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다"),
     MEMBER_WITHDRAWN(HttpStatus.FORBIDDEN, "이용할 수 없는 계정입니다"),
+    MEMBER_ALREADY_ACTIVE(HttpStatus.CONFLICT, "이미 활성 상태인 회원입니다"),   // 관리자 화면 전용 (비활성 → 활성화)
     SURVEY_NOT_FOUND(HttpStatus.NOT_FOUND, "설문지를 찾을 수 없습니다"),
     QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "문항을 찾을 수 없습니다"),
     RESULT_NOT_FOUND(HttpStatus.NOT_FOUND, "검사 결과를 찾을 수 없습니다"),
