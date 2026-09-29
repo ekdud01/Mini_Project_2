@@ -4,7 +4,8 @@
       layout:decorate="~{layout/admin-layout}">
 <!-- ADM-04 회원 상세 (UI 4.4) | GET /admin/members/{id}
      Model: member(회원정보), results(검사 이력 List, 최신순)
-     비활성 처리: POST /admin/members/{id}/withdraw + 확인 모달 (비활성 회원은 버튼 숨김) -->
+     비활성 처리: POST /admin/members/{id}/withdraw + 확인 모달 (활성 회원에게만 표시)
+     활성화 처리: POST /admin/members/{id}/activate (비활성 회원에게만 표시, 되돌리기 쉬워 확인 모달 없음) -->
 <head><title>회원 상세</title></head>
 <body>
 <section layout:fragment="content"
@@ -31,13 +32,19 @@
           <svg th:replace="~{fragments/icons :: trash}"></svg>비활성 처리
         </button>
       </form>
+      <form th:if="${inactive}"
+            th:action="@{/admin/members/{id}/activate(id=${member.id})}" method="post">
+        <button type="submit" class="btn btn-primary" data-loading-text="처리 중...">
+          <svg th:replace="~{fragments/icons :: check}"></svg>활성화
+        </button>
+      </form>
     </div>
   </div>
 
   <!-- 비활성 회원 안내 -->
   <div th:if="${inactive}" class="alert alert-info" role="status">
     <svg th:replace="~{fragments/icons :: info}"></svg>
-    <span>비활성 회원입니다. 로그인할 수 없으며, 검사 이력은 보존됩니다</span>
+    <span>비활성 회원입니다. 로그인할 수 없으며, 검사 이력은 보존됩니다. [활성화]를 누르면 다시 로그인할 수 있습니다</span>
   </div>
 
   <div class="grid-side">
