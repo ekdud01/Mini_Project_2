@@ -1,13 +1,15 @@
 package com.kdsq.global.security;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.kdsq.global.exception.BusinessException;
+import com.kdsq.global.exception.ErrorCode;
+
 /**
- * 로그인한 회원 id를 얻는 유일한 창구.
- *
- * [임시] JWT가 완성되기 전까지는 항상 2를 반환한다.
- *  - 서버를 처음 켜면 AdminInitializer가 관리자 계정을 1번으로 등록한다.
- *  - 테스트 전에 회원가입 API로 회원 1명을 만들어 두어야 한다 (id = 2, backend/http/member.http 첫 요청).
- *  - JWT 완성 후 윤수연이 SecurityContext에서 회원 id를 꺼내도록 내부만 교체한다.
- *    호출하는 쪽 코드는 바꿀 필요가 없다.
+ * 로그인한 회원 id를 얻는 유일한 창구 (사용자 API /api/** 전용).
+ * JwtAuthenticationFilter가 액세스 토큰의 회원 id(sub)를 principal로 넣어 둔다.
+ * 로그인이 필요한 API는 SecurityConfig에서 이미 막히므로, 여기서 예외가 나는 경우는 설정 실수뿐이다.
  */
 public final class SecurityUtil {
 
@@ -15,6 +17,10 @@ public final class SecurityUtil {
     }
 
     public static Long currentMemberId() {
-        return 2L;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof Long memberId) {
+            return memberId;
+        }
+        throw new BusinessException(ErrorCode.UNAUTHORIZED);
     }
 }
