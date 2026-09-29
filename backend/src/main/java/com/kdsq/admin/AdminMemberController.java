@@ -89,12 +89,12 @@ public class AdminMemberController {
                 throw e;   // 이메일 중복이 아닌 오류는 그대로 → AdminExceptionHandler
             }
             // 예외 페이지가 아니라 입력칸 아래에 표시 (UI 2.5 마지막 줄, 4.5)
-            bindingResult.rejectValue("email", "duplicate", "이미 사용 중인 이메일입니다.");
+            bindingResult.rejectValue("email", "duplicate", "이미 사용 중인 이메일입니다");   // 화면 문구는 끝 마침표 없음 (UI 설계서 2.4)
             return showEditForm(id, member, model);
         }
 
         // PRG 패턴: 저장 후 redirect, 메시지는 플래시로 1회만 전달
-        redirectAttributes.addFlashAttribute("successMessage", "회원 정보가 수정되었습니다.");
+        redirectAttributes.addFlashAttribute("successMessage", "회원 정보가 수정되었습니다");
         return "redirect:/admin/members/" + id;
     }
 
@@ -103,14 +103,15 @@ public class AdminMemberController {
     public String withdraw(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             adminMemberService.withdraw(id);
-            redirectAttributes.addFlashAttribute("successMessage", "탈퇴 처리되었습니다.");
+            redirectAttributes.addFlashAttribute("successMessage", "탈퇴 처리되었습니다");
         } catch (BusinessException e) {
             if (e.getErrorCode() == ErrorCode.MEMBER_NOT_FOUND) {
                 throw e;   // 없는 회원·관리자 id → 404 화면
             }
+            // 실패 플래시 (UI 4.4): 이미 탈퇴한 회원은 이유를 알려주고, 그 밖의 실패는 공통 문구
             String message = (e.getErrorCode() == ErrorCode.MEMBER_WITHDRAWN)
-                    ? "이미 탈퇴한 회원입니다."          // UI 4.4
-                    : "처리 중 오류가 발생했습니다.";
+                    ? "이미 탈퇴한 회원입니다"
+                    : "처리 중 오류가 발생했습니다";
             redirectAttributes.addFlashAttribute("errorMessage", message);
         }
         return "redirect:/admin/members/" + id;
