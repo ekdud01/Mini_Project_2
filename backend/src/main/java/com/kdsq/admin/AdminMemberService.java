@@ -17,6 +17,7 @@ import com.kdsq.global.exception.ErrorCode;
 import com.kdsq.member.Member;
 import com.kdsq.member.MemberRepository;
 import com.kdsq.member.Role;
+import com.kdsq.member.UserStatus;
 import com.kdsq.result.SurveyResult;
 import com.kdsq.result.SurveyResultRepository;
 
@@ -38,11 +39,11 @@ public class AdminMemberService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final SurveyResultRepository surveyResultRepository;
 
-    /** ADM-03 회원 목록: 일반 회원만, 이름/이메일 검색 + 페이징 */
-    public Page<Member> getMembers(String keyword, Pageable pageable) {
+    /** ADM-03 회원 목록: 일반 회원만, 상태 필터 + 이름/이메일 검색 + 페이징 */
+    public Page<Member> getMembers(String keyword, UserStatus status, Pageable pageable) {
         // 빈 검색어를 null로 바꿔야 JPQL의 (:keyword IS NULL OR ...)가 "전체 조회"로 동작한다
         String kw = StringUtils.hasText(keyword) ? keyword.trim() : null;
-        return memberRepository.searchMembers(Role.MEMBER, kw, pageable);
+        return memberRepository.searchMembers(Role.MEMBER, kw, status, pageable);
     }
 
     /** ADM-04 회원 상세 / ADM-04-1 수정 폼 */
