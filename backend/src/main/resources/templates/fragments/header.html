@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!-- 공통 헤더 | Model: adminName, adminEmail (AdminModelAdvice 제공, 로그인 시에만 존재)
-     로고 = 사용자 화면과 같은 뇌 아이콘 + "마음 기억" + ADMIN 표시 -->
+<!-- 공통 헤더 | Model: adminEmail (AdminModelAdvice 제공, 로그인 시에만 존재)
+     관리자 계정은 1개로 운영하므로 이름 대신 "관리자" + 이메일로 표시 -->
 <body>
 <header th:fragment="header" class="admin-header">
-  <a th:href="@{/admin/dashboard}" class="brand" aria-label="마음 기억 관리자 대시보드로 이동">
-    <span class="brand-mark"><svg th:replace="~{fragments/icons :: brain}"></svg></span>
-    <span class="brand-name">마음 기억</span>
-    <span class="brand-tag">ADMIN</span>
-  </a>
-  <div class="admin-user" th:if="${adminName != null}">
+    <a th:href="@{/admin/dashboard}" class="brand" aria-label="마음 기억 관리자 대시보드로 이동">
+        <span class="brand-mark"><svg th:replace="~{fragments/icons :: brain}"></svg></span>
+        <span class="brand-name">마음 기억</span>
+        <span class="brand-tag">ADMIN</span>
+    </a>
+    <div class="admin-user" th:if="${adminEmail != null}">
     <span class="who">
       <svg th:replace="~{fragments/icons :: shield}"></svg>
-      <span><strong th:text="${adminName}">홍관리</strong><span class="admin-user-role"> 관리자</span>님</span>
-      <span class="admin-email" th:if="${adminEmail != null}" th:text="${adminEmail}">admin@kdsq.com</span>
+      <strong>관리자</strong>
+      <span class="admin-email" th:text="${adminEmail}">admin@kdsq.com</span>
     </span>
-    <form th:action="@{/admin/logout}" method="post">
-      <button type="submit" class="btn btn-sm">
-        <svg th:replace="~{fragments/icons :: logout}"></svg>로그아웃
-      </button>
-    </form>
-  </div>
+        <form th:action="@{/admin/logout}" method="post">
+            <button type="submit" class="btn btn-sm">
+                <svg th:replace="~{fragments/icons :: logout}"></svg>로그아웃
+            </button>
+        </form>
+    </div>
 </header>
 </body>
 </html>
