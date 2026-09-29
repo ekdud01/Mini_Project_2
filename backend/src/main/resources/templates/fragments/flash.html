@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!-- 플래시 메시지 | Model: successMessage, errorMessage -->
+<!-- 플래시 메시지 | Model: successMessage, errorMessage (RedirectAttributes)
+     성공 = 초록·3초 후 자동 닫힘, 오류 = 빨강·× 버튼으로 닫기 (admin.js)
+     비활성화·삭제 완료 알림은 빨강으로 표시 (결과 상태 색과 통일, 동작은 성공 알림과 같음)
+     → 백엔드 문구에 '비활성' 또는 '삭제'가 들어 있으면 flash-danger 추가 -->
+<body>
 <div th:fragment="flash">
-    <div th:if="${successMessage}" class="flash flash-success" role="alert" th:text="${successMessage}">처리되었습니다.</div>
-    <div th:if="${errorMessage}" class="flash flash-error" role="alert">
-        <span th:text="${errorMessage}">오류가 발생했습니다.</span>
-        <button type="button" class="flash-close" aria-label="알림 닫기">×</button>
-    </div>
+  <div th:if="${successMessage}" class="flash flash-success" role="status"
+       th:classappend="${#strings.contains(successMessage, '비활성') or #strings.contains(successMessage, '삭제')} ? 'flash-danger'">
+    <svg th:replace="~{fragments/icons :: check}"></svg>
+    <span th:text="${successMessage}">처리되었습니다</span>
+  </div>
+  <div th:if="${errorMessage}" class="flash flash-error" role="alert">
+    <svg th:replace="~{fragments/icons :: alert}"></svg>
+    <span th:text="${errorMessage}">오류가 발생했습니다</span>
+    <button type="button" class="flash-close" aria-label="알림 닫기">×</button>
+  </div>
 </div>
+</body>
 </html>
