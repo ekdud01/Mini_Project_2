@@ -1,26 +1,22 @@
-/** 정상/주의/위험 표시 */
+/** 판정 배너: 정상(초록) / 주의(노랑) / 위험(빨강) */
 
-import { Badge } from '@/components/ui/badge';
 import { cn } from "@/lib/utils";
-import { SurveyResultShape } from "@/types/propTypes";
-import { EXAM_TYPE_LABEL, RISK_BADGE_CLASS, RISK_LEVEL, RISK_MESSAGE, RISK_TEXT_CLASS } from "@/utils/kdsq";
+import { RISK_BANNER, RISK_MESSAGE, RISK_TEXT_CLASS } from "@/utils/kdsq";
+import PropTypes from "prop-types";
 
-function ResultStatus({ result }) {
-    const { riskLevel, examType } = result;
+function ResultStatus({ riskLevel }) {
+    const banner = RISK_BANNER[riskLevel];
 
     return (
-        <div className="space-y-3 text-center">
-            <div className="flex items-center justify-center gap-2">
-                <Badge variant="outline">{EXAM_TYPE_LABEL[examType]}</Badge>
-                <Badge className={cn('px-3 text-sm', RISK_BADGE_CLASS[riskLevel])}>{RISK_LEVEL[riskLevel]}</Badge>
-            </div>
-            <p className={cn('text-2xl font-bold', RISK_TEXT_CLASS[riskLevel])}>{RISK_MESSAGE[riskLevel]}</p>
+        <div role="status" className={cn('space-y-2 rounded-xl border px-6 py-5 text-center', banner.className)}>
+            <p className={cn('text-xl font-bold', RISK_TEXT_CLASS[riskLevel])}>{RISK_MESSAGE[riskLevel]}</p>
+            <p className="leading-relaxed text-slate-700">{banner.description}</p>
         </div>
     );
 }
 
 ResultStatus.propTypes = {
-    result: SurveyResultShape.isRequired,
+    riskLevel: PropTypes.oneOf(['Normal', 'Borderline', 'HighRisk']).isRequired,
 };
 
 export default ResultStatus;

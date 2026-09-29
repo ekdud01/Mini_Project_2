@@ -18,6 +18,7 @@ import QuestionCard from './components/QuestionCard';
 import AnswerOptions from './components/AnswerOptions';
 import PreviousButton from './components/PreviousButton';
 import SubmitButton from './components/SubmitButton';
+import SurveyIntro from './components/SurveyIntro';
 import NextButton from './components/NextButton';
 import { EXAM_TYPE_BY_ROUTE, needsSecondTest, sumScores } from '@/utils/kdsq';
 
@@ -44,6 +45,8 @@ export default function SurveyPage({ type }) {
   const [validationMessage, setValidationMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [noQuestions, setNoQuestions] = useState(false);
+  // 1차(P)는 시작 안내를 먼저 보여주고 [검사 시작하기]를 눌러야 문항이 나온다. 2차(C)는 바로 시작
+  const [isStarted, setIsStarted] = useState(type === 'C');
   const currentQuestion = questions[currentIndex];
   const currentQuestionId = currentQuestion?.id;
   const isLast = currentIndex === questions.length - 1;
@@ -85,6 +88,7 @@ export default function SurveyPage({ type }) {
       navigate('/surveys/p', { replace: true, state: { message: RESTART_MESSAGE } });
       return;
     }
+    setIsStarted(type === 'C');
     setCurrentIndex(0);
     setAnswers({});
     setErrorMessage('');
@@ -123,6 +127,7 @@ export default function SurveyPage({ type }) {
   // 1차 답변이 없거나 서버가 2차 검사를 거절하면 처음부터 다시 시작
   const restartFromFirst = () => {
     clearPendingFirstAnswers();
+    setIsStarted(false); // 시작 안내부터 다시
     setCurrentIndex(0); // 이미 /surveys/p에 있으면 화면이 다시 마운트되지 않으므로 직접 초기화
     setAnswers({});
     navigate('/surveys/p', { replace: true, state: { message: RESTART_MESSAGE } });
@@ -188,50 +193,68 @@ export default function SurveyPage({ type }) {
     );
   }
   
+  // 시작 전: 안내 + [검사 시작하기] (문항은 뒤에서 미리 불러온다)
+  if (!isStarted) {
+    return (
+      <section className="mx-auto max-w-2xl space-y-4">
+        {notice && (
+          <Alert>
+            <AlertDescription>{notice}</AlertDescription>
+          </Alert>
+        )}
+        <SurveyIntro description={survey?.description} onStart={() => setIsStarted(true)} />
+      </section>
+    );
+  }
+
   // 문항이 준비되기 전에는 QuestionCard를 그리지 않는다
   if (loading || !currentQuestion) return <LoadingSpinner />;
 
   return (
-    <section className="mx-auto max-w-2xl space-y-6 pb-24 md:pb-0">
+    <section className="mx-auto max-w-2xl space-y-4 pb-24 md:pb-0">
       {notice && (
         <Alert>
           <AlertDescription>{notice}</AlertDescription>
         </Alert>
       )}
 
-      <SurveyHeader type={type} description={survey?.description} />
+      {/* 검사 전체를 하나의 흰 카드로 묶는다 (시안 image 8·12) */}
+      <div className="space-y-6 rounded-2xl border bg-white p-6 shadow-sm">
+        <SurveyHeader type={type} description={survey?.description} />
 
-      <ProgressBar current={currentIndex + 1} total={questions.length} />
+        <ProgressBar current={currentIndex + 1} total={questions.length} />
 
-      <div className="space-y-3">
-        <QuestionCard question={currentQuestion} />
-        <AnswerOptions
-          value={answers[currentQuestionId] ?? null}
-          onChange={handleSelect}
-          invalid={Boolean(validationMessage)}
-        />
-        {validationMessage && (
-          <p role="alert" className="text-sm font-medium text-destructive">
-            {validationMessage}
-          </p>
+        <hr className="border-slate-200" />
+
+        <div className="space-y-5">
+          <QuestionCard question={currentQuestion} />
+          <AnswerOptions
+            value={answers[currentQuestionId] ?? null}
+            onChange={handleSelect}
+            invalid={Boolean(validationMessage)}
+          />
+          {validationMessage && (
+            <p role="alert" className="text-sm font-medium text-destructive">
+              {validationMessage}
+            </p>
+          )}
+        </div>
+
+        {errorMessage && (
+          <Alert variant="destructive">
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
         )}
+
+        <div className="fixed inset-x-0 bottom-0 z-10 flex gap-3 border-t bg-background p-4 md:static md:border-0 md:bg-transparent md:p-0">
+          <PreviousButton isDisabled={currentIndex === 0 || submitting} onClick={handlePrevious} />
+          {isLast ? (
+            <SubmitButton isSubmitting={submitting} onClick={handleSubmit} />
+          ) : (
+            <NextButton onClick={handleNext} />
+          )}
+        </div>
       </div>
-
-      {errorMessage && (
-        <Alert variant="destructive">
-          <AlertDescription>{errorMessage}</AlertDescription>
-        </Alert>
-      )}
-
-      <div className="fixed inset-x-0 bottom-0 z-10 flex gap-2 border-t bg-background p-4 md:static md:justify-between md:border-0 md:bg-transparent md:p-0">
-        <PreviousButton isDisabled={currentIndex === 0 || submitting} onClick={handlePrevious} />
-        {isLast ? (
-          <SubmitButton isSubmitting={submitting} onClick={handleSubmit} />
-        ) : (
-          <NextButton onClick={handleNext} />
-        )}
-      </div>
-
     </section>
   );
 }

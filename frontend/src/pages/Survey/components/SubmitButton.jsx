@@ -8,7 +8,7 @@ function SubmitButton({ isSubmitting = false, onClick }) {
         <Button
             type="button"
             size="lg"
-            className="h-12 flex-1 md:flex-none md:min-w-28"
+            className="h-12 flex-1 text-base font-bold"
             disabled={isSubmitting}
             aria-busy={isSubmitting}
             onClick={onClick}

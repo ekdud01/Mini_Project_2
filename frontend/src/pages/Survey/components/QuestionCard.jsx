@@ -1,6 +1,5 @@
-/** 문항 표시 */
+/** 문항 표시 (바깥 카드 안에 들어가므로 별도 Card 없이 제목만) */
 
-import { Card, CardHeader } from "@/components/ui/card";
 import { QuestionShape } from "@/types/propTypes";
 import React from "react";
 
@@ -8,14 +7,9 @@ function QuestionCard({ question }) {
     const headingId = `question-${question.id}`;
 
     return (
-        <Card>
-            <CardHeader>
-                <h2 id={headingId} className="flex gap-2 text-xl leading-snug font-semibold">
-                    <span className="shrink-0 text-primary">Q{question.questionNumber}.</span>
-                    <span>{question.content}</span>
-                </h2>
-            </CardHeader>
-        </Card>
+        <h2 id={headingId} className="text-xl leading-snug font-bold">
+            Q{question.questionNumber}. {question.content}
+        </h2>
     );
 };
 

@@ -56,6 +56,41 @@ export const RISK_MESSAGE = {
     HighRisk: '전문적인 검진이 필요합니다.'
 };
 
+/** 결과 화면 상단 배너 설명·색 (제목은 RISK_MESSAGE) — 진단 표현은 쓰지 않는다 */
+export const RISK_BANNER = {
+    Normal: {
+        description: '1차 검사 점수가 기준(4점) 미만이어서 검사가 종료되었습니다.',
+        className: 'border-green-300 bg-green-50',
+    },
+    Borderline: {
+        description: '판정 기준(6점) 미만이지만, 생활 관리와 정기적인 검사를 권장합니다.',
+        className: 'border-amber-300 bg-amber-50',
+    },
+    HighRisk: {
+        description: '선별검사 점수가 판정 기준(6점) 이상입니다. 가까운 보건소나 전문의 상담을 권장합니다.',
+        className: 'border-red-300 bg-red-50',
+    },
+};
+
+/** 판정 기준 막대(cut-line) 구간 — from~to 점, 막대 색 */
+export const SCORE_RANGES = {
+    KDSQ_P: [
+        { from: 0, to: 3, label: '0~3점 정상 (검사 종료)', barClass: 'bg-green-300' },
+        { from: 4, to: 10, label: '4~10점 → 2차 검사 진행', barClass: 'bg-slate-200' },
+    ],
+    KDSQ_C: [
+        { from: 0, to: 5, label: '0~5 주의', barClass: 'bg-yellow-300' },
+        { from: 6, to: 30, label: '6~30 위험', barClass: 'bg-red-300' },
+    ],
+};
+
+/** 영역별 점수 문항 범위 (KDSQ-C) */
+export const DOMAINS = [
+    { key: 'memoryScore', label: '기억력', range: '1~5번' },
+    { key: 'otherScore', label: '기타 인지기능', range: '6~10번' },
+    { key: 'adlScore', label: '일상생활수행능력', range: '11~15번' },
+];
+
 /** 답변 선택지 */
 export const ANSWER_OPTIONS = [
     { label: '아니다', value: 0 },

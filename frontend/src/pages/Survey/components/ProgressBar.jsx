@@ -7,11 +7,16 @@ function ProgressBar({ current, total }) {
     const percent = total > 0 ? Math.round((current / total) * 100) : 0;
 
     return (
-        <div className="space-y-2">
-            <p className="text-center text-sm font-medium text-muted-foreground">
-                진행률 <span className="text-foreground">{current} / {total}</span>
-            </p>
-            <Progress value={percent} aria-label={`전체 ${total}문항 중 ${current}번째 문항`} />
+        <div className="space-y-3">
+            <div className="flex items-center justify-between text-sm font-semibold">
+                <span className="text-primary">진행률 {percent}%</span>
+                <span className="text-slate-600">{current} / {total} 문항</span>
+            </div>
+            <Progress
+                value={percent}
+                className="h-3 bg-slate-200"
+                aria-label={`전체 ${total}문항 중 ${current}번째 문항`}
+            />
         </div>
     );
 };

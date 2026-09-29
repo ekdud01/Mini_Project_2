@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 
 function ExamDate({ date }) {
   return (
-    <p className="text-center text-sm text-muted-foreground">
+    <p className="text-center text-sm text-slate-500">
       검사일시 : <time dateTime={date}>{formatDateTime(date)}</time>
     </p>
   );
