@@ -8,7 +8,13 @@ import { Button } from '@/components/ui/button';
 
 function HistoryButton({ onClick }) {
   return (
-    <Button type="button" variant="outline" size="lg" className="h-14 flex-1 text-base font-bold" onClick={onClick}>
+    <Button
+      type="button"
+      variant="outline"
+      size="lg"
+      className="h-14 w-full text-base font-bold md:flex-1"
+      onClick={onClick}
+    >
       검사 이력 보기
     </Button>
   );

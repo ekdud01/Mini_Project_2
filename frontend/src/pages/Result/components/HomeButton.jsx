@@ -8,7 +8,12 @@ import { Button } from '@/components/ui/button';
 
 function HomeButton({ onClick }) {
   return (
-    <Button type="button" size="lg" className="h-14 flex-1 text-base font-bold" onClick={onClick}>
+    <Button
+      type="button"
+      size="lg"
+      className="h-14 w-full text-base font-bold md:flex-1"
+      onClick={onClick}
+    >
       홈으로
     </Button>
   );
