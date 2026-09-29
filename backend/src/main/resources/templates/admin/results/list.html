@@ -92,7 +92,7 @@
               th:with="day=${#temporals.format(r.createdAt, 'yyyy-MM-dd')}">
             <td th:text="${day}">2026-09-24</td>
             <!-- th:utext는 @highlight.mark 결과에만 사용 -->
-            <td class="strong" th:utext="${@highlight.mark(r.member.name, cond?.name)}">홍길동</td>
+              <td class="strong" th:with="h=${@highlight.mark(r.member.name, cond?.name)}" th:utext="${h}">홍길동</td>
             <td class="num"><span class="score"><b th:text="${r.firstScore}">7</b> <span>/ 10</span></span></td>
             <td class="num">
               <span class="score" th:if="${r.totalScore != null}"><b th:text="${r.totalScore}">9</b> <span>/ 30</span></span>
