@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- 브레드크럼 | 사용: breadcrumb('회원 관리', '/admin/members', '회원 상세') -->
+<nav th:fragment="breadcrumb(parentName, parentUrl, currentName)" class="breadcrumb" aria-label="현재 위치">
+    <ol>
+        <li th:if="${parentName != null}"><a th:href="@{${parentUrl}}" th:text="${parentName}">상위 메뉴</a></li>
+        <li aria-current="page" th:text="${currentName}">현재 화면</li>
+    </ol>
+</nav>
+</html>

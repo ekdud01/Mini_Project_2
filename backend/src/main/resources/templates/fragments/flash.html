@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- 플래시 메시지 | Model: successMessage, errorMessage -->
+<div th:fragment="flash">
+    <div th:if="${successMessage}" class="flash flash-success" role="alert" th:text="${successMessage}">처리되었습니다.</div>
+    <div th:if="${errorMessage}" class="flash flash-error" role="alert">
+        <span th:text="${errorMessage}">오류가 발생했습니다.</span>
+        <button type="button" class="flash-close" aria-label="알림 닫기">×</button>
+    </div>
+</div>
+</html>

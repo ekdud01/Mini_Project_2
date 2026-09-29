@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- 페이지네이션 | 사용: pagination(${members}) 또는 pagination(${results})
+     - 서버 page는 0부터, 화면 표시는 1부터(i + 1)
+     - 현재 페이지 앞뒤 2개씩 최대 5개, 1페이지뿐이면 숨김
+     - 링크는 @pageUrl.to(i): 현재 검색 조건은 그대로 두고 page만 변경 -->
+<nav th:fragment="pagination(page)" aria-label="페이지 이동" class="pagination"
+     th:if="${page.totalPages > 1}"
+     th:with="cur=${T(java.lang.Math).min(page.number, page.totalPages - 1)},
+              start=${T(java.lang.Math).max(0, cur - 2)},
+              end=${T(java.lang.Math).min(page.totalPages - 1, cur + 2)}">
+    <!-- cur: 범위를 벗어난 페이지(삭제 후 사라진 마지막 페이지 등)면 마지막 페이지로 간주 -->
+    <a th:if="${cur > 0}" th:href="${@pageUrl.to(page.number > cur ? cur : cur - 1)}" aria-label="이전 페이지">◀</a>
+    <a th:each="i : ${#numbers.sequence(start, end)}"
+       th:href="${@pageUrl.to(i)}" th:text="${i + 1}"
+       th:attr="aria-current=${i == page.number} ? 'page' : null"></a>
+    <a th:if="${cur < page.totalPages - 1}" th:href="${@pageUrl.to(cur + 1)}" aria-label="다음 페이지">▶</a>
+</nav>
+</html>
