@@ -1,10 +1,35 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!-- 브레드크럼 | 사용: breadcrumb('회원 관리', '/admin/members', '회원 상세') -->
-<nav th:fragment="breadcrumb(parentName, parentUrl, currentName)" class="breadcrumb" aria-label="현재 위치">
-    <ol>
-        <li th:if="${parentName != null}"><a th:href="@{${parentUrl}}" th:text="${parentName}">상위 메뉴</a></li>
-        <li aria-current="page" th:text="${currentName}">현재 화면</li>
-    </ol>
-</nav>
+<!-- 브레드크럼 | Model: currentPath
+     대시보드·로그인에서는 표시 안 함, 마지막 단계는 링크 없음 -->
+<th:block th:fragment="breadcrumb"
+          th:with="p=${currentPath} ?: '',
+                   inMembers=${#strings.startsWith(p, '/admin/members')},
+                   inResults=${#strings.startsWith(p, '/admin/results')}">
+    <nav class="breadcrumb" aria-label="현재 위치" th:if="${inMembers or inResults}">
+        <ol>
+            <li><a th:href="@{/admin/dashboard}">홈</a></li>
+
+            <th:block th:if="${inMembers}">
+                <li th:if="${p == '/admin/members'}" aria-current="page">회원 관리</li>
+                <th:block th:unless="${p == '/admin/members'}">
+                    <li><a th:href="@{/admin/members}">회원 관리</a></li>
+                    <li th:unless="${#strings.endsWith(p, '/edit')}" aria-current="page">회원 상세</li>
+                    <th:block th:if="${#strings.endsWith(p, '/edit')}">
+                        <li><a th:href="${#strings.substringBefore(p, '/edit')}">회원 상세</a></li>
+                        <li aria-current="page">회원 정보 수정</li>
+                    </th:block>
+                </th:block>
+            </th:block>
+
+            <th:block th:if="${inResults}">
+                <li th:if="${p == '/admin/results'}" aria-current="page">검사 결과</li>
+                <th:block th:unless="${p == '/admin/results'}">
+                    <li><a th:href="@{/admin/results}">검사 결과</a></li>
+                    <li aria-current="page">검사 상세 결과</li>
+                </th:block>
+            </th:block>
+        </ol>
+    </nav>
+</th:block>
 </html>

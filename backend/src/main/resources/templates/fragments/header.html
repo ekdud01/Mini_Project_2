@@ -4,7 +4,7 @@
 <header th:fragment="header" class="admin-header">
     <a th:href="@{/admin/dashboard}" class="admin-logo">KDSQ 관리자</a>
     <div class="admin-user" th:if="${adminName != null}">
-        <span><strong th:text="${adminName}">관리자</strong>님</span>
+        <span><strong th:text="${adminName}">홍길동</strong><span class="admin-user-role"> 관리자</span>님</span>
         <form th:action="@{/admin/logout}" method="post">
             <button type="submit" class="btn btn-sm">로그아웃</button>
         </form>

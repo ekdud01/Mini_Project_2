@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin-layout}">
+<!-- ADM-05 검사 결과 목록 (UI 4.6) | GET /admin/results?examType=&riskLevels=&name=&from=&to=&page=
+     Model: results(Page), cond(examType, riskLevels, name, from, to) -->
+<head><title>검사 결과</title></head>
+<body>
+<section layout:fragment="content"
+         th:with="rl=${cond?.riskLevels != null} ? ${#strings.listJoin(cond.riskLevels, ',')} : ''">
+
+    <div class="page-title">
+        <h1>검사 결과</h1>
+        <p class="list-summary">총 <strong th:text="${results.totalElements}">342</strong>건</p>
+    </div>
+
+    <!-- 복합 필터: 검색 후에도 조건 유지, page는 넣지 않는다 (UI 2.5) -->
+    <form class="search-form" th:action="@{/admin/results}" method="get" role="search">
+        <div class="form-group">
+            <label for="examType">검사 종류</label>
+            <select id="examType" name="examType" class="form-control">
+                <option value="">전체</option>
+                <option value="KDSQ_P" th:selected="${cond?.examType?.toString() == 'KDSQ_P'}">KDSQ-P</option>
+                <option value="KDSQ_C" th:selected="${cond?.examType?.toString() == 'KDSQ_C'}">KDSQ-C</option>
+            </select>
+        </div>
+
+        <fieldset class="form-group">
+            <legend>위험도</legend>
+            <div class="check-group">
+                <label><input type="checkbox" name="riskLevels" value="Normal"
+                              th:checked="${#strings.contains(rl, 'Normal')}"> 정상</label>
+                <label><input type="checkbox" name="riskLevels" value="Borderline"
+                              th:checked="${#strings.contains(rl, 'Borderline')}"> 주의</label>
+                <label><input type="checkbox" name="riskLevels" value="HighRisk"
+                              th:checked="${#strings.contains(rl, 'HighRisk')}"> 위험</label>
+            </div>
+        </fieldset>
+
+        <div class="form-group">
+            <label for="name">이름</label>
+            <input type="search" id="name" name="name" class="form-control" th:value="${cond?.name}" placeholder="회원 이름">
+        </div>
+
+        <div class="form-group">
+            <label for="from">시작일</label>
+            <input type="date" id="from" name="from" class="form-control" th:value="${cond?.from}">
+        </div>
+        <div class="form-group">
+            <label for="to">종료일</label>
+            <input type="date" id="to" name="to" class="form-control" th:value="${cond?.to}">
+        </div>
+
+        <button type="submit" class="btn btn-primary">검색</button>
+        <a th:href="@{/admin/results}" class="btn">초기화</a>
+    </form>
+
+    <div class="table-wrap">
+        <table class="table">
+            <caption class="sr-only">검사 결과 목록</caption>
+            <thead>
+            <tr>
+                <th scope="col">날짜</th>
+                <th scope="col">회원</th>
+                <th scope="col">KDSQ-P</th>
+                <th scope="col">KDSQ-C</th>
+                <th scope="col">위험도</th>
+                <th scope="col">작업</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${results.empty}">
+                <td colspan="6" class="empty-message">검색 결과가 없습니다.</td>
+            </tr>
+            <tr th:each="r : ${results.content}">
+                <td th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd')}">2026-09-22</td>
+                <td th:with="h=${@highlight.mark(r.member.name, cond?.name)}" th:utext="${h}">홍길동</td>
+                <!-- KDSQ-P: "4점/2차대상"(2차까지 진행) 또는 "2점/정상"(1차 종료) -->
+                <td th:text="|${r.firstScore}점/${r.examType.name() == 'KDSQ_C' ? '2차대상' : '정상'}|">4점/2차대상</td>
+                <!-- KDSQ-C: 1차에서 끝난 결과는 totalScore가 null → "-" -->
+                <td th:text="${r.totalScore == null} ? '-' : |${r.totalScore}점/${r.riskLevel.displayName}|">5점/주의</td>
+                <td><span class="badge" th:classappend="'badge-' + ${r.riskLevel.name()}"
+                          th:text="${r.riskLevel.displayName}">주의</span></td>
+                <td>
+                    <div class="table-actions">
+                        <!-- 보기·삭제 모두 현재 목록 주소를 returnUrl로 전달 (UI 2.5) -->
+                        <a th:href="@{/admin/results/{id}(id=${r.id}, returnUrl=${@pageUrl.current()})}" class="btn btn-sm">보기</a>
+                        <form th:action="@{/admin/results/{id}/delete(id=${r.id})}" method="post">
+                            <input type="hidden" name="returnUrl" th:value="${@pageUrl.current()}">
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    data-confirm="이 검사 결과를 삭제하시겠습니까?">삭제</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:replace="~{fragments/pagination :: pagination(${results})}"></div>
+</section>
+</body>
+</html>
