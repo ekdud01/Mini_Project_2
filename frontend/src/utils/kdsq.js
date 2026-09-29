@@ -24,11 +24,29 @@ export const RISK_LEVEL = {
     HighRisk: '위험',
 };
 
-/** 판정 색상 */
+/**
+ * 판정 색상 (UI 설계서 6.1 디자인 토큰)
+ * - RISK_COLOR: hex 값이 필요한 곳(Recharts 등)에서 사용
+ * - RISK_BADGE_CLASS / RISK_TEXT_CLASS: 화면 배지·문구용 Tailwind 클래스
+ *   토큰 색(#22c55e 등)을 흰 배경 글자색으로 쓰면 명도 대비가 4.5:1에 못 미쳐(UI 8장),
+ *   글자는 같은 계열의 진한 색을 쓰고 테두리·배경에만 토큰 색을 쓴다.
+ */
 export const RISK_COLOR = {
     Normal: '#22c55e',
     Borderline: '#f59e0b',
     HighRisk: '#ef4444',
+};
+
+export const RISK_BADGE_CLASS = {
+    Normal: 'border-success bg-success/15 text-green-800',
+    Borderline: 'border-warning bg-warning/15 text-amber-800',
+    HighRisk: 'border-destructive bg-destructive/10 text-red-700',
+};
+
+export const RISK_TEXT_CLASS = {
+    Normal: 'text-green-700',
+    Borderline: 'text-amber-700',
+    HighRisk: 'text-red-600',
 };
 
 /** 결과 화면 판정 문구 */
