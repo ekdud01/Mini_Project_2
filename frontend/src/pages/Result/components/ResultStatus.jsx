@@ -6,9 +6,9 @@ import { SurveyResultShape } from "@/types/propTypes";
 import { EXAM_TYPE_LABEL, RISK_LEVEL, RISK_MESSAGE } from "@/utils/kdsq";
 
 const BADGE_CLASS = {
-    Normal: 'border-normal bg-normal/15 text-green-800',
-    Borderline: 'border-borderline bg-borderline/15 text-amber-800',
-    HighRisk: 'border-highrisk bg-highrisk/10 text-red-700',
+    Normal: 'border-success bg-success/15 text-green-800',
+    Borderline: 'border-warning bg-warning/15 text-amber-800',
+    HighRisk: 'border-destructive bg-destructive/10 text-red-700',
 };
 
 const TEXT_CLASS = {
