@@ -1,7 +1,5 @@
 package com.kdsq.admin;
 
-
-import com.kdsq.member.UserStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -110,7 +108,10 @@ public class AdminMemberController {
             if (e.getErrorCode() == ErrorCode.MEMBER_NOT_FOUND) {
                 throw e;   // 없는 회원·관리자 id → 404 화면
             }
-            redirectAttributes.addFlashAttribute("errorMessage", "처리 중 오류가 발생했습니다.");  // 이미 탈퇴한 회원 등 (UI 4.4)
+            String message = (e.getErrorCode() == ErrorCode.MEMBER_WITHDRAWN)
+                    ? "이미 탈퇴한 회원입니다."          // UI 4.4
+                    : "처리 중 오류가 발생했습니다.";
+            redirectAttributes.addFlashAttribute("errorMessage", message);
         }
         return "redirect:/admin/members/" + id;
     }
