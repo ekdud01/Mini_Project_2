@@ -93,10 +93,10 @@ function HeaderNavigation({ pathname, isLoggedIn, isLoggingOut, onLogout }) {
       <Link
         to={isLoggedIn ? '/surveys/p' : '/login'}
         onClick={() => setIsOpen(false)}
-        aria-label="마음 기억 KDSQ 홈"
+        aria-label="MEMORY ATTACK KDSQ 홈"
         className="inline-flex min-h-12 items-center gap-2 rounded-lg text-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
-        마음 기억 <span className="text-sm font-semibold text-primary">KDSQ</span>
+        MEMORY ATTACK <span className="text-sm font-semibold text-primary">KDSQ</span>
       </Link>
 
       <Button

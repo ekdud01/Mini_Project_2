@@ -27,7 +27,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     const previousTitle = document.title;
-    document.title = '로그인 - 마음 기억';
+    document.title = '로그인 - MEMORY ATTACK';
     return () => { document.title = previousTitle; };
   }, []);
 
@@ -69,7 +69,7 @@ export default function LoginPage() {
     <section data-page="login" aria-labelledby="login-title" className="w-full py-4 md:py-8">
       <div className="mx-auto w-full max-w-md space-y-6 rounded-2xl border bg-white p-6 shadow-sm md:p-10">
         <div className="space-y-2 text-center">
-          <p className="break-keep text-sm font-semibold text-primary">마음 기억 · KDSQ 인지선별검사</p>
+          <p className="break-keep text-sm font-semibold text-primary">MEMORY ATTACK · KDSQ 인지선별검사</p>
           <h1 id="login-title" className="text-2xl font-bold">로그인</h1>
           <p className="break-keep text-base leading-relaxed text-muted-foreground">
             검사를 시작하려면 로그인해주세요.
