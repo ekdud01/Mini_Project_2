@@ -2,8 +2,8 @@ import { Link, NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 /**
- * [뼈대] 상단 메뉴 (UI 설계서 2.1) — 로그인 상태에 따른 메뉴·로그아웃, 모바일 메뉴는 강찬식이 완성한다.
- * 디자인만 시안에 맞춤: 파란 로고 + "마음 기억" + KDSQ 칩, 현재 메뉴는 파란색 (메뉴·링크는 기존과 동일)
+ * 상단 메뉴 — 로그인 상태에 따른 메뉴·로그아웃, 모바일 메뉴는 강찬식이 완성한다.
+ * 로고 + 서비스명, 현재 메뉴는 파란색 
  */
 const navClass = ({ isActive }) =>
   cn('font-medium transition-colors hover:text-primary', isActive ? 'font-bold text-primary' : 'text-slate-700');

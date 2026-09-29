@@ -1,7 +1,10 @@
-/** 검사 이력 보기 - /mypage 이동 (보조 버튼: 흰 배경 테두리) */
+/** 
+ * 검사 이력 보기 
+ * 마이페이지 화면(/mypage) 이동
+ */
 
-import { Button } from "@/components/ui/button";
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
+import { Button } from '@/components/ui/button';
 
 function HistoryButton({ onClick }) {
   return (

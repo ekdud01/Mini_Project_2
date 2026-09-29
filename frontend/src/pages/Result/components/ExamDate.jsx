@@ -1,7 +1,7 @@
 /** 검사 일시 */
 
-import { formatDateTime } from "@/utils/date";
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
+import { formatDateTime } from '@/utils/date';
 
 function ExamDate({ date }) {
   return (

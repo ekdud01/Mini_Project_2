@@ -3,19 +3,23 @@
  * 해석 문구 없이 점수 · 막대 · 문항 범위만 표시 (숫자는 중립색)
  */
 
-import { Progress } from "@/components/ui/progress";
-import { DOMAIN_MAX_SCORE, DOMAINS } from "@/utils/kdsq";
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
+import { DOMAIN_MAX_SCORE, DOMAINS } from '@/utils/kdsq';
+import { Progress } from '@/components/ui/progress';
 
 function ScoreSummary({ memoryScore, otherScore, adlScore }) {
   const scores = { memoryScore, otherScore, adlScore };
 
   return (
     <section aria-labelledby="score-summary-title" className="space-y-4">
-      <h2 id="score-summary-title" className="text-xl font-bold">영역별 점수</h2>
+      <h2 id="score-summary-title" className="text-xl font-bold">
+        영역별 점수
+      </h2>
+
       <ul className="grid grid-cols-1 gap-3 md:grid-cols-3">
         {DOMAINS.map(({ key, label, range }) => {
           const score = scores[key];
+
           return (
             <li key={key} className="space-y-3 rounded-xl border bg-white p-5">
               <p className="font-bold">{label}</p>
