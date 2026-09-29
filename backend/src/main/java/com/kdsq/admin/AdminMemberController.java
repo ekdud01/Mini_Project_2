@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -18,6 +19,9 @@ import lombok.RequiredArgsConstructor;
  * | 요청                                  | 템플릿                 | Model                                 |
  * |---------------------------------------|------------------------|---------------------------------------|
  * | GET  /admin/members?keyword=&page=    | admin/members/list     | members(Page), keyword                |
+ * | GET  /admin/members/{id}              | admin/members/detail   | member, results                       |
+ *
+ * 없는 회원·관리자 id → 서비스의 BusinessException(MEMBER_NOT_FOUND) → AdminExceptionHandler가 error/404
  */
 @Controller
 @RequestMapping("/admin/members")
@@ -34,5 +38,13 @@ public class AdminMemberController {
         model.addAttribute("members", adminMemberService.getMembers(keyword, pageable));
         model.addAttribute("keyword", StringUtils.hasText(keyword) ? keyword.trim() : null);  // 검색창 유지 + 하이라이트
         return "admin/members/list";
+    }
+
+    /** ADM-04 회원 상세 + 검사 이력 */
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Model model) {
+        model.addAttribute("member", adminMemberService.getMember(id));
+        model.addAttribute("results", adminMemberService.getResults(id));
+        return "admin/members/detail";
     }
 }

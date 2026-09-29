@@ -1,5 +1,7 @@
 package com.kdsq.admin;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -7,9 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.kdsq.global.exception.BusinessException;
+import com.kdsq.global.exception.ErrorCode;
 import com.kdsq.member.Member;
 import com.kdsq.member.MemberRepository;
 import com.kdsq.member.Role;
+import com.kdsq.result.SurveyResult;
+import com.kdsq.result.SurveyResultRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,11 +32,30 @@ import lombok.RequiredArgsConstructor;
 public class AdminMemberService {
 
     private final MemberRepository memberRepository;
+    private final SurveyResultRepository surveyResultRepository;
 
     /** ADM-03 회원 목록: 일반 회원만, 이름/이메일 검색 + 페이징 */
     public Page<Member> getMembers(String keyword, Pageable pageable) {
         // 빈 검색어를 null로 바꿔야 JPQL의 (:keyword IS NULL OR ...)가 "전체 조회"로 동작한다
         String kw = StringUtils.hasText(keyword) ? keyword.trim() : null;
         return memberRepository.searchMembers(Role.MEMBER, kw, pageable);
+    }
+
+    /** ADM-04 회원 상세 */
+    public Member getMember(Long id) {
+        return findMember(id);
+    }
+
+    /** ADM-04 회원 상세의 검사 이력: 삭제되지 않은 결과만, 최신순 */
+    public List<SurveyResult> getResults(Long memberId) {
+        findMember(memberId);   // 관리자 id·없는 id면 여기서 404
+        return surveyResultRepository.findActiveByMemberId(memberId);
+    }
+
+    /** 일반 회원만 찾는다. 없는 id·관리자 id면 MEMBER_NOT_FOUND → AdminExceptionHandler가 404 화면으로 */
+    private Member findMember(Long id) {
+        return memberRepository.findById(id)
+                .filter(member -> member.getRole() == Role.MEMBER)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }
