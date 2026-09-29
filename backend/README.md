@@ -260,7 +260,6 @@ LocalDateTime createdAt
 
 | 파일 | 지금 | 교체 후 (담당) |
 |---|---|---|
-| `WebConfig`의 `/admin/dashboard` | 로그인 후 preview 화면으로 연결 | 대시보드 컨트롤러 완성 후 삭제 (윤수연) |
 | `templates/layout`, `admin/login`, `admin.css` | 최소 뼈대 | UI 설계서 2.5·4장 (황지영) |
 | `admin/preview.html`, `WebConfig`의 `/admin/preview` | 레이아웃 확인용 | 관리자 화면 완성 후 삭제 (황지영) |
 
