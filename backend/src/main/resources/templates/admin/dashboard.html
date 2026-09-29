@@ -6,7 +6,9 @@
      Model: stats(DashboardStatsDto, Entity 설계서 8.5)
        totalMembers, totalResults, riskLevelCounts, riskLevelRatios,
        avgTotal, avgMemory, avgOther, avgAdl,
-       monthly[{month, resultCount, avgTotal(Double, 평균 없는 달은 null)}], recentHighRisk -->
+       monthly[{month, resultCount, avgTotal(Double, 평균 없는 달은 null)}], recentHighRisk,
+       withdrawnMembers, highRiskCount, highRiskRatio (대시보드 시안용 추가 값)
+     - 차트 아래 같은 수치를 표로 제공, 영역별 막대는 <meter> (인라인 style 없음) -->
 <head><title>대시보드</title></head>
 <body>
 <section layout:fragment="content"
@@ -24,21 +26,17 @@
         <div class="stat-card">
             <p class="stat-label">전체 회원 (활성)</p>
             <p class="stat-value"><span th:text="${#numbers.formatInteger(stats.totalMembers, 1, 'COMMA')}">24</span><small> 명</small></p>
-            <p class="stat-sub">활성 회원 기준</p>
+            <p class="stat-sub" th:text="|비활성 ${stats.withdrawnMembers}명 별도|">비활성 3명 별도</p>
         </div>
         <div class="stat-card">
             <p class="stat-label">전체 검사 건수</p>
             <p class="stat-value"><span th:text="${#numbers.formatInteger(stats.totalResults, 1, 'COMMA')}">109</span><small> 건</small></p>
             <p class="stat-sub" th:text="|이번 달 ${thisMonth}건|">이번 달 27건</p>
         </div>
-        <!-- 위험 판정: EnumMap을 순회해 HighRisk 값만 사용 (패키지명 없이) -->
         <div class="stat-card is-risk">
             <p class="stat-label">위험 판정</p>
-            <th:block th:each="e : ${stats.riskLevelCounts}" th:if="${e.key.name() == 'HighRisk'}">
-                <p class="stat-value"><span th:text="${e.value}">34</span><small> 건</small></p>
-                <p class="stat-sub"
-                   th:text="|전체의 ${#numbers.formatDecimal(stats.riskLevelRatios.get(e.key), 1, 1)}%|">전체의 31.2%</p>
-            </th:block>
+            <p class="stat-value"><span th:text="${stats.highRiskCount}">34</span><small> 건</small></p>
+            <p class="stat-sub" th:text="|전체의 ${#numbers.formatDecimal(stats.highRiskRatio, 1, 1)}%|">전체의 31.2%</p>
         </div>
         <div class="stat-card">
             <p class="stat-label">종합점수 평균</p>
