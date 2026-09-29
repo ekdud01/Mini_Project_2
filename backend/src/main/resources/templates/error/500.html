@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<!-- 500 에러 | 처리 중 예기치 않은 오류, 조회 실패 포함 | 레이아웃 미사용 단독 페이지 -->
+<!-- 500 에러 | 처리 중 예기치 않은 오류, 조회 실패 포함 | 레이아웃 미사용 단독 페이지 (로그인 전·권한 없음에서도 표시) -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,9 +9,15 @@
 </head>
 <body class="error-page">
 <main class="error-box">
-    <p class="error-code">500</p>
+    <span class="brand-mark"><svg th:replace="~{fragments/icons :: brain}"></svg></span>
+    <p class="error-code is-server">500</p>
     <h1>일시적인 오류가 발생했습니다.</h1>
-    <p>잠시 후 다시 시도해주세요.</p>
+    <p>잠시 후 다시 시도해주세요.<br>문제가 계속되면 시스템 담당자에게 문의하세요.</p>
+    <div class="error-actions">
+        <button type="button" class="btn" data-action="reload">다시 시도</button>
+        <a th:href="@{/admin/dashboard}" class="btn btn-primary">대시보드로 이동</a>
+    </div>
 </main>
+<script th:src="@{/js/admin.js}" defer></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<!-- 403 에러 | ADMIN이 아닌 계정의 관리자 기능 접근 | 레이아웃 미사용 단독 페이지 -->
+<!-- 403 에러 | ADMIN이 아닌 계정의 관리자 기능 접근 | 레이아웃 미사용 단독 페이지 (로그인 전·권한 없음에서도 표시) -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,9 +9,14 @@
 </head>
 <body class="error-page">
 <main class="error-box">
+    <span class="brand-mark"><svg th:replace="~{fragments/icons :: brain}"></svg></span>
     <p class="error-code">403</p>
     <h1>접근 권한이 없습니다.</h1>
-    <a th:href="@{/admin/login}" class="btn btn-primary">관리자 로그인</a>
+    <p>관리자 계정으로 로그인해야<br>이용할 수 있는 페이지입니다.</p>
+    <div class="error-actions">
+        <a th:href="@{/admin/login}" class="btn btn-primary">관리자 로그인</a>
+    </div>
 </main>
+<script th:src="@{/js/admin.js}" defer></script>
 </body>
 </html>
