@@ -1,8 +1,9 @@
 /** 설문·문항 상태 */
 
+import axios from 'axios';
 import { create } from 'zustand';
 import * as surveyApi from '@/api/surveyApi';
-import { registerStoreReset } from './resetStores';
+import { registerStoreReset } from '@/store/resetStores';
 
 const initialState = {
   surveys: [],
@@ -11,6 +12,12 @@ const initialState = {
   loading: false,
   error: null,
 };
+
+/**
+ * 요청 실패 시 상태 정리
+ * 세션이 바뀌어 취소된 요청(axios 취소 오류)은 error에 담지 않는다
+ */
+const failState = (error) => (axios.isCancel(error) ? { loading: false } : { loading: false, error });
 
 export const useSurveyStore = create((set, get) => ({
   ...initialState,
@@ -24,7 +31,7 @@ export const useSurveyStore = create((set, get) => ({
       set({ surveys, loading: false });
       return surveys;
     } catch (error) {
-      set({ loading: false, error });
+      set(failState(error));
       throw error;
     }
   },
@@ -37,7 +44,7 @@ export const useSurveyStore = create((set, get) => ({
       set({ questions, loading: false });
       return questions;
     } catch (error) {
-      set({ loading: false, error });
+      set(failState(error));
       throw error;
     }
   },
@@ -48,4 +55,6 @@ export const useSurveyStore = create((set, get) => ({
   reset: () => set(initialState),
 }));
 
-registerStoreReset('survey', () => useSurveyStore.getState().reset());
+// 로그아웃 시 초기화 연결
+const unregisterReset = registerStoreReset('survey', () => useSurveyStore.getState().reset());
+if (import.meta.hot) import.meta.hot.dispose(unregisterReset);
