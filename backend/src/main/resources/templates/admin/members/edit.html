@@ -14,7 +14,6 @@
   <div class="page-title">
     <div class="title-group">
       <h1>회원 정보 수정</h1>
-      <span class="text-sub" th:text="|· ${member.name}|">· 홍길동</span>
     </div>
   </div>
 
@@ -86,7 +85,7 @@
              <dd><span th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd')}">2026-03-02</span>
                  <span class="text-sub">| 수정 불가</span></dd></div>
         <div><dt>상태</dt>
-             <dd><span class="badge" th:classappend="'badge-' + ${member.status.name()}"
+             <dd class="status-line"><span class="badge" th:classappend="'badge-' + ${member.status.name()}"
                        th:text="${inactive} ? '비활성' : '활성'">활성</span>
                  <span class="text-sub">상태 변경은 회원 상세 페이지에서 진행</span></dd></div>
       </dl>

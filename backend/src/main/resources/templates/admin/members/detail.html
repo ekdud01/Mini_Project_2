@@ -10,7 +10,8 @@
 <body>
 <section layout:fragment="content"
          th:with="inactive=${member.status.name() == 'WITHDRAWN'},
-                  hasResults=${!#lists.isEmpty(results)}">
+                  hasResults=${!#lists.isEmpty(results)},
+                  thisYear=${#dates.year(#dates.createNow())}">
 
   <!-- 제목: 회원 성명 + 상태 배지 (활성 = 초록, 비활성 = 빨강) -->
   <div class="page-title">
@@ -47,14 +48,16 @@
     <span>비활성 회원입니다. 로그인할 수 없으며, 검사 이력은 보존됩니다. [활성화]를 누르면 다시 로그인할 수 있습니다</span>
   </div>
 
-  <div class="grid-side">
+  <!-- 윗줄: 회원 정보 | 검사 결과 추이 (높이 맞춤), 아랫줄: 검사 이력 (전체 폭) -->
+  <div class="grid-member">
     <!-- 회원 정보 -->
     <div class="card">
       <h2>회원 정보</h2>
       <dl class="detail-list">
         <div><dt>이메일</dt>   <dd th:text="${member.email}">hong@test.com</dd></div>
         <div><dt>성별</dt>     <dd th:text="${member.gender.description}">남성</dd></div>
-        <div><dt>출생년도</dt> <dd th:text="${member.birthYear}">1960</dd></div>
+        <div><dt>출생년도</dt> <dd><span th:text="${member.birthYear}">1960</span>
+                                   <span class="text-sub" th:text="|(${thisYear - member.birthYear}세)|">(66세)</span></dd></div>
         <div><dt>가입일</dt>   <dd th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd')}">2026-03-02</dd></div>
       </dl>
       <!-- 최근 판정 요약: 이력은 최신순이므로 첫 번째 결과 -->
@@ -68,10 +71,30 @@
       </div>
     </div>
 
-    <!-- 검사 이력 -->
+    <!-- 검사 결과 추이: 세로 = 판정(정상·주의·위험), 가로 = 검사일(오래된 → 최근)
+         점 위 알약 = 점수 (1차에서 종료 = 1차 점수, 2차까지 = 2차 총점), 마우스를 올리면 1차·2차 점수와 판정 -->
+    <div class="card">
+      <div class="card-head">
+        <h2>검사 결과 추이</h2>
+        <span class="text-sub">오래된 검사 → 최근 검사</span>
+      </div>
+      <div class="empty-state" th:unless="${hasResults}">
+        <strong>검사 이력이 없습니다</strong>
+      </div>
+      <th:block th:if="${hasResults}">
+        <div class="chart-box chart-box-member">
+          <canvas id="memberTrend" role="img" aria-label="검사 결과 추이 차트. 수치는 아래 검사 이력 표 참고"></canvas>
+        </div>
+        <p class="chart-note">점 위 숫자는 점수 · 1차 10점, 2차 30점 만점</p>
+      </th:block>
+    </div>
+  </div>
+
+  <!-- 검사 이력 -->
     <div class="card card-flush">
       <div class="card-head">
-        <h2>검사 이력 <span class="text-sub" th:text="|총 ${#lists.size(results)}건|">총 5건</span></h2>
+        <h2>검사 이력</h2>
+        <span class="text-sub">총 <strong th:text="${#lists.size(results)}">5</strong>건</span>
       </div>
 
       <div class="empty-state" th:unless="${hasResults}">
@@ -112,7 +135,92 @@
         </table>
       </div>
     </div>
-  </div>
+
+  <!-- 검사 결과 추이 차트 (Chart.js, 대시보드와 같은 CDN) -->
+  <th:block th:if="${hasResults}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+  <script th:inline="javascript">
+    (() => {
+      // 검사 이력은 최신순 → 오래된 순으로 뒤집어 그림
+      const rows = [
+        /*[# th:each="r : ${results}"]*/
+        { day: /*[[${#temporals.format(r.createdAt, 'yyyy-MM-dd')}]]*/ '2026-09-24',
+          first: /*[[${r.firstScore}]]*/ 7, total: /*[[${r.totalScore}]]*/ null,
+          level: /*[[${r.riskLevel.name()}]]*/ 'HighRisk', label: /*[[${r.riskLevel.displayName}]]*/ '위험' },
+        /*[/]*/
+      ].reverse();
+
+      const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+      const font = css('--font-family');
+      // 판정별 줄 위치(0 = 정상, 1 = 주의, 2 = 위험)와 색 (위험도 배지와 같은 색)
+      const LV = {
+        Normal:     { y: 0, name: '정상', dot: css('--risk-normal'),  fg: css('--normal-fg'),  bg: css('--normal-bg') },
+        Borderline: { y: 1, name: '주의', dot: css('--risk-caution'), fg: css('--caution-fg'), bg: css('--caution-bg') },
+        HighRisk:   { y: 2, name: '위험', dot: css('--risk-high'),    fg: css('--high-fg'),    bg: css('--high-bg') }
+      };
+      const score = (r) => r.total ?? r.first;              // 2차까지 했으면 2차 총점, 아니면 1차 점수
+
+      const pill = (ctx, x, y, text, fg, bg, border) => {
+        const w = ctx.measureText(text).width + 18, h = 22;
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(x - w / 2, y - h / 2, w, h, h / 2); else ctx.rect(x - w / 2, y - h / 2, w, h);
+        ctx.fillStyle = bg; ctx.fill();
+        if (border) { ctx.strokeStyle = border; ctx.stroke(); }
+        ctx.fillStyle = fg; ctx.fillText(text, x, y + 0.5);
+      };
+      // 왼쪽 판정 칩 + 점 위 점수 알약
+      const decorate = {
+        id: 'decorate',
+        afterDatasetsDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          ctx.save();
+          ctx.font = `700 12px ${font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          Object.values(LV).forEach(l => pill(ctx, chartArea.left - 44, scales.y.getPixelForValue(l.y), `● ${l.name}`, l.fg, l.bg));
+          chart.getDatasetMeta(0).data.forEach((pt, i) => {
+            const l = LV[rows[i].level];
+            pill(ctx, pt.x, pt.y - 22, `${score(rows[i])}점`, l.fg, '#fff', l.dot);
+          });
+          ctx.restore();
+        }
+      };
+
+      new Chart(document.getElementById('memberTrend'), {
+        type: 'line',
+        data: {
+          labels: rows.map(r => r.day.slice(2).replace(/-/g, '.')),   // '26.09.24'
+          datasets: [{
+            data: rows.map(r => LV[r.level].y),
+            borderColor: css('--color-neutral'), borderWidth: 2, tension: 0,
+            pointRadius: 6, pointHoverRadius: 8, pointBorderWidth: 2, pointBorderColor: '#fff',
+            pointBackgroundColor: rows.map(r => LV[r.level].dot)
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          layout: { padding: { top: 30, left: 90, right: 24 } },
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: {
+              title: (items) => rows[items[0].dataIndex].day,
+              label: (c) => {
+                const r = rows[c.dataIndex];
+                return r.total != null ? ` 1차 ${r.first}점 / 2차 ${r.total}점 · ${r.label}` : ` 1차 ${r.first}점 (1차에서 종료) · ${r.label}`;
+              }
+            } }
+          },
+          scales: {
+            x: { grid: { display: false }, offset: true },
+            y: { min: -0.3, max: 2.3, ticks: { display: false }, border: { display: false },
+                 grid: { color: (c) => [0, 1, 2].includes(c.tick.value) ? css('--color-border') : 'transparent' },
+                 afterBuildTicks: (axis) => { axis.ticks = [0, 1, 2].map(v => ({ value: v })); } }
+          }
+        },
+        plugins: [decorate]
+      });
+    })();
+  </script>
+  </th:block>
 
 </section>
 </body>
