@@ -14,8 +14,8 @@
 --   (주의) 샘플 회원(hong 등)으로 직접 만든 검사 결과도 함께 지워진다
 --
 -- 로그인: 모든 회원 비밀번호 Test1234! (BCrypt 저장), 관리자 admin@kdsq.com은 서버가 자동 등록 (이 파일에 없음)
--- 주요 계정: hong@test.com(이력 6건), kim@test.com(이력 없음), lee@test.com(탈퇴), park@test.com(결과 201번),
---            testuser26@test.com(이력 23건), testuser27@test.com(이력 11건), testuser10@test.com(탈퇴)
+-- 주요 계정: hong@test.com(이력 6건), kim@test.com(이력 없음), lee@test.com(본인 탈퇴), park@test.com(결과 201번),
+--            testuser26@test.com(이력 23건), testuser27@test.com(이력 11건), testuser10@test.com(관리자 비활성화)
 -- 결과 id는 Mock과 같게 101~411을 그대로 쓴다 (예: /admin/results/201 = park의 결과)
 -- 회원 id는 DB마다 다를 수 있어 이메일로 찾아 연결한다. 관리자가 1번, hong이 2번이면 SecurityUtil 임시 id(2)와도 맞는다
 -- ==========================================================
@@ -55,6 +55,11 @@ INSERT INTO members (email, password, name, gender, birth_year, status, role, cr
 ON DUPLICATE KEY UPDATE
  password = VALUES(password), name = VALUES(name), gender = VALUES(gender), birth_year = VALUES(birth_year),
  status = VALUES(status), created_at = VALUES(created_at), updated_at = VALUES(updated_at);
+
+-- 1-1. 비활성 사유 (withdrawn_by 칸은 서버 실행 시 자동 생성): lee = 본인 탈퇴, testuser10 = 관리자 비활성화, 나머지(활성) = NULL
+UPDATE members
+   SET withdrawn_by = CASE email WHEN 'lee@test.com' THEN 'SELF' WHEN 'testuser10@test.com' THEN 'ADMIN' ELSE NULL END
+ WHERE email IN ('hong@test.com', 'kim@test.com', 'lee@test.com', 'park@test.com', 'testuser6@test.com', 'testuser7@test.com', 'testuser8@test.com', 'testuser9@test.com', 'testuser10@test.com', 'testuser11@test.com', 'testuser12@test.com', 'testuser13@test.com', 'testuser14@test.com', 'testuser15@test.com', 'testuser16@test.com', 'testuser17@test.com', 'testuser18@test.com', 'testuser19@test.com', 'testuser20@test.com', 'testuser21@test.com', 'testuser22@test.com', 'testuser23@test.com', 'testuser24@test.com', 'testuser25@test.com', 'testuser26@test.com', 'testuser27@test.com');
 
 -- 2. 기존 샘플 결과 삭제 (다시 실행할 때 중복 방지)
 DELETE FROM survey_results
