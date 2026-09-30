@@ -35,15 +35,3 @@ INSERT IGNORE INTO questions (id, survey_id, question_number, content, created_a
 INSERT IGNORE INTO solutions (id, risk_level, title, content, created_at) VALUES
  (1, 'Borderline', '인지건강 관리 안내', '규칙적인 운동, 사회 활동, 정기적인 재검사 권장 등', NOW()),
  (2, 'HighRisk', '전문 검진 안내', '가까운 치매안심센터 또는 전문 의료기관 방문 권장 등', NOW());
-
--- ↓ 여기부터는 data.sql에 넣지 않는 수동 테스트용 SQL
--- 테스트용 회원 (비밀번호는 BCrypt 해시)
-INSERT INTO members (email, password, name, gender, birth_year, status, role, created_at) VALUES
- ('hong@test.com', '$2a$10$...', '홍길동', 'MALE', 1960, 'ACTIVE', 'MEMBER', NOW());
-
--- 테스트용 검사 결과 (1차 종료 / 2차 주의 / 2차 위험)
--- member_id 2 = 위 테스트 회원 (1번은 AdminInitializer가 먼저 등록한 관리자). 회원가입 API(backend/http/member.http)로 가입했다면 위 회원 INSERT는 생략한다
-INSERT INTO survey_results (member_id, survey_id, first_score, memory_score, other_score, adl_score, risk_level, active, created_at) VALUES
- (2, 1, 2, NULL, NULL, NULL, 'Normal', 1, '2026-07-10 10:00:00'),
- (2, 2, 5, 2, 1, 1, 'Borderline', 1, '2026-08-12 10:00:00'),
- (2, 2, 7, 4, 2, 3, 'HighRisk', 1, '2026-09-15 10:00:00');
