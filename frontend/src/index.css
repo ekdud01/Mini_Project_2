@@ -60,6 +60,10 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    /* 스크롤바 유무에 따라 화면 폭이 달라져 푸터 줄바꿈·높이가 바뀌지 않도록 자리를 항상 확보한다. */
+    scrollbar-gutter: stable;
+  }
   body {
     @apply bg-background text-foreground;
     font-size: 16px; /* 본문 16px 이상 (UI 설계서 8장 접근성) */

@@ -144,6 +144,42 @@ class AdminMemberServiceTest {
         verify(refreshTokenRepository, never()).deleteByMemberId(anyLong());
     }
 
+    // ───────────────────── 활성화 ─────────────────────
+
+    @Test
+    @DisplayName("활성화 처리: 비활성(WITHDRAWN) 회원이 ACTIVE로 돌아간다")
+    void activate_success() {
+        Member member = member();
+        member.withdraw();   // 비활성 상태로 준비
+        given(memberRepository.findById(2L)).willReturn(Optional.of(member));
+
+        adminMemberService.activate(2L);
+
+        assertThat(member.getStatus()).isEqualTo(UserStatus.ACTIVE);
+    }
+
+    @Test
+    @DisplayName("이미 활성 상태인 회원이면 MEMBER_ALREADY_ACTIVE")
+    void activate_alreadyActive() {
+        given(memberRepository.findById(2L)).willReturn(Optional.of(member()));
+
+        assertThatThrownBy(() -> adminMemberService.activate(2L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.MEMBER_ALREADY_ACTIVE);
+    }
+
+    @Test
+    @DisplayName("관리자 id로 활성화하면 MEMBER_NOT_FOUND (관리자는 회원 관리 대상이 아님)")
+    void activate_admin_notFound() {
+        given(memberRepository.findById(1L)).willReturn(Optional.of(admin()));
+
+        assertThatThrownBy(() -> adminMemberService.activate(1L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
+    }
+
     private AdminMemberUpdateForm form(String name, String email) {
         AdminMemberUpdateForm form = new AdminMemberUpdateForm();
         form.setName(name);

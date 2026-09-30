@@ -86,16 +86,30 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function validateSignup(b) {
   const fields = [];
   const year = new Date().getFullYear();
-  if (!b.email || !EMAIL_REGEX.test(b.email) || b.email.length > 100)
+  if (!b.email || !b.email.trim())
+    fields.push({ field: 'email', message: '이메일을 입력해주세요' });
+  else if (b.email.length > 100)
+    fields.push({ field: 'email', message: '이메일은 100자 이하여야 합니다' });
+  else if (!EMAIL_REGEX.test(b.email))
     fields.push({ field: 'email', message: '이메일 형식이 올바르지 않습니다' });
-  if (!b.password || !PASSWORD_REGEX.test(b.password))
+  if (!b.password)
+    fields.push({ field: 'password', message: '비밀번호를 입력해주세요' });
+  else if (!PASSWORD_REGEX.test(b.password))
     fields.push({ field: 'password', message: '비밀번호는 8~20자의 영문, 숫자, 특수문자를 모두 포함해야 합니다' });
-  if (!b.name || !b.name.trim() || b.name.length > 50)
-    fields.push({ field: 'name', message: '이름은 1~50자로 입력해주세요' });
+  if (!b.name || !b.name.trim())
+    fields.push({ field: 'name', message: '이름을 입력해주세요' });
+  else if (b.name.length > 50)
+    fields.push({ field: 'name', message: '이름은 50자 이하여야 합니다' });
   if (!['MALE', 'FEMALE'].includes(b.gender))
     fields.push({ field: 'gender', message: '성별을 선택해주세요' });
-  if (!Number.isInteger(b.birthYear) || b.birthYear < 1900 || b.birthYear > year)
-    fields.push({ field: 'birthYear', message: `출생년도는 1900년부터 ${year}년 사이여야 합니다` });
+  if (b.birthYear === null || b.birthYear === undefined)
+    fields.push({ field: 'birthYear', message: '출생년도를 입력해주세요' });
+  else if (!Number.isInteger(b.birthYear))
+    fields.push({ field: 'birthYear', message: '출생년도는 정수로 입력해주세요' });
+  else if (b.birthYear < 1900)
+    fields.push({ field: 'birthYear', message: '출생년도는 1900년 이후여야 합니다' });
+  else if (b.birthYear > year)
+    fields.push({ field: 'birthYear', message: '출생년도는 올해까지만 입력할 수 있습니다' });
   return fields;
 }
 

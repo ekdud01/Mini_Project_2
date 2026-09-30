@@ -1,39 +1,62 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<!-- ADM-01 관리자 로그인 | 레이아웃 미사용 | 파라미터: ?error, ?logout -->
+<!-- ADM-01 관리자 로그인 | 레이아웃 미사용 단독 페이지 | 파라미터: ?error, ?logout
+     폼은 th:action 사용 → CSRF 활성화 시 _csrf 자동 포함 -->
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>로그인 | KDSQ 관리자</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>관리자 로그인 | KDSQ 관리자</title>
+  <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body class="login-page">
-<main class="login-box">
-    <h1>KDSQ 관리자</h1>
+  <main>
+    <div class="login-box">
+      <div class="login-head">
+        <span class="brand-mark"><svg th:replace="~{fragments/icons :: brain}"></svg></span>
+        <p class="login-service">MEMORY ATTACK · KDSQ 인지선별검사</p>
+        <h1>관리자 로그인</h1>
+        <span class="chip">● 관리자 전용</span>
+      </div>
 
-    <div th:if="${param.error}" class="flash flash-error" role="alert">
-        이메일 또는 비밀번호가 올바르지 않습니다.
-    </div>
-    <div th:if="${param.logout}" class="flash flash-success" role="alert">
-        로그아웃되었습니다.
-    </div>
+      <!-- 상태 알림: 연한 배경 + 진한 글자 + 아이콘 (색만으로 구분하지 않음) -->
+      <div th:if="${param.error}" class="alert alert-error" role="alert">
+        <svg th:replace="~{fragments/icons :: alert}"></svg>
+        <span>이메일 또는 비밀번호가 올바르지 않습니다</span>
+      </div>
+      <div th:if="${param.logout}" class="alert alert-success" role="status">
+        <svg th:replace="~{fragments/icons :: check}"></svg>
+        <span>로그아웃되었습니다</span>
+      </div>
 
-    <form th:action="@{/admin/login}" method="post">
+      <form th:action="@{/admin/login}" method="post">
         <div class="form-group">
-            <label for="email">이메일</label>
-            <input type="email" id="email" name="email" class="form-control" required autocomplete="username">
+          <label for="email">이메일</label>
+          <div class="input-icon">
+            <svg th:replace="~{fragments/icons :: mail}"></svg>
+            <input type="email" id="email" name="email" class="form-control"
+                   placeholder="admin@example.com" required autocomplete="username">
+          </div>
         </div>
         <div class="form-group">
-            <label for="password">비밀번호</label>
-            <input type="password" id="password" name="password" class="form-control" required autocomplete="current-password">
+          <label for="password">비밀번호</label>
+          <div class="input-icon">
+            <svg th:replace="~{fragments/icons :: lock}"></svg>
+            <input type="password" id="password" name="password" class="form-control has-toggle"
+                   placeholder="비밀번호 입력" required autocomplete="current-password">
+            <!-- 비밀번호 보기/숨기기 (admin.js) -->
+            <button type="button" class="pw-toggle" data-toggle-password="password"
+                    aria-label="비밀번호 보기" aria-pressed="false">
+              <svg th:replace="~{fragments/icons :: eye}"></svg>
+            </button>
+          </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">로그인</button>
-    </form>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" data-loading-text="로그인 중...">로그인</button>
+      </form>
 
-    <p class="form-note login-note">
-        사전 등록된 관리자 계정만 사용할 수 있습니다.<br>
-        계정 발급은 시스템 담당자에게 문의하세요.
-    </p>
-</main>
+      <p class="login-note">사전 등록된 관리자 계정만 사용할 수 있습니다<br>계정 발급은 시스템 담당자에게 문의하세요</p>
+    </div>
+    <p class="page-foot">© 2026 MEMORY ATTACK · KDSQ 인지선별검사 플랫폼</p>
+  </main>
+  <script th:src="@{/js/admin.js}" defer></script>
 </body>
 </html>

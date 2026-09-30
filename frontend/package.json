@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "test:auth": "node --test tests/auth.test.js",
+    "test:validation": "node --test tests/validation.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

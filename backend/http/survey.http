@@ -1,0 +1,36 @@
+### 실행: VS Code 확장 "REST Client"에서 각 요청 위의 Send Request 클릭
+### 설문 API 테스트 케이스 (REST API 설계서 4.2, 7.4 TC-SURV-01~03)
+### 사전 준비: hong@test.com 회원 (member.http 첫 요청 또는 sample-data.sql)
+### 로그인 요청(@name login)을 먼저 실행해야 아래 요청이 그 응답의 토큰을 가져다 쓴다
+
+# @name login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "hong@test.com",
+  "password": "Test1234!"
+}
+
+### TC-SURV-01 설문 목록 → 200, KDSQ_P(id 1)·KDSQ_C(id 2) 2건
+GET http://localhost:8080/api/surveys
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### 설문 목록 examType 필터 → 200, KDSQ_C 1건
+GET http://localhost:8080/api/surveys?examType=KDSQ_C
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### 1차 문항 → 200, 5문항 (id 1~5, questionNumber 1~5)
+GET http://localhost:8080/api/surveys/1/questions
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### TC-SURV-02 2차 문항 → 200, 15문항 (id 6~20, questionNumber 1~15 오름차순)
+GET http://localhost:8080/api/surveys/2/questions
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### TC-SURV-03 없는 설문 → 404 SURVEY_NOT_FOUND
+GET http://localhost:8080/api/surveys/999/questions
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### 토큰 없이 요청 → 401 UNAUTHORIZED
+GET http://localhost:8080/api/surveys
