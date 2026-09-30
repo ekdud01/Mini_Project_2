@@ -2,8 +2,8 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/admin-layout}">
-<!-- ADM-05 검사 결과 목록 (UI 4.6) | GET /admin/results?examType=&riskLevels=&name=&from=&to=&page=
-     Model: results(Page), cond(examType, riskLevels, name, from, to)
+<!-- ADM-05 검사 결과 목록 (UI 4.6) | GET /admin/results?examType=&riskLevels=&name=&memberStatus=&from=&to=&page=
+     Model: results(Page), cond(examType, riskLevels, name, memberStatus, from, to)
      - 복합 필터 + 검색 후 조건 유지, page는 폼에 넣지 않는다
      - 위험도 칩은 실제 체크박스(모양만 칩), 기간 빠른 선택은 admin.js
      - 보기·삭제 모두 현재 목록 주소를 returnUrl로 전달
@@ -12,8 +12,9 @@
 <body>
 <section layout:fragment="content"
          th:with="rl=${cond?.riskLevels != null} ? ${#strings.listJoin(cond.riskLevels, ',')} : '',
+                  ms=${cond?.memberStatus != null} ? ${cond.memberStatus.name()} : '',
                   hasFilter=${cond?.examType != null or !#strings.isEmpty(rl) or !#strings.isEmpty(cond?.name)
-                              or cond?.from != null or cond?.to != null}">
+                              or !#strings.isEmpty(ms) or cond?.from != null or cond?.to != null}">
 
     <div class="page-title"><h1>검사 결과</h1></div>
 
@@ -46,6 +47,19 @@
                 <label for="name">성명</label>
                 <input type="search" id="name" name="name" class="form-control" th:value="${cond?.name}" placeholder="성명">
             </div>
+
+            <!-- 회원 상태: 활성·비활성 회원의 결과만 (회원 관리 화면과 같은 라디오 칩, 색은 admin.css의 value 기준) -->
+            <fieldset class="form-group">
+                <legend>회원 상태</legend>
+                <div class="chip-group">
+                    <label class="chip-check"><input type="radio" name="memberStatus" value=""
+                                                     th:checked="${ms == ''}"><span>전체</span></label>
+                    <label class="chip-check"><input type="radio" name="memberStatus" value="ACTIVE"
+                                                     th:checked="${ms == 'ACTIVE'}"><span>활성</span></label>
+                    <label class="chip-check"><input type="radio" name="memberStatus" value="WITHDRAWN"
+                                                     th:checked="${ms == 'WITHDRAWN'}"><span>비활성</span></label>
+                </div>
+            </fieldset>
 
             <fieldset class="form-group period">
                 <legend>기간</legend>
@@ -84,10 +98,11 @@
                 <thead>
                 <tr>
                     <th scope="col">성명</th>
-                    <th scope="col">검사일</th>
+                    <th scope="col" class="center">위험도</th>
                     <th scope="col" class="num">1차 (P)</th>
                     <th scope="col" class="num">2차 (C)</th>
-                    <th scope="col" class="center">위험도</th>
+                    <th scope="col">검사일</th>
+                    <th scope="col" class="center">회원 상태</th>
                     <th scope="col" class="center">작업</th>
                 </tr>
                 </thead>
@@ -97,15 +112,20 @@
                        rurl=${@pageUrl.current()}">
                     <!-- th:utext는 @highlight.mark 결과에만 사용 -->
                     <td class="strong" th:with="h=${@highlight.mark(r.member.name, cond?.name)}" th:utext="${h}">홍길동</td>
-                    <td th:text="${day}">2026-09-24</td>
+                    <td class="center">
+              <span class="badge" th:classappend="'badge-' + ${r.riskLevel.name()}"
+                    th:text="${r.riskLevel.displayName}">위험</span>
+                    </td>
                     <td class="num"><span class="score"><b th:text="${r.firstScore}">7</b> <span>/ 10</span></span></td>
                     <td class="num">
                         <span class="score" th:if="${r.totalScore != null}"><b th:text="${r.totalScore}">9</b> <span>/ 30</span></span>
                         <span class="muted" th:if="${r.totalScore == null}" aria-label="2차 검사 없음">—</span>
                     </td>
+                    <td th:text="${day}">2026-09-24</td>
+                    <!-- 회원 상태: 회원 관리 목록과 같은 배지 (활성 = 파랑, 비활성 = 회색, 위험도 색과 구분) -->
                     <td class="center">
-              <span class="badge" th:classappend="'badge-' + ${r.riskLevel.name()}"
-                    th:text="${r.riskLevel.displayName}">위험</span>
+              <span class="badge" th:classappend="'badge-' + ${r.member.status.name()}"
+                    th:text="${r.member.status.name() == 'WITHDRAWN'} ? '비활성' : '활성'">활성</span>
                     </td>
                     <td class="center">
                         <div class="table-actions">

@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
+import com.kdsq.member.UserStatus;
 import com.kdsq.survey.ExamType;
 
 /**
@@ -50,6 +51,13 @@ public final class SurveyResultSpecs {
         return (root, query, cb) -> !StringUtils.hasText(name)
                 ? cb.conjunction()
                 : cb.like(root.join("member").<String>get("name"), "%" + name.trim() + "%");
+    }
+
+    /** 회원 상태: 활성·비활성 회원의 결과만 (결과 자체의 삭제 여부 active와는 별개) */
+    public static Specification<SurveyResult> memberStatusEq(UserStatus status) {
+        return (root, query, cb) -> status == null
+                ? cb.conjunction()
+                : cb.equal(root.join("member").get("status"), status);
     }
 
     /**

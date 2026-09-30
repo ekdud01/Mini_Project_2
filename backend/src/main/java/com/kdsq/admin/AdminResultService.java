@@ -37,6 +37,7 @@ public class AdminResultService {
                 .and(SurveyResultSpecs.examTypeEq(cond.getExamType()))
                 .and(SurveyResultSpecs.riskLevelIn(cond.getRiskLevels()))
                 .and(SurveyResultSpecs.memberNameContains(cond.getName()))
+                .and(SurveyResultSpecs.memberStatusEq(cond.getMemberStatus()))
                 .and(SurveyResultSpecs.createdBetween(cond.getFrom(), cond.getTo()));
 
         return surveyResultRepository.findAll(spec, pageable);
