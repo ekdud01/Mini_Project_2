@@ -92,7 +92,7 @@ class AuthServiceTest {
     // ───────────────────── 로그인 ─────────────────────
 
     @Test
-    @DisplayName("로그인 성공: 액세스·리프레시 토큰을 주고, 처음 로그인이면 리프레시 토큰을 저장한다 (TC-AUTH-03)")
+    @DisplayName("로그인 성공: 액세스·리프레시 토큰을 주고, 처음 로그인이면 리프레시 토큰을 저장한다 (TC-AUTH-04)")
     void login_success_firstLogin() {
         given(memberRepository.findByEmail("hong@test.com")).willReturn(Optional.of(member(2L)));
         given(passwordEncoder.matches("Test1234!", "encoded")).willReturn(true);
@@ -124,7 +124,7 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("비밀번호가 틀리면 INVALID_CREDENTIALS (TC-AUTH-04)")
+    @DisplayName("비밀번호가 틀리면 INVALID_CREDENTIALS (TC-AUTH-05)")
     void login_wrongPassword() {
         given(memberRepository.findByEmail("hong@test.com")).willReturn(Optional.of(member(2L)));
         given(passwordEncoder.matches("Wrong1234!", "encoded")).willReturn(false);
@@ -147,7 +147,7 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("관리자 계정으로 사용자 로그인을 하면 INVALID_CREDENTIALS (관리자는 /admin/login만 사용)")
+    @DisplayName("관리자 계정으로 사용자 로그인을 하면 INVALID_CREDENTIALS (관리자는 /admin/login만 사용, TC-AUTH-07)")
     void login_admin_rejected() {
         Member admin = Member.createAdmin("admin@kdsq.com", "encoded", "관리자");
         given(memberRepository.findByEmail("admin@kdsq.com")).willReturn(Optional.of(admin));
@@ -160,7 +160,7 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("탈퇴 회원이 맞는 비밀번호로 로그인하면 MEMBER_WITHDRAWN, 토큰을 발급하지 않는다")
+    @DisplayName("탈퇴 회원이 맞는 비밀번호로 로그인하면 MEMBER_WITHDRAWN, 토큰을 발급하지 않는다 (TC-AUTH-06)")
     void login_withdrawn() {
         given(memberRepository.findByEmail("hong@test.com")).willReturn(Optional.of(withdrawnMember(2L)));
         given(passwordEncoder.matches("Test1234!", "encoded")).willReturn(true);
@@ -187,7 +187,7 @@ class AuthServiceTest {
     // ───────────────────── 토큰 재발급 ─────────────────────
 
     @Test
-    @DisplayName("재발급 성공: 새 액세스 토큰만 주고 리프레시 토큰은 응답에 없다")
+    @DisplayName("재발급 성공: 새 액세스 토큰만 주고 리프레시 토큰은 응답에 없다 (TC-AUTH-09)")
     void reissue_success() {
         givenRefreshTokenOf(2L);
         RefreshToken saved = RefreshToken.issue(member(2L), REFRESH, LocalDateTime.now().plusDays(1));
@@ -225,7 +225,7 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("재발급: 로그아웃·재로그인으로 저장된 토큰과 다르면 INVALID_REFRESH_TOKEN")
+    @DisplayName("재발급: 로그아웃·재로그인으로 저장된 토큰과 다르면 INVALID_REFRESH_TOKEN (TC-AUTH-10)")
     void reissue_tokenMismatch() {
         givenRefreshTokenOf(2L);
         RefreshToken saved = RefreshToken.issue(member(2L), "newer-token", LocalDateTime.now().plusDays(1));
