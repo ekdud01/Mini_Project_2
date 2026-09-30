@@ -12,7 +12,7 @@ const GUIDE_ITEMS = [
   { label: '문항 수', value: '5문항' },
   { label: '소요 시간', value: '약 1~2분 (시간 제한 없음)' },
   { label: '응답 방법', value: '아니다 · 가끔(조금) 그렇다 · 자주(많이) 그렇다 중 선택' },
-  { label: '진행 안내', value: '1차 점수가 4점 이상이면 2차 상세검사(15문항)로 이어집니다.' },
+  { label: '진행 안내', value: '1차 점수가 4점 이상이면 2차 상세검사(15문항)로 이어집니다' },
 ];
 
 function SurveyIntro({ description, onStart }) {
@@ -29,7 +29,7 @@ function SurveyIntro({ description, onStart }) {
         ))}
       </dl>
 
-      <p className="text-sm text-muted-foreground">이 검사는 선별검사이며 의학적 진단이 아닙니다.</p>
+      <p className="text-sm text-muted-foreground">이 검사는 선별검사이며 의학적 진단이 아닙니다</p>
 
       <Button type="button" size="lg" className="h-14 w-full text-lg font-bold" onClick={onStart}>
         검사 시작하기

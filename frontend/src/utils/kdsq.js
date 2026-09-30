@@ -46,7 +46,7 @@ export const DOMAIN_MAX_SCORE = 10;
 
 /** 설문 안내 문구 — API의 description이 오기 전·없을 때 사용 */
 export const DEFAULT_SURVEY_DESCRIPTION =
-    '아래의 각 항목에 대하여, 1년 전과 비교하여, 현재 상태에 해당하는 곳에 표시해 주십시오. (동행한 가족이 있으면 가족이 작성하시고, 없으면 본인이 작성하십시오.)';
+    '아래의 각 항목에 대하여, 1년 전과 비교하여, 현재 상태에 해당하는 곳에 표시해 주십시오 \n(동행한 가족이 있으면 가족이 작성하시고, 없으면 본인이 작성하십시오)';
 
 /** 답변 선택지 */
 export const ANSWER_OPTIONS = [
@@ -117,23 +117,23 @@ export const RISK_TEXT_CLASS = {
 
 /** 상단 배너 제목 */
 export const RISK_MESSAGE = {
-    Normal: '정상 범위입니다.',
-    Borderline: '주의가 필요합니다.',
-    HighRisk: '전문적인 검진이 필요합니다.',
+    Normal: '정상 범위입니다',
+    Borderline: '주의가 필요합니다',
+    HighRisk: '전문적인 검진이 필요합니다',
 };
 
 /** 상단 배너 설명·색 */
 export const RISK_BANNER = {
     Normal: {
-        description: '1차 검사 점수가 기준(4점) 미만이어서 검사가 종료되었습니다.',
+        description: '1차 검사 점수가 기준(4점) 미만이어서 검사가 종료되었습니다',
         className: 'border-green-300 bg-green-50',
     },
     Borderline: {
-        description: '판정 기준(6점) 미만이지만, 생활 관리와 정기적인 검사를 권장합니다.',
+        description: '판정 기준(6점) 미만이지만, 생활 관리와 정기적인 검사를 권장합니다',
         className: 'border-amber-300 bg-amber-50',
     },
     HighRisk: {
-        description: '선별검사 점수가 판정 기준(6점) 이상입니다. 가까운 보건소나 전문의 상담을 권장합니다.',
+        description: '선별검사 점수가 판정 기준(6점) 이상입니다 \n가까운 보건소나 전문의 상담을 권장합니다',
         className: 'border-red-300 bg-red-50',
     },
 };
