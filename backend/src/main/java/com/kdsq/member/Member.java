@@ -41,6 +41,11 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private UserStatus status;
 
+    /** 비활성 사유 (SELF = 본인 탈퇴, ADMIN = 관리자 비활성화). 활성 회원은 null */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "withdrawn_by", length = 10)
+    private WithdrawnBy withdrawnBy;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.MEMBER;
@@ -70,14 +75,22 @@ public class Member extends BaseEntity {
         return admin;
     }
 
-    /** 본인 탈퇴 / 관리자 탈퇴 처리 (소프트 삭제) */
+    /** 본인 탈퇴 (소프트 삭제): 마이페이지에서 회원이 직접 탈퇴 */
     public void withdraw() {
         this.status = UserStatus.WITHDRAWN;
+        this.withdrawnBy = WithdrawnBy.SELF;
+    }
+
+    /** 관리자 비활성화 (소프트 삭제): 관리자 회원 상세에서 처리 */
+    public void deactivateByAdmin() {
+        this.status = UserStatus.WITHDRAWN;
+        this.withdrawnBy = WithdrawnBy.ADMIN;
     }
 
     /** 관리자 활성화 처리 (ADM-04): 비활성(WITHDRAWN) 회원을 다시 로그인할 수 있게 되돌린다 */
     public void activate() {
         this.status = UserStatus.ACTIVE;
+        this.withdrawnBy = null;
     }
 
     /** 관리자 화면(ADM-04-1)에서만 호출. 이메일 중복 검사는 서비스에서 먼저 수행 */
