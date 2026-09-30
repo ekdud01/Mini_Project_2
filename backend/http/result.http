@@ -1,0 +1,224 @@
+### 실행: VS Code 확장 "REST Client"에서 각 요청 위의 Send Request 클릭
+### 검사 결과 API 테스트 케이스 (REST API 설계서 4.3, 7.4 TC-RES-01~10)
+### 사전 준비: hong@test.com 회원, data.sql의 설문·문항 (KDSQ-P 문항 id 1~5, KDSQ-C 문항 id 6~20)
+### 로그인 요청(@name login)을 먼저 실행한다. 상세 조회는 TC-RES-01·04 제출을 먼저 실행해야 그 결과 id를 쓴다
+
+# @name login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "hong@test.com",
+  "password": "Test1234!"
+}
+
+### TC-RES-01 1차 합계 3점 → 201, Normal, 영역 점수·총점 null, Location 헤더
+# @name normal
+POST http://localhost:8080/api/results
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+{
+  "surveyId": 1,
+  "answers": [
+    { "questionId": 1, "score": 0 },
+    { "questionId": 2, "score": 0 },
+    { "questionId": 3, "score": 1 },
+    { "questionId": 4, "score": 1 },
+    { "questionId": 5, "score": 1 }
+  ]
+}
+
+### TC-RES-02 1차 합계 5점을 1차만 제출 → 422 KDSQ_C_REQUIRED (저장 안 됨)
+POST http://localhost:8080/api/results
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+{
+  "surveyId": 1,
+  "answers": [
+    { "questionId": 1, "score": 1 },
+    { "questionId": 2, "score": 1 },
+    { "questionId": 3, "score": 1 },
+    { "questionId": 4, "score": 1 },
+    { "questionId": 5, "score": 1 }
+  ]
+}
+
+### TC-RES-03 1차 5점 + 2차 총점 5점 → 201, Borderline, totalScore 5
+POST http://localhost:8080/api/results
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+{
+  "surveyId": 2,
+  "firstAnswers": [
+    { "questionId": 1, "score": 1 },
+    { "questionId": 2, "score": 1 },
+    { "questionId": 3, "score": 1 },
+    { "questionId": 4, "score": 1 },
+    { "questionId": 5, "score": 1 }
+  ],
+  "answers": [
+    { "questionId": 6, "score": 1 },
+    { "questionId": 7, "score": 1 },
+    { "questionId": 8, "score": 0 },
+    { "questionId": 9, "score": 0 },
+    { "questionId": 10, "score": 0 },
+    { "questionId": 11, "score": 1 },
+    { "questionId": 12, "score": 1 },
+    { "questionId": 13, "score": 0 },
+    { "questionId": 14, "score": 0 },
+    { "questionId": 15, "score": 0 },
+    { "questionId": 16, "score": 1 },
+    { "questionId": 17, "score": 0 },
+    { "questionId": 18, "score": 0 },
+    { "questionId": 19, "score": 0 },
+    { "questionId": 20, "score": 0 }
+  ]
+}
+
+### TC-RES-04 1차 5점 + 2차 총점 6점 → 201, HighRisk, totalScore 6
+# @name highRisk
+POST http://localhost:8080/api/results
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+{
+  "surveyId": 2,
+  "firstAnswers": [
+    { "questionId": 1, "score": 1 },
+    { "questionId": 2, "score": 1 },
+    { "questionId": 3, "score": 1 },
+    { "questionId": 4, "score": 1 },
+    { "questionId": 5, "score": 1 }
+  ],
+  "answers": [
+    { "questionId": 6, "score": 1 },
+    { "questionId": 7, "score": 1 },
+    { "questionId": 8, "score": 0 },
+    { "questionId": 9, "score": 0 },
+    { "questionId": 10, "score": 0 },
+    { "questionId": 11, "score": 1 },
+    { "questionId": 12, "score": 1 },
+    { "questionId": 13, "score": 0 },
+    { "questionId": 14, "score": 0 },
+    { "questionId": 15, "score": 0 },
+    { "questionId": 16, "score": 1 },
+    { "questionId": 17, "score": 1 },
+    { "questionId": 18, "score": 0 },
+    { "questionId": 19, "score": 0 },
+    { "questionId": 20, "score": 0 }
+  ]
+}
+
+### TC-RES-05 1차 3점 + 2차 제출 → 422 KDSQ_C_NOT_ALLOWED
+POST http://localhost:8080/api/results
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+{
+  "surveyId": 2,
+  "firstAnswers": [
+    { "questionId": 1, "score": 1 },
+    { "questionId": 2, "score": 1 },
+    { "questionId": 3, "score": 1 },
+    { "questionId": 4, "score": 0 },
+    { "questionId": 5, "score": 0 }
+  ],
+  "answers": [
+    { "questionId": 6, "score": 1 },
+    { "questionId": 7, "score": 1 },
+    { "questionId": 8, "score": 0 },
+    { "questionId": 9, "score": 0 },
+    { "questionId": 10, "score": 0 },
+    { "questionId": 11, "score": 1 },
+    { "questionId": 12, "score": 1 },
+    { "questionId": 13, "score": 0 },
+    { "questionId": 14, "score": 0 },
+    { "questionId": 15, "score": 0 },
+    { "questionId": 16, "score": 1 },
+    { "questionId": 17, "score": 1 },
+    { "questionId": 18, "score": 0 },
+    { "questionId": 19, "score": 0 },
+    { "questionId": 20, "score": 0 }
+  ]
+}
+
+### TC-RES-06 1차 답변 4개 → 400 INVALID_ANSWER_COUNT
+POST http://localhost:8080/api/results
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+{
+  "surveyId": 1,
+  "answers": [
+    { "questionId": 1, "score": 0 },
+    { "questionId": 2, "score": 0 },
+    { "questionId": 3, "score": 0 },
+    { "questionId": 4, "score": 0 }
+  ]
+}
+
+### TC-RES-07 score = 3 → 400 VALIDATION_ERROR (fields에 answers[0].score)
+POST http://localhost:8080/api/results
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+{
+  "surveyId": 1,
+  "answers": [
+    { "questionId": 1, "score": 3 },
+    { "questionId": 2, "score": 0 },
+    { "questionId": 3, "score": 0 },
+    { "questionId": 4, "score": 0 },
+    { "questionId": 5, "score": 0 }
+  ]
+}
+
+### TC-RES-08 1차 제출에 2차 문항 id(6) 포함 → 404 QUESTION_NOT_FOUND
+POST http://localhost:8080/api/results
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+{
+  "surveyId": 1,
+  "answers": [
+    { "questionId": 2, "score": 0 },
+    { "questionId": 3, "score": 0 },
+    { "questionId": 4, "score": 0 },
+    { "questionId": 5, "score": 0 },
+    { "questionId": 6, "score": 0 }
+  ]
+}
+
+### TC-RES-09 본인 HighRisk 결과 상세 → 200, memberId, solutions 1건 이상 (TC-RES-04 먼저 실행)
+GET http://localhost:8080/api/results/{{highRisk.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### TC-RES-10 본인 Normal 결과 상세 → 200, solutions = [] (TC-RES-01 먼저 실행)
+GET http://localhost:8080/api/results/{{normal.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### 없는 결과(또는 다른 회원·삭제된 결과) → 404 RESULT_NOT_FOUND
+GET http://localhost:8080/api/results/999999
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### 내 검사 이력 → 200, 최신순 content + page (마이페이지는 size=100)
+GET http://localhost:8080/api/members/me/results?page=0&size=100
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### 토큰 없이 제출 → 401 UNAUTHORIZED
+POST http://localhost:8080/api/results
+Content-Type: application/json
+
+{
+  "surveyId": 1,
+  "answers": [
+    { "questionId": 1, "score": 0 },
+    { "questionId": 2, "score": 0 },
+    { "questionId": 3, "score": 1 },
+    { "questionId": 4, "score": 1 },
+    { "questionId": 5, "score": 1 }
+  ]
+}
