@@ -134,7 +134,7 @@ class MemberServiceTest {
     // ───────────────────── 회원 탈퇴 ─────────────────────
 
     @Test
-    @DisplayName("회원 탈퇴: 상태를 WITHDRAWN으로 바꾸고(소프트 삭제) 리프레시 토큰을 지운다")
+    @DisplayName("회원 탈퇴: 상태를 WITHDRAWN(사유 SELF)으로 바꾸고(소프트 삭제) 리프레시 토큰을 지운다")
     void withdraw_success() {
         Member member = savedMember(2L);
         given(memberRepository.findById(2L)).willReturn(Optional.of(member));
@@ -142,6 +142,7 @@ class MemberServiceTest {
         memberService.withdraw(2L);
 
         assertThat(member.getStatus()).isEqualTo(UserStatus.WITHDRAWN);
+        assertThat(member.getWithdrawnBy()).isEqualTo(WithdrawnBy.SELF);   // 관리자 화면에서 "본인 탈퇴 회원" 문구
         verify(refreshTokenRepository).deleteByMemberId(2L);   // 남은 토큰으로 재발급받지 못하게
     }
 

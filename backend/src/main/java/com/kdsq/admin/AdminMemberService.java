@@ -81,14 +81,14 @@ public class AdminMemberService {
         }
     }
 
-    /** 탈퇴 처리: 소프트 삭제(ACTIVE → WITHDRAWN) + 리프레시 토큰 폐기. 검사 결과는 보존 */
+    /** 비활성화 처리: 소프트 삭제(ACTIVE → WITHDRAWN, 사유 ADMIN) + 리프레시 토큰 폐기. 검사 결과는 보존 */
     @Transactional
     public void withdraw(Long id) {
         Member member = findMember(id);
         if (!member.getStatus().isActive()) {
             throw new BusinessException(ErrorCode.MEMBER_WITHDRAWN);   // 이미 탈퇴한 회원 → 컨트롤러가 실패 플래시
         }
-        member.withdraw();
+        member.deactivateByAdmin();
         // 지우지 않으면 탈퇴 후에도 남은 토큰으로 Access Token을 재발급받을 수 있다
         refreshTokenRepository.deleteByMemberId(id);
     }

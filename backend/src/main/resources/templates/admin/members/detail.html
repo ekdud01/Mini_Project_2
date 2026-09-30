@@ -42,10 +42,12 @@
     </div>
   </div>
 
-  <!-- 비활성 회원 안내 (진한 회색 안내 상자) -->
-  <div th:if="${inactive}" class="alert alert-info" role="status">
+  <!-- 비활성 회원 안내 (진한 회색 안내 상자): 본인 탈퇴(SELF)와 관리자 비활성화(ADMIN·사유 없음)를 나눠 표시 -->
+  <div th:if="${inactive}" class="alert alert-info" role="status"
+       th:with="selfWithdrawn=${member.withdrawnBy != null and member.withdrawnBy.name() == 'SELF'}">
     <svg th:replace="~{fragments/icons :: info}"></svg>
-    <span>비활성 회원입니다. 로그인할 수 없으며, 검사 이력은 보존됩니다. [활성화]를 누르면 다시 로그인할 수 있습니다</span>
+    <span th:if="${selfWithdrawn}">본인 탈퇴 회원입니다. 로그인할 수 없으며, 검사 이력은 보존됩니다</span>
+    <span th:unless="${selfWithdrawn}">비활성 회원입니다. 로그인할 수 없으며, 검사 이력은 보존됩니다</span>
   </div>
 
   <!-- 윗줄: 회원 정보 | 검사 결과 추이 (높이 맞춤), 아랫줄: 검사 이력 (전체 폭) -->

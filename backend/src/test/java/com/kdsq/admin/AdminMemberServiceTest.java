@@ -24,6 +24,7 @@ import com.kdsq.member.Gender;
 import com.kdsq.member.Member;
 import com.kdsq.member.MemberRepository;
 import com.kdsq.member.UserStatus;
+import com.kdsq.member.WithdrawnBy;
 import com.kdsq.result.SurveyResultRepository;
 
 /**
@@ -116,7 +117,7 @@ class AdminMemberServiceTest {
     // ───────────────────── 탈퇴 ─────────────────────
 
     @Test
-    @DisplayName("탈퇴 처리: 상태가 WITHDRAWN이 되고 리프레시 토큰을 삭제한다")
+    @DisplayName("비활성화 처리: 상태가 WITHDRAWN(사유 ADMIN)이 되고 리프레시 토큰을 삭제한다")
     void withdraw_success() {
         Member member = member();
         given(memberRepository.findById(2L)).willReturn(Optional.of(member));
@@ -124,6 +125,7 @@ class AdminMemberServiceTest {
         adminMemberService.withdraw(2L);
 
         assertThat(member.getStatus()).isEqualTo(UserStatus.WITHDRAWN);
+        assertThat(member.getWithdrawnBy()).isEqualTo(WithdrawnBy.ADMIN);   // 회원 상세에서 "비활성 회원" 문구
         // 리프레시 토큰 삭제 메서드가 2L로 호출됐는지 확인
         verify(refreshTokenRepository).deleteByMemberId(2L);
     }
@@ -147,15 +149,16 @@ class AdminMemberServiceTest {
     // ───────────────────── 활성화 ─────────────────────
 
     @Test
-    @DisplayName("활성화 처리: 비활성(WITHDRAWN) 회원이 ACTIVE로 돌아간다")
+    @DisplayName("활성화 처리: 비활성(WITHDRAWN) 회원이 ACTIVE로 돌아가고 비활성 사유는 지운다")
     void activate_success() {
         Member member = member();
-        member.withdraw();   // 비활성 상태로 준비
+        member.withdraw();   // 비활성 상태로 준비 (본인 탈퇴)
         given(memberRepository.findById(2L)).willReturn(Optional.of(member));
 
         adminMemberService.activate(2L);
 
         assertThat(member.getStatus()).isEqualTo(UserStatus.ACTIVE);
+        assertThat(member.getWithdrawnBy()).isNull();
     }
 
     @Test
