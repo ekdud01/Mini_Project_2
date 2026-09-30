@@ -29,7 +29,7 @@ function SurveyIntro({ description, onStart }) {
         ))}
       </dl>
 
-      <p className="text-sm text-muted-foreground">이 검사는 선별검사이며 의학적 진단이 아닙니다</p>
+      <p className="text-center text-sm text-muted-foreground">이 검사는 선별검사이며 의학적 진단이 아닙니다</p>
 
       <Button type="button" size="lg" className="h-14 w-full text-lg font-bold" onClick={onStart}>
         검사 시작하기
