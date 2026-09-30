@@ -119,7 +119,7 @@ export default function RegisterForm({ onSubmit, isLoading = false }) {
             {errors[field] ? (
               <p id={`${id}-error`} role="alert" className="break-keep text-sm font-medium text-destructive">{errors[field]}</p>
             ) : field === 'password' && (
-              <p id={`${id}-hint`} className="break-keep text-sm text-muted-foreground">8~20자, 영문·숫자·특수문자를 모두 포함해주세요.</p>
+              <p id={`${id}-hint`} className="break-keep text-sm text-muted-foreground">8~20자, 영문·숫자·특수문자를 모두 포함해주세요</p>
             )}
           </div>
         );
