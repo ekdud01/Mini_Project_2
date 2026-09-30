@@ -57,7 +57,7 @@
   --radius-pill: 999px;
   --shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 1px 3px rgba(15, 23, 42, .04);
   --shadow-lg: 0 10px 30px rgba(15, 23, 42, .08);
-  --header-height: 73px;
+  --header-height: 64px;
   --control-height: 44px;
 }
 
@@ -278,11 +278,8 @@ select.form-control { padding-right: 32px; }
   width: 34px; height: 34px; border-radius: 10px; background: var(--color-primary); color: #fff;
 }
 .brand-mark .icon { width: 20px; height: 20px; }
-.brand-name { font-size: 24px; font-weight: var(--font-weight-extrabold); color: var(--color-primary); }
+.brand-name { font-size: 21px; font-weight: var(--font-weight-extrabold); color: var(--color-primary); }
 .brand-tag { padding: 3px 7px; border-radius: 6px; background: #334155; color: #fff; font-size: 12px; font-weight: var(--font-weight-bold); letter-spacing: .04em; }
-.admin-user { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
-.admin-user .who { display: flex; align-items: center; gap: 6px; }
-.admin-user form { margin: 0; }
 
 .admin-menu { background: var(--color-surface); border-bottom: 1px solid var(--color-border); padding: 0 var(--space-lg); }
 .admin-menu ul { display: flex; list-style: none; margin: 0; padding: 0; overflow-x: auto; }
@@ -293,7 +290,7 @@ select.form-control { padding-right: 32px; }
 .admin-main { flex: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: var(--space-lg) var(--space-xl) 40px; }
 .breadcrumb ol { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0 0 var(--space-sm); padding: 0; font-size: var(--font-size-sm); color: var(--color-text-sub); }
 .breadcrumb li + li::before { content: "›"; margin-right: 6px; }
-.admin-footer { padding: var(--space-xl) var(--space-md); text-align: center; font-size: var(--font-size-sm); color: #94a3b8; border-top: 1px solid var(--color-border); }
+.admin-footer { padding: var(--space-md); text-align: center; font-size: var(--font-size-sm); color: #94a3b8; }
 .admin-footer p { margin: 0; }
 
 /* 페이지 제목줄 */
@@ -479,10 +476,6 @@ select.form-control { padding-right: 32px; }
 .meta-strip dd .text-sub { font-weight: var(--font-weight-normal); }
 .meta-right .btn .icon { width: 16px; height: 16px; }
 
-/* ===== 18. 헤더 이메일 (보류 항목 반영) ===== */
-.admin-email { margin-left: 4px; color: var(--color-text-sub); font-size: var(--font-size-sm); }
-@media (max-width: 1023px) { .admin-email { display: none; } }   /* 좁은 화면에서는 이름만 */
-
 /* ===== 상태 필터 칩: 선택 표시 (전체 = 기본 흰색, 활성 = 파랑, 비활성 = 회색 → 20장에서 지정) ===== */
 .chip-check input[type="radio"]:checked + span {
   border-color: var(--color-border-strong); background: var(--color-surface); color: var(--color-text); font-weight: var(--font-weight-bold);
@@ -531,13 +524,9 @@ select.form-control { padding-right: 32px; }
 .search-grid .period .date-range .form-control { flex: 1; }
 .search-grid .search-actions { grid-column: 4; display: flex; gap: 8px; }
 @media (max-width: 1023px) {
-  /* minmax(0, 1fr) + fieldset min-width: 0 → 칩·기간 줄이 화면 폭을 넘겨 가로 스크롤이 생기지 않게 (C-06) */
-  .search-form.search-grid { grid-template-columns: minmax(0, 1fr); }
-  .search-grid fieldset.form-group { min-width: 0; }
+  .search-form.search-grid { grid-template-columns: 1fr; }
   .search-grid .period, .search-grid .search-actions { grid-column: auto; }
   .search-grid .form-control { width: 100%; }
-  .search-grid .date-range { flex-wrap: wrap; }                              /* 좁으면 빠른 선택 버튼은 다음 줄로 */
-  .search-grid .period .date-range .form-control { flex: 1 1 140px; width: auto; }
 }
 
 /* 회원 정보 수정: 필수 입력 항목 안내 빨강 */
@@ -574,3 +563,21 @@ select.form-control { padding-right: 32px; }
 @media (max-width: 639px) {
   .chart-box-trend { height: 280px; }
 }
+
+/* ===== 22. 한 줄 헤더 · 회원 상세 추이 (9/30 시안) ===== */
+/* 헤더: 서비스 이름(왼쪽) · 상단 메뉴 · 로그아웃(오른쪽 끝) */
+.admin-header .admin-menu { margin-left: auto; align-self: stretch; padding: 0; background: none; border: none; }
+.admin-header .admin-menu ul { height: 100%; }
+.admin-header .admin-menu a { display: flex; align-items: center; height: 100%; padding: 0 16px; }
+.header-logout { margin: 0; }
+@media (max-width: 1023px) {
+  .admin-header { flex-wrap: wrap; }
+  .admin-header .admin-menu { order: 3; flex-basis: 100%; margin-left: 0; }
+}
+/* 회원 상세: 윗줄 회원 정보 | 추이 (높이 맞춤), 아랫줄 검사 이력 */
+.grid-member { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 20px; align-items: stretch; margin-bottom: 20px; }
+.grid-member > .card { margin: 0; }
+.chart-box-member { height: 260px; }
+@media (max-width: 1023px) { .grid-member { grid-template-columns: 1fr; } }
+/* 회원 정보 수정: 상태 배지와 안내 문구 한 줄 */
+.status-line { display: flex; align-items: center; gap: 10px; }
