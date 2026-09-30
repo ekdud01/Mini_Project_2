@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -8,8 +9,11 @@ import { useMemberStore } from '@/store/memberStore';
 import { getErrorMessage } from '@/utils/apiError';
 import ProfileCard from './components/ProfileCard';
 import EmptyHistory from './components/EmptyHistory';
+import ExamHistoryTable from './components/ExamHistoryTable';
+import ExamTrendChart from './components/ExamTrendChart';
 
 export default function MyPage() {
+  const navigate = useNavigate();
   const me = useMemberStore((state) => state.me);
   const history = useMemberStore((state) => state.history);
   const fetchMe = useMemberStore((state) => state.fetchMe);
@@ -17,6 +21,7 @@ export default function MyPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [retryAttempt, setRetryAttempt] = useState(0);
+  const [historyPage, setHistoryPage] = useState(1);
   const requestId = useRef(0);
   const activeController = useRef(null);
 
@@ -41,6 +46,7 @@ export default function MyPage() {
         ]);
         if (!isCurrent() || controller.signal.aborted) return;
         setErrorMessage('');
+        setHistoryPage(1);
       } catch (error) {
         if (!isCurrent() || controller.signal.aborted || axios.isCancel(error)) return;
         // 첫 실패를 보존하고 아직 진행 중인 다른 조회의 저장을 막는다.
@@ -93,9 +99,12 @@ export default function MyPage() {
               <h2 id="mypage-history-title" className="text-2xl font-bold">검사 이력</h2>
               <p className="text-base text-muted-foreground">총 {history.length}건</p>
             </div>
-            {history.length === 0 && <EmptyHistory />}
-            {/* 이력이 있는 경우의 표·모바일 카드와 추이 차트는 3·4단계에서 연결한다. */}
+            {history.length === 0 ? <EmptyHistory /> : (
+              <ExamHistoryTable results={history} page={historyPage} onPageChange={setHistoryPage}
+                onDetail={(resultId) => navigate(`/results/${resultId}`)} />
+            )}
           </section>
+          <ExamTrendChart results={history} />
         </>
       ) : null}
     </section>

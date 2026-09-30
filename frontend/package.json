@@ -9,7 +9,7 @@
     "lint": "oxlint",
     "test:auth": "node --test tests/auth.test.js",
     "test:validation": "node --test tests/validation.test.js",
-    "test:mypage": "node --test tests/member.test.js tests/mypage-startup.test.js",
+    "test:mypage": "node --test tests/member.test.js tests/mypage-startup.test.js tests/mypage-history.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

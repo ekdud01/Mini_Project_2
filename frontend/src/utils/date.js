@@ -4,6 +4,14 @@
  */
 const pad = (n) => String(n).padStart(2, '0');
 
+/** "2026-09-24T10:30:00" → "2026-09-24" (검사 이력) */
+export function formatDateOnly(value) {
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
 /** "2026-09-24T10:30:00" → "2026-09-24 10:30" */
 export function formatDateTime(value) {
   if (!value) return '';

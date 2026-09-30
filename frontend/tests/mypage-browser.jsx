@@ -8,6 +8,8 @@ import api from '@/api/axiosInstance';
 import { useAuthStore } from '@/store/authStore';
 import { useMemberStore } from '@/store/memberStore';
 import MyPage from '@/pages/MyPage';
+import ResultPage from '@/pages/Result';
+import { useResultStore } from '@/store/resultStore';
 import UserLayout from '@/components/layout/UserLayout';
 import '@/index.css';
 
@@ -15,6 +17,7 @@ const profile = { name: '검증회원', email: 'fixture@test.com', gender: 'FEMA
 const empty = { content: [], page: { number: 0, size: 100, totalElements: 0, totalPages: 0, first: true, last: true } };
 const scenarios = [
   ['empty', '빈 이력'], ['history', '이력 1건'], ['long', '긴 이메일'],
+  ['ten', '이력 10건'], ['eleven', '이력 11건'], ['hundred', '이력 100건'], ['deleted', '삭제된 결과'],
   ['profile-error', '프로필 500'], ['history-error', '이력 500'], ['network', '네트워크 오류'],
   ['delayed', '두 조회 지연'], ['late-success', '이력 실패와 늦은 프로필 성공'],
   ['late-failure', '프로필 실패와 늦은 이력 실패'],
@@ -31,6 +34,18 @@ const snapshot = () => revision;
 const originalAdapter = api.defaults.adapter;
 const originalActions = {};
 
+function makeHistory(selectedMode) {
+  const count = { history: 1, ten: 10, eleven: 11, hundred: 100, deleted: 1 }[selectedMode] ?? 0;
+  return Array.from({ length: count }, (_, index) => ({
+    id: index + 1,
+    examType: index % 3 === 0 ? 'KDSQ_P' : 'KDSQ_C',
+    firstScore: index % 3 === 0 ? (index === 0 ? 0 : 3) : 4,
+    totalScore: index % 3 === 0 || index % 3 === 2 ? null : (index === 1 ? 0 : 18),
+    riskLevel: index % 3 === 0 ? 'Normal' : (index % 3 === 1 && index > 1 ? 'HighRisk' : 'Borderline'),
+    createdAt: `2026-09-${String(30 - Math.floor(index / 5)).padStart(2, '0')}T10:00:00`,
+  }));
+}
+
 for (const action of ['fetchMe', 'fetchMyResults']) {
   const original = useMemberStore.getState()[action];
   originalActions[action] = original;
@@ -44,6 +59,13 @@ for (const action of ['fetchMe', 'fetchMyResults']) {
 api.defaults.adapter = async (config) => {
   const capturedMode = mode;
   const isHistory = config.url === '/members/me/results';
+  if (config.url.startsWith('/results/')) {
+    const result = makeHistory(capturedMode).find((item) => item.id === Number(config.url.split('/').pop()));
+    if (capturedMode === 'deleted' || !result) throw new axios.AxiosError('삭제된 결과', 'ERR_BAD_REQUEST', config, {}, {
+      status: 404, data: { error: { code: 'RESULT_NOT_FOUND' } }, config, headers: {},
+    });
+    return { status: 200, data: { success: true, data: { ...result, solutions: [] } }, config, headers: {} };
+  }
   if (!['/members/me', '/members/me/results'].includes(config.url)) throw new Error(`예상하지 않은 요청: ${config.url}`);
   const request = { id: ++sequence, url: config.url, mode: capturedMode, signal: config.signal, done: false };
   requests.push(request);
@@ -66,13 +88,15 @@ api.defaults.adapter = async (config) => {
   const me = capturedMode === 'long'
     ? { ...profile, email: `${'a'.repeat(64)}@${'b'.repeat(24)}.example.kr` }
     : { ...profile, name: capturedMode === 'late-success' ? '이전 응답' : profile.name };
-  const results = capturedMode === 'history'
-    ? { content: [{ id: 1, examType: 'KDSQ_P', firstScore: 0, totalScore: null, riskLevel: 'Normal', createdAt: '2026-09-30T10:00:00' }], page: { ...empty.page, totalElements: 1, totalPages: 1 } }
-    : empty;
+  const content = makeHistory(capturedMode);
+  const results = { content, page: { ...empty.page, totalElements: content.length, totalPages: content.length ? 1 : 0 } };
   return { status: 200, data: { success: true, data: isHistory ? results : me }, config, headers: {} };
 };
 // 같은 origin의 실제 앱 탭에 fixture 토큰을 저장하지 않는다.
 useAuthStore.persist.setOptions({
+  storage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
+});
+useResultStore.persist.setOptions({
   storage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
 });
 useAuthStore.getState().clear();
@@ -128,6 +152,7 @@ export function Fixture() {
           <Routes>
             <Route element={<UserLayout />}>
               <Route path="/mypage" element={<MyPage />} />
+              <Route path="/results/:resultId" element={<ResultPage />} />
               <Route path="/surveys/p" element={<section><h1>검사 시작 경로 도착</h1><Link to="/mypage">마이페이지로 돌아가기</Link></section>} />
             </Route>
           </Routes>
