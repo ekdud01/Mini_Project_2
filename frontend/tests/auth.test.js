@@ -94,7 +94,7 @@ test('재시도도 만료되면 무한 재발급 없이 인증을 종료한다',
   assert.equal(reissues, 1);
   assert.equal(requests, 2);
   assert.equal(auth.getState().accessToken, null);
-  assert.equal(auth.getState().logoutReason, '다시 로그인해주세요.');
+  assert.equal(auth.getState().logoutReason, '다시 로그인해주세요');
 });
 
 test('재발급 401은 인증 정보를 삭제한다', async () => {
@@ -235,7 +235,7 @@ test('로그인 성공·clear는 등록된 스토어를 초기화하고 종료 �
     await auth.getState().login('new@test.com', 'password');
     assert.equal(resets, 1);
     assert.equal(auth.getState().email, 'new@test.com');
-    auth.getState().clear({ reason: '다시 로그인해주세요.' });
+    auth.getState().clear({ reason: '다시 로그인해주세요' });
     assert.equal(resets, 2);
     assert.deepEqual(JSON.parse(localStorage.getItem('auth-storage')).state,
       { accessToken: null, refreshToken: null, email: null });

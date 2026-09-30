@@ -23,16 +23,16 @@ export default function LoginForm({ onSubmit, isLoading = false, errorMessage = 
 
     const normalizedEmail = email.trim();
     const nextErrors = {};
-    if (!normalizedEmail) nextErrors.email = '이메일을 입력해주세요.';
+    if (!normalizedEmail) nextErrors.email = '이메일을 입력해주세요';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
       nextErrors.email = '이메일 형식이 올바르지 않습니다';
     }
-    if (!password.trim()) nextErrors.password = '비밀번호를 입력해주세요.';
+    if (!password.trim()) nextErrors.password = '비밀번호를 입력해주세요';
 
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) {
       setValidationMessage(!normalizedEmail || !password.trim()
-        ? '이메일과 비밀번호를 입력해주세요.'
+        ? '이메일과 비밀번호를 입력해주세요'
         : '이메일 형식이 올바르지 않습니다');
       (nextErrors.email ? emailRef : passwordRef).current?.focus();
       return;
@@ -103,7 +103,7 @@ export default function LoginForm({ onSubmit, isLoading = false, errorMessage = 
             name="password"
             type={showPassword ? 'text' : 'password'}
             autoComplete="current-password"
-            placeholder="비밀번호를 입력해주세요."
+            placeholder="비밀번호를 입력해주세요"
             value={password}
             onChange={(event) => { setPassword(event.target.value); clearFieldError('password'); }}
             readOnly={isLoading}

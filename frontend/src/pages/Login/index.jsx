@@ -7,8 +7,8 @@ import { getErrorMessage } from '@/utils/apiError';
 import LoginForm from './components/LoginForm';
 
 const LOGIN_ERRORS = {
-  INVALID_CREDENTIALS: '이메일 또는 비밀번호를 확인해주세요.',
-  MEMBER_WITHDRAWN: '이용할 수 없는 계정입니다.',
+  INVALID_CREDENTIALS: '이메일 또는 비밀번호를 확인해주세요',
+  MEMBER_WITHDRAWN: '이용할 수 없는 계정입니다',
 };
 
 export default function LoginPage() {
@@ -72,7 +72,7 @@ export default function LoginPage() {
           <p className="break-keep text-sm font-semibold text-primary">MEMORY ATTACK · KDSQ 인지선별검사</p>
           <h1 id="login-title" className="text-2xl font-bold">로그인</h1>
           <p className="break-keep text-base leading-relaxed text-muted-foreground">
-            검사를 시작하려면 로그인해주세요.
+            검사를 시작하려면 로그인해주세요
           </p>
         </div>
 
