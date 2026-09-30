@@ -57,7 +57,7 @@ export default function RegisterPage() {
         <div className="space-y-2 text-center">
           <h1 id="register-title" className="text-2xl font-bold">회원가입</h1>
           <p className="break-keep text-base leading-relaxed text-muted-foreground">
-            간단한 가입 후 바로 인지 검사가 가능합니다.
+            간단한 가입 후 바로 인지 검사가 가능합니다
           </p>
         </div>
         <RegisterForm onSubmit={handleRegister} isLoading={isLoading} />
