@@ -99,12 +99,12 @@ public class AdminMemberController {
         return "redirect:/admin/members/" + id;
     }
 
-    /** 비활성 처리 (소프트 삭제 WITHDRAWN + 리프레시 토큰 폐기). 화면 표기는 "비활성" */
+    /** 비활성화 (소프트 삭제 WITHDRAWN + 리프레시 토큰 폐기). 화면 버튼 표기 "비활성화"와 문구를 맞춘다 */
     @PostMapping("/{id}/withdraw")
     public String withdraw(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             adminMemberService.withdraw(id);
-            redirectAttributes.addFlashAttribute("successMessage", "비활성 처리되었습니다");
+            redirectAttributes.addFlashAttribute("successMessage", "비활성화되었습니다");
         } catch (BusinessException e) {
             if (e.getErrorCode() == ErrorCode.MEMBER_NOT_FOUND) {
                 throw e;   // 없는 회원·관리자 id → 404 화면

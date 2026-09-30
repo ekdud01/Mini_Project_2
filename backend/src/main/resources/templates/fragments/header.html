@@ -4,9 +4,9 @@
      관리자 계정은 1개로 운영하므로 이름 대신 "관리자" + 이메일로 표시 -->
 <body>
 <header th:fragment="header" class="admin-header">
-    <a th:href="@{/admin/dashboard}" class="brand" aria-label="마음 기억 관리자 대시보드로 이동">
+    <a th:href="@{/admin/dashboard}" class="brand" aria-label="MEMORY ATTACK 관리자 대시보드로 이동">
         <span class="brand-mark"><svg th:replace="~{fragments/icons :: brain}"></svg></span>
-        <span class="brand-name">마음 기억</span>
+        <span class="brand-name">MEMORY ATTACK</span>
         <span class="brand-tag">ADMIN</span>
     </a>
     <div class="admin-user" th:if="${adminEmail != null}">

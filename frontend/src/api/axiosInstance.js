@@ -76,7 +76,7 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         if (!isCurrentSession(session)) return Promise.reject(sessionChanged());
         if (refreshError.response?.status === 401) {
-          useAuthStore.getState().clear({ reason: '다시 로그인해주세요.' });
+          useAuthStore.getState().clear({ reason: '다시 로그인해주세요' });
         }
         // 네트워크/5xx는 세션을 유지하고 실제 재발급 오류를 화면에 전달한다.
         return Promise.reject(refreshError);
@@ -86,7 +86,7 @@ axiosInstance.interceptors.response.use(
     }
 
     if (['ACCESS_TOKEN_EXPIRED', 'INVALID_REFRESH_TOKEN', 'UNAUTHORIZED'].includes(code)) {
-      useAuthStore.getState().clear({ reason: '다시 로그인해주세요.' });
+      useAuthStore.getState().clear({ reason: '다시 로그인해주세요' });
     }
     return Promise.reject(error);
   },
