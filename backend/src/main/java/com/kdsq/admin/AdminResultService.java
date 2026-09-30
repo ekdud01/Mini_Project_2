@@ -47,4 +47,13 @@ public class AdminResultService {
         return surveyResultRepository.findActiveDetailById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESULT_NOT_FOUND));
     }
+
+    /** 삭제 (소프트 삭제: active = false). 변경 감지로 저장되므로 쓰기 트랜잭션이 필요하다 */
+    @Transactional
+    public void deleteResult(Long id) {
+        SurveyResult result = surveyResultRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESULT_NOT_FOUND));
+        result.deactivate();
+    }
+
 }

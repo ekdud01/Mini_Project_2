@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kdsq.admin.dto.ResultSearchCondition;
 
@@ -19,10 +21,11 @@ import lombok.RequiredArgsConstructor;
 /**
  * 관리자 검사 결과 관리 (UI 설계서 4.6~4.7, 파트 분배 5.3)
  *
- * | 요청                                                            | 템플릿              | Model                |
- * |-----------------------------------------------------------------|--------------------|----------------------|
- * | GET  /admin/results?examType=&riskLevels=&name=&from=&to=&page= | admin/results/list | results(Page), cond  |
- * | GET  /admin/results/{id}?returnUrl=      | admin/results/detail | result, returnUrl(검증된 목록 주소) |
+ * | 요청                                                            | 템플릿               | Model                             |
+ * |-----------------------------------------------------------------|---------------------|-----------------------------------|
+ * | GET  /admin/results?examType=&riskLevels=&name=&from=&to=&page= | admin/results/list  | results(Page), cond               |
+ * | GET  /admin/results/{id}?returnUrl=                             | admin/results/detail| result, returnUrl(검증된 목록 주소) |
+ * | POST /admin/results/{id}/delete (폼 값 returnUrl)               | redirect:returnUrl   | 플래시: successMessage            |
  */
 @Controller
 @RequestMapping("/admin/results")
@@ -50,6 +53,15 @@ public class AdminResultController {
         return "admin/results/detail";
     }
 
+    /** 검사 결과 삭제 (소프트 삭제) 후 들어왔던 목록으로 */
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id, @RequestParam(required = false) String returnUrl,
+                         RedirectAttributes redirectAttributes) {
+        adminResultService.deleteResult(id);   // 없는 결과면 RESULT_NOT_FOUND → 404 화면
+        redirectAttributes.addFlashAttribute("successMessage", "삭제되었습니다");
+        return "redirect:" + safeReturnUrl(returnUrl);
+    }
+
     /** 검사 결과 목록 주소만 허용, 없거나 다른 주소면 조건 없는 목록 (오픈 리다이렉트 방지) */
     private static String safeReturnUrl(String returnUrl) {
         if (returnUrl != null && returnUrl.startsWith("/admin/results")) {
@@ -57,5 +69,4 @@ public class AdminResultController {
         }
         return "/admin/results";
     }
-
 }
