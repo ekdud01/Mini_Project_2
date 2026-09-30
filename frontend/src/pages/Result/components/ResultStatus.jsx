@@ -10,7 +10,7 @@ function ResultStatus({ riskLevel }) {
   return (
     <div role="status" className={cn('space-y-2 rounded-xl border px-6 py-5 text-center', banner.className)}>
       <p className={cn('text-xl font-bold', RISK_TEXT_CLASS[riskLevel])}>{RISK_MESSAGE[riskLevel]}</p>
-      <p className="leading-relaxed text-slate-700">{banner.description}</p>
+      <p className="whitespace-pre-line leading-relaxed text-slate-700">{banner.description}</p>
     </div>
   );
 }

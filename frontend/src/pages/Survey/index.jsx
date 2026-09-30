@@ -31,12 +31,12 @@ import SubmitButton from './components/SubmitButton';
 const PAGE_TITLES = { P: 'KDSQ-P 1차 검사', C: 'KDSQ-C 2차 검사' };
 
 const MESSAGES = {
-  selectAnswer: '답변을 선택해주세요.',
-  answerAll: '모든 문항에 답해주세요.',
-  restart: '1차 검사부터 다시 진행해주세요.',
-  loadFail: '문항을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
-  submitFail: '검사 제출에 실패했습니다. 다시 시도해주세요.',
-  network: '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+  selectAnswer: '답변을 선택해주세요',
+  answerAll: '모든 문항에 답해주세요',
+  restart: '1차 검사부터 다시 진행해주세요',
+  loadFail: '문항을 불러오지 못했습니다. 잠시 후 다시 시도해주세요',
+  submitFail: '검사 제출에 실패했습니다. 다시 시도해주세요',
+  network: '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요',
 };
 
 /** 이 오류 코드를 받으면 1차부터 다시 시작 */

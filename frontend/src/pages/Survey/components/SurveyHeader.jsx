@@ -17,7 +17,7 @@ const STEP_BADGE = {
 };
 
 /** 2차 검사 상단 안내 */
-const SECOND_TEST_NOTICE = '1차 검사 결과 추가 검사가 필요합니다. 2차 검사까지 완료해야 결과가 저장됩니다.';
+const SECOND_TEST_NOTICE = '1차 검사 결과 추가 검사가 필요합니다. 2차 검사까지 완료해야 결과가 저장됩니다';
 
 function SurveyHeader({ type, title = TITLES[type], description = DEFAULT_SURVEY_DESCRIPTION }) {
   const badge = STEP_BADGE[type];
@@ -39,9 +39,9 @@ function SurveyHeader({ type, title = TITLES[type], description = DEFAULT_SURVEY
         </p>
       )}
 
-      <p className="rounded-lg border bg-slate-50 px-4 py-3 text-sm font-medium leading-relaxed text-slate-700">
-        <span aria-hidden="true">💡 </span>
-        {description}
+      <p className="flex gap-1.5 rounded-lg border bg-slate-50 px-4 py-3 text-sm font-medium leading-relaxed text-slate-700">
+        <span aria-hidden="true">💡</span>
+        <span className="whitespace-pre-line">{description}</span>
       </p>
     </header>
   );
