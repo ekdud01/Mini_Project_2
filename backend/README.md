@@ -107,7 +107,7 @@ Started KdsqApplication in ... seconds
 |---|---|
 | http://localhost:8080/api/health | `{"success":true,"data":{"status":"UP"},"message":"서버가 정상 동작 중입니다",...}` |
 | http://localhost:8080/admin/login | 관리자 로그인 폼. `admin@kdsq.com` / `admin1234!`로 로그인하면 관리자 화면으로 이동 |
-| http://localhost:8080/admin/preview | 관리자 레이아웃(헤더·사이드바·푸터) 확인용 페이지 (관리자 로그인 후) |
+| http://localhost:8080/admin/dashboard | 관리자 대시보드 (관리자 로그인 후) |
 
 DB 도구(HeidiSQL 등)나 `mysql` 명령창에서 `USE kdsq_db; SHOW TABLES;`를 실행하면 테이블 6개가 보여야 한다.
 `members`, `surveys`, `questions`, `survey_results`, `solutions`, `refresh_tokens`
@@ -196,7 +196,7 @@ Authorization: Bearer {{login.response.body.data.accessToken}}
 - 액세스 토큰은 1시간 동안 유효하다. 401 `ACCESS_TOKEN_EXPIRED`가 나오면 로그인 요청을 다시 실행한다.
 - 예시는 `backend/http/member.http`, `auth.http`에 있다.
 
-**관리자 화면(`/admin/**`)** 은 세션 로그인이다. http://localhost:8080/admin/login 에서 `admin@kdsq.com` / `admin1234!`로 로그인해야 들어갈 수 있다 (`/admin/preview` 포함). 일반 회원 계정으로는 로그인되지 않는다.
+**관리자 화면(`/admin/**`)** 은 세션 로그인이다. http://localhost:8080/admin/login 에서 `admin@kdsq.com` / `admin1234!`로 로그인해야 들어갈 수 있다. 일반 회원 계정으로는 로그인되지 않는다.
 
 ### 4-4. 성공 응답
 
@@ -256,12 +256,9 @@ LocalDateTime createdAt
 
 ---
 
-## 5. 임시 코드 (정식본으로 교체 예정)
+## 5. 임시 코드
 
-| 파일 | 지금 | 교체 후 (담당) |
-|---|---|---|
-| `templates/layout`, `admin/login`, `admin.css` | 최소 뼈대 | UI 설계서 2.5·4장 (황지영) |
-| `admin/preview.html`, `WebConfig`의 `/admin/preview` | 레이아웃 확인용 | 관리자 화면 완성 후 삭제 (황지영) |
+없음. 개발 초기의 임시 코드(관리자 레이아웃 뼈대, 레이아웃 확인용 `/admin/preview`)는 정식 화면으로 교체하거나 삭제했다 (9/30).
 
 ## 6. 파일 주인
 
