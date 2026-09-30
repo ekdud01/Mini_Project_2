@@ -56,7 +56,7 @@
 
     <!-- 결과 없음: 표 머리글 대신 안내 + 초기화 -->
     <div class="empty-state" th:if="${members.empty}">
-      <strong>조건에 맞는 회원이 없습니다</strong>
+      <strong>검색 결과가 없습니다</strong>
       <a th:if="${hasFilter}" th:href="@{/admin/members}" class="btn btn-sm">검색 초기화</a>
     </div>
 
