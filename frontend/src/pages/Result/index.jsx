@@ -31,7 +31,7 @@ const MESSAGES = {
   loadFail: '검사 결과를 불러오지 못했습니다. 잠시 후 다시 시도해주세요',
   network: '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요',
   firstTestEnded:
-    '1차 검사에서 종료되어 영역별 점수와 관리 안내는 제공되지 않습니다. 6개월~1년 후 다시 검사해 보시길 권장합니다',
+    '1차 검사에서 종료되어 영역별 점수와 관리 안내는 제공되지 않습니다 \n6개월~1년 후 다시 검사해 보시길 권장합니다',
   disclaimer: '이 결과는 선별검사 결과이며 의학적 진단이 아닙니다',
 };
 
@@ -130,7 +130,7 @@ export default function ResultPage() {
             <Recommendation solutions={result.solutions ?? []} />
           </>
         ) : (
-          <p className="rounded-xl bg-slate-100 px-5 py-4 leading-relaxed text-slate-700">
+          <p className="whitespace-pre-line rounded-xl bg-slate-100 px-5 py-4 leading-relaxed text-center text-slate-700">
             {MESSAGES.firstTestEnded}
           </p>
         )}
