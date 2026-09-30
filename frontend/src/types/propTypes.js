@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 
 /** 도메인 타입의 PropTypes shape (React 설계서 3.2). 여러 컴포넌트가 함께 쓴다. */
 
+export const ExamTypeType = PropTypes.oneOf(['KDSQ_P', 'KDSQ_C']);
+
 export const RiskLevelType = PropTypes.oneOf(['Normal', 'Borderline', 'HighRisk']);
 
 export const QuestionShape = PropTypes.shape({
@@ -18,7 +20,7 @@ export const SolutionShape = PropTypes.shape({
 
 export const SurveyResultShape = PropTypes.shape({
   id: PropTypes.number.isRequired,
-  examType: PropTypes.oneOf(['KDSQ_P', 'KDSQ_C']).isRequired,
+  examType: ExamTypeType.isRequired,
   firstScore: PropTypes.number.isRequired,
   memoryScore: PropTypes.number, // KDSQ-P로 끝나면 null
   otherScore: PropTypes.number,
