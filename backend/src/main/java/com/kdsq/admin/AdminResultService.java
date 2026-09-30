@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdsq.admin.dto.ResultSearchCondition;
+import com.kdsq.global.exception.BusinessException;
+import com.kdsq.global.exception.ErrorCode;
 import com.kdsq.result.SurveyResult;
 import com.kdsq.result.SurveyResultRepository;
 import com.kdsq.result.SurveyResultSpecs;
@@ -38,5 +40,11 @@ public class AdminResultService {
                 .and(SurveyResultSpecs.createdBetween(cond.getFrom(), cond.getTo()));
 
         return surveyResultRepository.findAll(spec, pageable);
+    }
+
+    /** ADM-06 상세: 삭제된 결과는 없는 것으로 본다 → 404 */
+    public SurveyResult getDetail(Long id) {
+        return surveyResultRepository.findActiveDetailById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESULT_NOT_FOUND));
     }
 }
