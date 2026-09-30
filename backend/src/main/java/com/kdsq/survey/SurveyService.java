@@ -17,8 +17,11 @@ public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final QuestionRepository questionRepository;
     public List<SurveyResponse> surveycheck(ExamType examType){
-        List<Survey> s=surveyRepository.findAll();
-        return s.stream().filter(survey->survey.getExamType()==examType||examType==null)
+        // examType이 있으면 해당 설문 1건만, 없으면 전체 (Entity 설계서 8.2.1)
+        List<Survey> s = (examType == null)
+                ? surveyRepository.findAll()
+                : surveyRepository.findByExamType(examType).stream().toList();
+        return s.stream()
                 .map(survey -> new SurveyResponse(survey.getId(),survey.getExamType(), survey.getTitle(), survey.getDescription()))
                 .toList();
     }
