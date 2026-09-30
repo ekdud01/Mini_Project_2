@@ -168,7 +168,7 @@ fixture에는 10·11·100건 및 삭제된 결과 시나리오를 추가했다. 
 
 ## 2026-09-30 — 5단계 본인 회원 탈퇴
 
-기준: `feature/fe-mypage@f897b62` 위 작업 트리 (미커밋). `WithdrawButton`, `WithdrawDialog`를 추가하고 MyPage가 `isWithdrawOpen`·`isWithdrawing`·`withdrawError`를 소유하도록 연결했다. store의 `withdraw`(1단계)는 변경하지 않았다
+구현 당시 기준: `feature/fe-mypage@f897b62` 위 작업 트리. 이후 `e4fb0b2` (`feat: 마이페이지 본인 회원 탈퇴 구현`)로 커밋했다. `WithdrawButton`, `WithdrawDialog`를 추가하고 MyPage가 `isWithdrawOpen`·`isWithdrawing`·`withdrawError`를 소유하도록 연결했다. store의 `withdraw`(1단계)는 변경하지 않았다
 
 구현 내용:
 
@@ -222,3 +222,78 @@ fixture에는 10·11·100건 및 삭제된 결과 시나리오를 추가했다. 
 ### 남은 범위
 
 5단계 통과 기준을 MSW 환경에서 확인했다. 실제 JWT/DB 서버의 `DELETE /api/members/me`(WITHDRAWN 변경·refresh token 삭제·재로그인 거부)와 6단계 통합 회귀는 미진행이다
+
+## 2026-09-30 — 6단계 Mock 통합 검증 완료, 실제 서버 검증은 후속 진행
+
+기준: `feature/fe-mypage@e4fb0b2`. 착수 시 작업 트리는 깨끗했다. 제품 코드 변경 없이 아래 통합 검증을 수행하고 개발 서버 전용 `mypage-integration.html`·`mypage-integration.jsx`를 추가했다
+
+### 환경과 실행 결과
+
+- Windows / Node v24.11.0 / Vite 8.3.1 / Codex 내장 브라우저
+- 실제 앱 + MSW: `http://127.0.0.1:5181`, `VITE_USE_MOCK=true`
+- 인증·탈퇴 계측: `/tests/mypage-integration.html`에서 실제 `main.jsx`·App·라우터·store·MSW를 실행하고, 테스트 제어판으로 실패·지연 응답과 토큰 만료를 설정
+- 조회 경합·10/11건·긴 이메일: 기존 `/tests/mypage-browser.html`의 실제 페이지·store + 제어 가능한 axios adapter 사용
+- 두 fixture의 결과를 실제 JWT/DB 서버 검증으로 간주하지 않는다. 지연 탈퇴 핸들러는 204만 반환하며 실제 Mock 회원을 탈퇴시키지 않으므로 기본 MSW 탈퇴도 별도로 실행했다
+
+| 검사 | 실제 결과 |
+|---|---|
+| `npm run test:mypage` | 31/31 통과 — 이번 대화의 직전 커밋 검증 결과를 동일 제품 코드에서 재사용 |
+| `npm run test:auth` | 이번 통합 검증에서 16/16 통과 |
+| `npm run test:validation` | 이번 통합 검증에서 12/12 통과 |
+| `npm run lint` | 최종 fixture 수정 후 오류 0·기존 경고 5건, 신규 경고 없음 |
+| `npm run build` | 이번 대화의 동일 제품 코드 빌드 통과 결과 재사용. 테스트 HTML은 프로덕션 엔트리에 포함되지 않음 |
+| `gradlew.bat test --no-daemon` | JDK 17.0.19로 79/79 통과, 실패·오류·skip 0. DB에 연결하는 E2E 검증은 아님 |
+
+초기 프론트 테스트·빌드의 Windows `spawn EPERM`은 권한 확장 실행으로 해소했다. 백엔드는 Gradle 관리 경로의 JDK 17을 `JAVA_HOME`으로 지정했다. 시스템 기본 Java는 26이며 시스템 설정은 변경하지 않았다
+
+### 브라우저 통합 결과
+
+| 시나리오 | 기대 결과 및 실제 확인 |
+|---|---|
+| hong 정상 | 실제 로그인 → 마이페이지, 프로필·P/C 혼합 6건·차트 점 6개 표시. 회원정보 입력칸 0개, 관리자 수정 안내 표시 |
+| 상세 왕복 | 106번 상세에 9/30점과 위험 판정 표시, 검사 이력 보기로 정상 복귀 |
+| 타인 결과 | hong으로 park의 `/results/201`에 직접 접근하면 “검사 결과를 찾을 수 없습니다”, 이력 복귀 가능 |
+| kim 빈 상태 | 프로필·관리자 안내·검사 시작·탈퇴 표시, 차트 없음 |
+| park 1건 | 이력 1건, 차트 점 1개 표시 |
+| 10→11건 | 10건은 1페이지, 11건은 10·1행. Enter로 2페이지 이동, 마지막 다음 버튼 비활성 |
+| 차트 독립·점수 | 11건에서 null 3건을 제외한 점 8개가 페이지 이동 후 유지. P firstScore·C totalScore, 0점·null 표시 정상, 서버 판정 유지 |
+| 툴팁 키보드 | 차트 ArrowRight로 날짜·검사 종류·점수·판정 확인. null 점수는 `-` 표시 |
+| 삭제된 결과 | fixture의 삭제된 상세에서 “검사 결과를 찾을 수 없습니다”, 이력 복귀 가능 |
+| 개별 조회 실패 | 프로필만 500·이력만 500 모두 “정보를 불러오지 못했습니다”와 재시도. 임의 빈 상태로 처리하지 않음 |
+| 네트워크 실패 | “네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요”, 정상 응답 복원 후 재시도로 프로필·빈 상태 복구 |
+| 오래된 success/catch | 늦은 프로필 성공·늦은 이력 실패를 새 조회 성공 뒤 해제해도 새 화면 유지, 오류·이전 회원정보로 덮어쓰지 않음 |
+| StrictMode·이탈·reset | 최초 조회 액션 4회 중 이전 2회 취소. 지연 중 검사하기로 이탈하면 요청 2건 취소, 늦은 응답 저장 없음. reset 후 지연 응답도 store를 복원하지 않음 |
+| 재발급 성공 | 마이페이지 GET 2건의 401 → reissue 1회 → GET 2건 200, 프로필·6건 이력 복구 |
+| 재발급 500 | 로그인 상태·기존 store 유지, 오류 화면·재시도 표시, clear 0회. 핸들러 복원 후 재시도로 복구 |
+| 재발급 401 | `/login` + “다시 로그인해주세요”, clear 1회, 인증·member/survey/result 초기화 |
+| 탈퇴 취소·접근성 | 열림 시 취소 포커스, ESC·Enter 취소 뒤 회원 탈퇴 버튼으로 복귀, DELETE 0회 |
+| 탈퇴 실패 | 500·네트워크 오류를 Dialog 안에 표시, 로그인 유지, 다시 제출 가능 |
+| 처리 중 차단 | 지연 DELETE 동안 확인·취소 비활성, aria-busy=true, ESC·바깥 클릭 후 Dialog 유지. 연속 제출은 DELETE 1회 |
+| 204 성공·초기화 | `/login` 완료 안내, logout 1회·clear 1회·DELETE 1회·서버 logout 0회. 주입한 member/survey/result 및 persisted 임시 답변 초기화 |
+| 안내 일회성 | 완료 안내 후 회원가입 이동·뒤로 가기 시 재표시 없음 |
+| 계정 변경 | hong DELETE 중 kim 로그인, 늦은 204 이후 kim 유지·logout 0회·완료 안내 없음 |
+| 실제 Mock 탈퇴 | 기본 MSW로 kim 탈퇴 후 같은 SPA 세션에서 로그인 403·“이용할 수 없는 계정입니다”. 기존 탈퇴 계정 lee도 별도 로그인 거부 확인 |
+| 직접 진입 | park 로그인 상태에서 `result-storage` 임시 답변을 심고 `/mypage`를 새로고침. 이 새 문서에서 Survey·Result 방문 없이 탈퇴 성공, 이후 fixture 재수화 시 pending/persisted 답변 null·인증 없음 |
+| 화면·터치 영역 | 375px 모바일 카드, 768/1280px 표, 긴 이메일 포함 가로 넘침 없음. 표시된 마이페이지 버튼 48×48px 이상. 모바일 Dialog 화면 안 표시·취소 우선 포커스·키보드 복귀 확인 |
+
+fixture 작성 중 HMR에서 createRoot 중복 경고가 발생해 제어판 root·이벤트·store 계측의 해제 처리를 추가하고 새 문서로 다시 열었다. 최종 제어판에서 204 완료와 외부 클릭 차단을 재확인했다. 브라우저 로그에는 이전 문서의 경고가 남으므로 세션 전체 로그가 0건이라고 기록하지 않는다
+
+### 재현과 정리
+
+1. `VITE_USE_MOCK=true`인 개발 서버에서 `/tests/mypage-integration.html`을 연다. 앱의 로그인 화면을 사용하거나 테스트 계정 전환 버튼을 사용한다
+2. 인증 재발급은 검사 화면에서 기록 초기화 → 실패 설정(필요 시) → 토큰 만료 → 마이페이지 링크 순서로 검증한다. 401 뒤에는 정상 응답 복원과 새 로그인이 필요하다
+3. 탈퇴는 정상 마이페이지에서 실패/지연 설정 → 기록 초기화 → 회원 탈퇴 확인 순서다. 기본 MSW의 실제 탈퇴와 204 전용 지연 핸들러를 구분한다. 지연 응답은 최대 6초 후 자동 완료된다
+4. 제어판은 Mock 전용이며 토큰·비밀번호를 출력하지 않는다. 기본 MSW 가입·탈퇴 상태는 새로고침 시 초기화된다. 같은 계정의 탈퇴 후 로그인 거부는 새로고침 전에 확인한다
+5. 테스트 세션 정리 버튼으로 핸들러와 세션을 초기화한다. 직접 `/mypage` 새로고침은 제어판 없이 실제 앱만 실행하므로 직접 진입 회귀에 사용한다
+
+### 실제 서버 검증의 차단 조건
+
+- `localhost:8080/api/health`: 연결 거부, 실행 중인 백엔드 없음
+- 문서의 MariaDB 3306은 연결 거부. 실제 로컬 MariaDB 12.3.3은 3307에서 실행 중이며 문서 기본 boot 계정의 접속은 확인
+- `kdsq_db`는 boot 계정에서 조회되지 않았다. 별도 DB `kdsq_mypage_verify_20260930` 생성 시 `ERROR 1044 (42000): Access denied for user 'boot'@'localhost'` 발생. DB 생성·기존 데이터 변경은 이루어지지 않음
+- 검증용 DB와 해당 DB에 대한 boot 계정 권한, 또는 사용 가능한 기존 검증용 DB 정보가 필요하다. 권한 확보 후 실행 시 datasource URL만 환경 변수로 해당 DB에 맞추고 MSW를 끈 별도 프론트 서버로 확인한다
+- 미검증: 실제 JWT 로그인·재발급, DB 기반 내 정보·이력·상세·본인/활성 결과 필터, 테스트 회원 탈퇴의 WITHDRAWN 변경·refresh token 삭제·검사 이력 보존·재로그인 거부
+
+검증 종료 시점의 판정은 **Mock/프론트 통합 통과, 실제 JWT·DB E2E 미검증**이다. 위 결과는 `e4fb0b2`의 제품 코드에 대한 기록이며 이후 develop 변경의 검증 결과가 아니다
+
+후속 결정: 실제 서버 검증은 추후 진행하고 현재 구현·Mock 검증 내역을 커밋해 `develop` 대상 PR로 제출한다. PR 준비 시 원격 fetch로 `origin/develop@9f6a1b3`를 확인했다. develop의 추가 변경은 이 브랜치에 병합하지 않았으며, 실제 서버 통합 시 최신 기준을 다시 확인한다
