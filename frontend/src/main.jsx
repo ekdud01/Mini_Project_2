@@ -2,6 +2,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
+// 직접 진입한 페이지와 관계없이 로그아웃 시 설문·임시 답변을 초기화한다.
+import './store/surveyStore';
+import './store/resultStore';
 
 /**
  * 개발 모드(npm run dev)에서는 기본으로 MSW가 /api 요청을 Mock 데이터로 응답한다.
