@@ -22,6 +22,19 @@ import com.kdsq.result.SurveyResultRepository;
 import com.kdsq.survey.ExamType;
 import com.kdsq.survey.Survey;
 
+/**
+ * AdminResultService 단위 테스트 (UI 설계서 4.6 ADM-05, 4.7 ADM-06 / Entity 설계서 8.4)
+ *
+ * 왜 Mockito로 하나요?
+ *  - Repository를 "가짜(Mock)"로 바꿔서 DB·서버·템플릿 없이 서비스 규칙만 빠르게 확인한다.
+ *  - given(...).willReturn(...) : 가짜 Repository가 이렇게 대답하도록 미리 정해 둔다
+ *
+ * 확인하는 규칙
+ *  - 상세: 활성 결과만 조회, 없거나 삭제된 결과는 RESULT_NOT_FOUND (404)
+ *  - 삭제: 소프트 삭제(active = false), 이미 삭제된 결과는 RESULT_NOT_FOUND (사용자 API TC-RES-12와 같은 기준)
+ *
+ * 실행: 클래스 이름 옆 ▶ 또는 터미널에서 gradlew.bat test
+ */
 @ExtendWith(MockitoExtension.class)
 class AdminResultServiceTest {
 
@@ -39,7 +52,18 @@ class AdminResultServiceTest {
     }
 
     @Test
-    @DisplayName("상세: 없거나 삭제된 결과면 RESULT_NOT_FOUND")
+    @DisplayName("상세 조회 성공: 활성 결과를 그대로 반환한다 (UI 4.7)")
+    void getDetail_success() {
+        SurveyResult result = activeResult();
+        given(surveyResultRepository.findActiveDetailById(1L)).willReturn(Optional.of(result));
+
+        SurveyResult found = adminResultService.getDetail(1L);
+
+        assertThat(found).isSameAs(result);
+    }
+
+    @Test
+    @DisplayName("상세: 없거나 삭제된 결과면 RESULT_NOT_FOUND (UI 4.7)")
     void getDetail_notFound() {
         given(surveyResultRepository.findActiveDetailById(99L)).willReturn(Optional.empty());
 
@@ -49,7 +73,7 @@ class AdminResultServiceTest {
     }
 
     @Test
-    @DisplayName("삭제: 활성 결과는 active=false가 된다")
+    @DisplayName("삭제 성공: active가 false가 된다 (소프트 삭제, UI 4.6.4)")
     void deleteResult_success() {
         SurveyResult result = activeResult();
         given(surveyResultRepository.findById(1L)).willReturn(Optional.of(result));
@@ -60,7 +84,7 @@ class AdminResultServiceTest {
     }
 
     @Test
-    @DisplayName("삭제: 이미 삭제된 결과면 RESULT_NOT_FOUND")
+    @DisplayName("이미 삭제된 결과를 다시 삭제하면 RESULT_NOT_FOUND (UI 4.6.4)")
     void deleteResult_alreadyDeleted() {
         SurveyResult result = activeResult();
         result.deactivate();
