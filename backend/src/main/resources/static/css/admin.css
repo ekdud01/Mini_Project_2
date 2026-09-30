@@ -531,9 +531,13 @@ select.form-control { padding-right: 32px; }
 .search-grid .period .date-range .form-control { flex: 1; }
 .search-grid .search-actions { grid-column: 4; display: flex; gap: 8px; }
 @media (max-width: 1023px) {
-  .search-form.search-grid { grid-template-columns: 1fr; }
+  /* minmax(0, 1fr) + fieldset min-width: 0 → 칩·기간 줄이 화면 폭을 넘겨 가로 스크롤이 생기지 않게 (C-06) */
+  .search-form.search-grid { grid-template-columns: minmax(0, 1fr); }
+  .search-grid fieldset.form-group { min-width: 0; }
   .search-grid .period, .search-grid .search-actions { grid-column: auto; }
   .search-grid .form-control { width: 100%; }
+  .search-grid .date-range { flex-wrap: wrap; }                              /* 좁으면 빠른 선택 버튼은 다음 줄로 */
+  .search-grid .period .date-range .form-control { flex: 1 1 140px; width: auto; }
 }
 
 /* 회원 정보 수정: 필수 입력 항목 안내 빨강 */
