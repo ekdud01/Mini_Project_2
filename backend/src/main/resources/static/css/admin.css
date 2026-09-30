@@ -57,7 +57,7 @@
   --radius-pill: 999px;
   --shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 1px 3px rgba(15, 23, 42, .04);
   --shadow-lg: 0 10px 30px rgba(15, 23, 42, .08);
-  --header-height: 64px;
+  --header-height: 73px;
   --control-height: 44px;
 }
 
@@ -278,7 +278,7 @@ select.form-control { padding-right: 32px; }
   width: 34px; height: 34px; border-radius: 10px; background: var(--color-primary); color: #fff;
 }
 .brand-mark .icon { width: 20px; height: 20px; }
-.brand-name { font-size: 21px; font-weight: var(--font-weight-extrabold); color: var(--color-primary); }
+.brand-name { font-size: 24px; font-weight: var(--font-weight-extrabold); color: var(--color-primary); }
 .brand-tag { padding: 3px 7px; border-radius: 6px; background: #334155; color: #fff; font-size: 12px; font-weight: var(--font-weight-bold); letter-spacing: .04em; }
 .admin-user { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
 .admin-user .who { display: flex; align-items: center; gap: 6px; }
@@ -293,7 +293,7 @@ select.form-control { padding-right: 32px; }
 .admin-main { flex: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: var(--space-lg) var(--space-xl) 40px; }
 .breadcrumb ol { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0 0 var(--space-sm); padding: 0; font-size: var(--font-size-sm); color: var(--color-text-sub); }
 .breadcrumb li + li::before { content: "›"; margin-right: 6px; }
-.admin-footer { padding: var(--space-md); text-align: center; font-size: var(--font-size-sm); color: #94a3b8; }
+.admin-footer { padding: var(--space-xl) var(--space-md); text-align: center; font-size: var(--font-size-sm); color: #94a3b8; border-top: 1px solid var(--color-border); }
 .admin-footer p { margin: 0; }
 
 /* 페이지 제목줄 */

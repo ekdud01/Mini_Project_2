@@ -54,6 +54,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "Pretendard", "Noto Sans KR", sans-serif;
 }
 
 @layer base {

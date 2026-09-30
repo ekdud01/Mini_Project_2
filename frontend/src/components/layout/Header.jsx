@@ -29,7 +29,7 @@ const textLinkClass = (isActive) =>
   );
 
 const pillClass =
-  'inline-flex min-h-12 items-center gap-2 rounded-full border px-4 text-sm font-semibold text-slate-800 hover:bg-slate-50 md:h-10 md:min-h-0';
+  'inline-flex min-h-12 items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold text-foreground hover:bg-slate-50 md:h-[34px] md:min-h-0';
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring';
 
@@ -162,8 +162,8 @@ function HeaderNavigation({ pathname, isLoggedIn, isLoggingOut, onLogout }) {
             className={cn(pillClass, focusRing, 'disabled:opacity-60')}
           >
             {isLoggingOut
-              ? <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-              : <LogOut className="size-4" aria-hidden="true" />}
+              ? <Loader2 className="size-[18px] animate-spin" aria-hidden="true" />
+              : <LogOut className="size-[18px]" aria-hidden="true" />}
             {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
           </button>
         )}
