@@ -53,7 +53,7 @@ public class MemberService {
         return MemberResponse.from(findActiveMember(memberId));
     }
 
-    /** 회원 탈퇴: 소프트 삭제(ACTIVE → WITHDRAWN) + 리프레시 토큰 폐기. 검사 결과는 보존 */
+    /** 회원 탈퇴: 소프트 삭제(ACTIVE → WITHDRAWN, 사유 SELF) + 리프레시 토큰 폐기. 검사 결과는 보존 */
     @Transactional
     public void withdraw(Long memberId) {
         Member member = findActiveMember(memberId);
