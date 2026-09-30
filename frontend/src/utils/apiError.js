@@ -1,5 +1,5 @@
-const NETWORK_ERROR = '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
-const DEFAULT_ERROR = '일시적인 오류입니다. 잠시 후 다시 시도해주세요.';
+const NETWORK_ERROR = '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요';
+const DEFAULT_ERROR = '일시적인 오류입니다. 잠시 후 다시 시도해주세요';
 
 export const getErrorCode = (error) => error?.response?.data?.error?.code;
 

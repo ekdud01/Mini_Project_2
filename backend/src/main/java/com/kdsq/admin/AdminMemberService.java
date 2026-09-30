@@ -93,6 +93,19 @@ public class AdminMemberService {
         refreshTokenRepository.deleteByMemberId(id);
     }
 
+    /**
+     * 활성화 처리: 비활성(WITHDRAWN) → ACTIVE. 검사 이력은 그대로이고, 회원은 기존 비밀번호로 다시 로그인한다.
+     * 리프레시 토큰은 비활성 처리 때 이미 지웠으므로 따로 할 일이 없다.
+     */
+    @Transactional
+    public void activate(Long id) {
+        Member member = findMember(id);
+        if (member.getStatus().isActive()) {
+            throw new BusinessException(ErrorCode.MEMBER_ALREADY_ACTIVE);   // 이미 활성 → 컨트롤러가 실패 플래시
+        }
+        member.activate();
+    }
+
     /** 일반 회원만 찾는다. 없는 id·관리자 id면 MEMBER_NOT_FOUND → AdminExceptionHandler가 404 화면으로 */
     private Member findMember(Long id) {
         return memberRepository.findById(id)
