@@ -11,6 +11,10 @@ import ProfileCard from './components/ProfileCard';
 import EmptyHistory from './components/EmptyHistory';
 import ExamHistoryTable from './components/ExamHistoryTable';
 import ExamTrendChart from './components/ExamTrendChart';
+import WithdrawButton from './components/WithdrawButton';
+import WithdrawDialog from './components/WithdrawDialog';
+
+const WITHDRAW_COMPLETE_MESSAGE = '회원 탈퇴가 완료되었습니다';
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -18,12 +22,23 @@ export default function MyPage() {
   const history = useMemberStore((state) => state.history);
   const fetchMe = useMemberStore((state) => state.fetchMe);
   const fetchMyResults = useMemberStore((state) => state.fetchMyResults);
+  const withdraw = useMemberStore((state) => state.withdraw);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [retryAttempt, setRetryAttempt] = useState(0);
   const [historyPage, setHistoryPage] = useState(1);
+  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [withdrawError, setWithdrawError] = useState('');
   const requestId = useRef(0);
   const activeController = useRef(null);
+  const withdrawInFlight = useRef(false);
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => { isMounted.current = false; };
+  }, []);
 
   useEffect(() => {
     const previousTitle = document.title;
@@ -75,6 +90,39 @@ export default function MyPage() {
     setRetryAttempt((attempt) => attempt + 1);
   }
 
+  function handleWithdrawOpenChange(open) {
+    if (withdrawInFlight.current) return;
+    setIsWithdrawOpen(open);
+    if (!open) setWithdrawError('');
+  }
+
+  async function handleWithdraw() {
+    // 상태 반영 전 연속 클릭도 DELETE 한 번만 보낸다.
+    if (withdrawInFlight.current) return;
+    withdrawInFlight.current = true;
+    // 진행 중 조회가 있으면 무효화한다. 이미 보낸 DELETE는 취소하지 않는다.
+    requestId.current++;
+    activeController.current?.abort();
+    setIsWithdrawing(true);
+    setWithdrawError('');
+    try {
+      // true는 reset 세대가 유지된 204에서 logout({ callApi: false })까지 끝난 경우뿐이다.
+      if (await withdraw()) {
+        // logout으로 보호 경로가 먼저 /login으로 보내더라도 완료 안내 state로 덮어쓴다.
+        navigate('/login', { replace: true, state: { message: WITHDRAW_COMPLETE_MESSAGE } });
+        return;
+      }
+      if (isMounted.current) setWithdrawError('회원 탈퇴를 처리하지 못했습니다. 잠시 후 다시 시도해주세요');
+    } catch (error) {
+      // 계정 변경 등으로 취소된 요청은 안내하지 않는다.
+      if (!isMounted.current || axios.isCancel(error)) return;
+      setWithdrawError(getErrorMessage(error, {}, '회원 탈퇴를 처리하지 못했습니다. 잠시 후 다시 시도해주세요'));
+    } finally {
+      withdrawInFlight.current = false;
+      if (isMounted.current) setIsWithdrawing(false);
+    }
+  }
+
   return (
     <section data-page="mypage" aria-labelledby="mypage-title" className="w-full space-y-8 py-4 md:py-8">
       <h1 id="mypage-title" className="break-keep text-center text-2xl font-bold">마이페이지</h1>
@@ -105,6 +153,12 @@ export default function MyPage() {
             )}
           </section>
           <ExamTrendChart results={history} />
+          <div className="flex justify-end border-t pt-6">
+            <WithdrawDialog open={isWithdrawOpen} isWithdrawing={isWithdrawing} errorMessage={withdrawError}
+              onOpenChange={handleWithdrawOpenChange} onConfirm={handleWithdraw}>
+              <WithdrawButton />
+            </WithdrawDialog>
+          </div>
         </>
       ) : null}
     </section>

@@ -165,3 +165,60 @@ fixture 개발 중 HMR로 root를 중복 생성하는 콘솔 경고를 발견해
 fixture에는 10·11·100건 및 삭제된 결과 시나리오를 추가했다. 재현은 개발 서버의 `/tests/mypage-browser.html`에서 해당 버튼을 선택하면 된다. fixture 토큰과 결과 persist는 메모리 저장소를 쓰며 실제 앱 인증과 격리했다. 종료 시 fixture 세션 정리·실제 앱 로그아웃·viewport 복원·생성 탭 정리를 수행했다
 
 3·4단계의 프론트 통과 기준을 확인했다. 실제 JWT/DB 서버, 200% 확대, 100건 초과 서버 페이지 순회는 미검증/후속 범위이며, 5단계 본인 탈퇴 UI와 6단계 통합 검증은 아직 진행하지 않았다
+
+## 2026-09-30 — 5단계 본인 회원 탈퇴
+
+기준: `feature/fe-mypage@f897b62` 위 작업 트리 (미커밋). `WithdrawButton`, `WithdrawDialog`를 추가하고 MyPage가 `isWithdrawOpen`·`isWithdrawing`·`withdrawError`를 소유하도록 연결했다. store의 `withdraw`(1단계)는 변경하지 않았다
+
+구현 내용:
+
+- 정상 조회된 마이페이지 하단에 “회원 탈퇴” 보조 버튼 표시. 이력 유무와 관계없이 노출
+- 확인창: “탈퇴하시겠습니까?” / “탈퇴 후에는 같은 계정으로 로그인할 수 없습니다”를 Dialog 제목·설명으로 연결. 열릴 때 취소 버튼에 포커스. 탈퇴 버튼을 `DialogTrigger asChild`로 연결해 닫힌 뒤 Radix가 포커스를 복귀시키고 `aria-haspopup`·`aria-expanded`를 부여
+- 처리 중: 확인·취소 버튼 비활성, “탈퇴 처리 중” 표시, `aria-busy`. ESC·바깥 클릭·onOpenChange 닫힘 차단. 상태 반영 전 연속 클릭은 ref로 차단
+- 탈퇴 시작 시 진행 중 조회 번호 무효화·abort. 이미 보낸 DELETE는 취소하지 않음
+- store가 `true`를 반환한 경우에만 `/login` replace + `state.message` “회원 탈퇴가 완료되었습니다”. `false`는 대화상자 오류, axios 취소 오류는 안내·이동 없음
+- 실패는 `getErrorMessage(error, {}, '회원 탈퇴를 처리하지 못했습니다. 잠시 후 다시 시도해주세요')`로 대화상자 안에 표시하고 같은 대화상자에서 재시도
+
+`logout({ callApi: false })`의 `clear()`가 먼저 실행되므로 ProtectedRoute가 `/login`(state `from`)으로 먼저 이동한다. 이후 MyPage의 replace가 같은 전환 배치에서 state를 완료 안내로 덮어써 LoginPage가 안내를 받는 것을 브라우저에서 확인했다 (history 기록: `from` → `message` → LoginPage 소비 후 `{}`)
+
+### 자동 검사
+
+| 검사 | 결과 |
+|---|---|
+| `npm run test:mypage` | 31/31 통과 |
+| `npm run test:auth` | 16/16 통과 |
+| `npm run test:validation` | 12/12 통과 |
+| `npm run lint` | 오류 0, 기존 경고 5건 유지 (MyPage 경고 0) |
+| `npm run build` | 통과 |
+| `git diff --check` | 통과 |
+
+탈퇴 store 액션의 204·실패·reset·계정 변경 경합은 1단계 `member.test.js`에서 검증된 범위를 재사용했다. 이번 변경은 화면 연결이므로 JSX 구조 복제 테스트는 추가하지 않고 아래 브라우저 검증으로 확인했다
+
+### 브라우저 검증 (실제 앱 + MSW)
+
+환경: Vite 개발 서버 `http://127.0.0.1:5180`, Claude 내장 브라우저. 요청 횟수는 `devWorker.events`의 `request:start`로 집계했고, 실패·지연 응답은 `devWorker.use(..., { once: true })`로 한 번만 덮어썼다
+
+| 시나리오 | 실제 결과 |
+|---|---|
+| kim 빈 이력 + 직접 진입 | 로그인 후 `sessionStorage.result-storage`에 임시 답변을 심고 `/mypage` 전체 새로고침 진입. 프로필·빈 상태·“회원 탈퇴” 표시 |
+| 확인창 접근성 | 제목·설명 aria 연결, 열림 시 포커스 “취소”, 버튼 높이 48px |
+| 취소 (ESC, 키보드 Enter) | 대화상자 닫힘, 포커스 “회원 탈퇴”로 복귀, DELETE 0회 |
+| DELETE 500 | 대화상자 안 “회원 탈퇴를 처리하지 못했습니다. 잠시 후 다시 시도해주세요”, 로그인 유지 |
+| 네트워크 실패 후 재시도 | 같은 대화상자에서 재시도, “네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요”, 로그인 유지 |
+| 처리 중 ESC·바깥 클릭 | 10초 지연 동안 대화상자 유지, `aria-busy=true`, 두 버튼 비활성 |
+| 10초 초과 | 기존 axios timeout(10초)에 따라 네트워크 오류 문구, 로그인 유지 |
+| 연속 클릭 3회 | DELETE 1회 |
+| kim 204 성공 | `/login` 이동, “회원 탈퇴가 완료되었습니다” 1회 표시, 서버 logout 요청 0회, 인증 정보·logoutReason 비움, `result-storage` 임시 답변이 초기 상태로 정리 |
+| 안내 일회성 | 회원가입 이동 후 뒤로 가기 시 안내 미표시 |
+| 탈퇴 후 재로그인 | kim 로그인 403 `MEMBER_WITHDRAWN` |
+| park 이력 1건 + 375px | 하단 탈퇴 버튼 343×48px, 대화상자 뷰포트 안, 가로 넘침 없음. 탈퇴 성공 후 로그인 화면 안내 |
+| DELETE 진행 중 계정 변경 | hong의 DELETE 지연 중 kim으로 로그인 → 늦은 204 후에도 kim 로그인 유지, `/login` 이동·완료 안내 없음 |
+| 콘솔 | 의도한 500·네트워크·403 리소스 오류 외 error/warning 0개 |
+
+내장 브라우저 창이 숨겨진 동안에는 프레임이 그려지지 않아 Dialog 닫힘 애니메이션이 끝나지 않았다(`data-state=closed` 유지). 창을 표시한 뒤 정상 닫힘·포커스 복귀를 확인했으며 제품 동작 문제가 아니다
+
+최초 구현은 제어형 Dialog에 ref를 넘겨 `onCloseAutoFocus`에서 포커스를 직접 복귀시켰다. 이후 코드 단순화를 위해 `DialogTrigger asChild` 방식으로 바꾸고 ref 전달을 제거했다. 변경 후 재검증: 탈퇴 버튼 `aria-haspopup=dialog`·`aria-expanded` 전환, 48px, 키보드 Enter로 열림·취소 포커스, ESC·취소 닫힘 후 포커스 복귀·DELETE 0회, 500 오류 표시·로그인 유지, 재시도 연속 클릭 3회에 DELETE 1회, 204 후 `/login` 완료 안내·인증 비움·`result-storage` 정리. 창이 숨겨진 상태라 재검증 탭에만 Dialog 애니메이션을 끄는 테스트 스타일을 주입했다. 테스트 31/16/12, lint 기존 경고 5건, build 통과
+
+### 남은 범위
+
+5단계 통과 기준을 MSW 환경에서 확인했다. 실제 JWT/DB 서버의 `DELETE /api/members/me`(WITHDRAWN 변경·refresh token 삭제·재로그인 거부)와 6단계 통합 회귀는 미진행이다
