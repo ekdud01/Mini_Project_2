@@ -7,7 +7,7 @@ import { getErrorCode, getErrorMessage, getFieldErrors } from '@/utils/apiError'
 import { SIGNUP_FIELDS } from '@/utils/validation';
 import RegisterForm from './components/RegisterForm';
 
-const FAILURE_MESSAGE = '회원가입에 실패했습니다. 다시 시도해주세요.';
+const FAILURE_MESSAGE = '회원가입에 실패했습니다. 다시 시도해주세요';
 
 export default function RegisterPage() {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -26,7 +26,7 @@ export default function RegisterPage() {
       await register(body);
       navigate('/login', {
         replace: true,
-        state: { message: '가입이 완료되었습니다. 로그인해주세요.' },
+        state: { message: '가입이 완료되었습니다. 로그인해주세요' },
       });
     } catch (error) {
       const code = getErrorCode(error);

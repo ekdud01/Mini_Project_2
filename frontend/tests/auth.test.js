@@ -257,7 +257,7 @@ test('오류 유틸은 필드 오류·화면별 기본 문구·네트워크 오�
   const error = { response: { data: { error: { code: 'DUPLICATE_EMAIL', fields: [{ field: 'email', message: '중복' }] } } } };
   assert.deepEqual(getFieldErrors(error), { email: '중복' });
   assert.deepEqual(getFieldErrors({}), {});
-  assert.equal(getErrorMessage(error, { DUPLICATE_EMAIL: '이미 가입된 이메일입니다.' }), '이미 가입된 이메일입니다.');
-  assert.equal(getErrorMessage(error, {}, '회원가입에 실패했습니다.'), '회원가입에 실패했습니다.');
+  assert.equal(getErrorMessage(error, { DUPLICATE_EMAIL: '이미 가입된 이메일입니다' }), '이미 가입된 이메일입니다');
+  assert.equal(getErrorMessage(error, {}, '회원가입에 실패했습니다'), '회원가입에 실패했습니다');
   assert.match(getErrorMessage({ request: {} }), /네트워크 오류/);
 });
