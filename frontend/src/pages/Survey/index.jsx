@@ -222,7 +222,7 @@ export default function SurveyPage({ type }) {
   /** 문항 조회 실패 또는 문항 없음: 오류 메시지 + 재시도 */
   if (loadError || noQuestions) {
     return (
-      <div className="mx-auto max-w-2xl space-y-4 py-10 text-center">
+      <div className="mx-auto max-w-2xl space-y-4 pb-10 text-center">
         <Alert variant="destructive">
           <AlertDescription>{MESSAGES.loadFail}</AlertDescription>
         </Alert>
