@@ -15,8 +15,19 @@ async function enableMocking() {
   await worker.start({ onUnhandledRequest: 'bypass' });
 
   // [개발용] 로그인 화면이 완성되기 전 테스트 로그인: 브라우저 콘솔에서 devLogin() 입력
-  const { devLogin } = await import('./store/authStore');
-  window.devLogin = devLogin;
+  const { devLogin, useAuthStore } = await import('./store/authStore');
+  const { http, HttpResponse, delay } = await import('msw');
+  const { default: devApi } = await import('./api/axiosInstance');
+  Object.assign(window, {
+    devLogin,
+    devExpireToken: () => useAuthStore.getState().setAccessToken('expired'),
+    devWorker: worker,
+    devAuth: useAuthStore,
+    devApi,
+    http,
+    HttpResponse,
+    delay,
+  });
   console.info('[MSW] Mock 데이터 사용 중 — 테스트 로그인: 콘솔에 devLogin() 입력');
 }
 

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.kdsq.survey.ExamType;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,10 +38,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ErrorResponse.of(ErrorCode.VALIDATION_ERROR, fields));
     }
 
-    /** JSON 형식 오류, 타입이 맞지 않는 파라미터: 400 VALIDATION_ERROR */
-    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
-    public ResponseEntity<ErrorResponse> handleBadRequest(Exception e) {
+    /** JSON 형식 오류: 400 VALIDATION_ERROR */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(HttpMessageNotReadableException e) {
         return ResponseEntity.badRequest().body(ErrorResponse.of(ErrorCode.VALIDATION_ERROR));
+    }
+
+    /**
+     * 타입이 맞지 않는 파라미터: 400. 검사 유형(?examType=KDSQ_X)이면 INVALID_EXAM_TYPE (REST 설계서 5.2),
+     * 그 외(숫자 자리에 문자 등)는 VALIDATION_ERROR
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+        ErrorCode code = e.getRequiredType() == ExamType.class ? ErrorCode.INVALID_EXAM_TYPE : ErrorCode.VALIDATION_ERROR;
+        return ResponseEntity.status(code.getStatus()).body(ErrorResponse.of(code));
     }
 
     /** 그 외 예상하지 못한 오류: 500 (상세 내용은 로그에만 남긴다) */

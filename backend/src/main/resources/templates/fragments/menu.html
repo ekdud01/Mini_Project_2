@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- 상단 메뉴 | Model: currentPath (AdminModelAdvice 제공) 헤더 아래 가로 메뉴 -->
+<nav th:fragment="menu" class="admin-menu" aria-label="관리자 메뉴"
+     th:with="p=${currentPath} ?: ''">
+    <ul>
+        <li><a th:href="@{/admin/dashboard}"
+               th:classappend="${#strings.startsWith(p, '/admin/dashboard')} ? 'active'"
+               th:attr="aria-current=${#strings.startsWith(p, '/admin/dashboard')} ? 'page' : null">대시보드</a></li>
+        <li><a th:href="@{/admin/members}"
+               th:classappend="${#strings.startsWith(p, '/admin/members')} ? 'active'"
+               th:attr="aria-current=${#strings.startsWith(p, '/admin/members')} ? 'page' : null">회원 관리</a></li>
+        <li><a th:href="@{/admin/results}"
+               th:classappend="${#strings.startsWith(p, '/admin/results')} ? 'active'"
+               th:attr="aria-current=${#strings.startsWith(p, '/admin/results')} ? 'page' : null">검사 결과</a></li>
+    </ul>
+</nav>
+</html>

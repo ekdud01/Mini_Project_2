@@ -72,9 +72,12 @@ public class SurveyResult extends BaseEntity {
         return this.survey.getExamType();
     }
 
-    /** KDSQ-C 총점. KDSQ-P로 끝난 결과는 null (저장하지 않고 계산) */
+    /**
+     * KDSQ-C 총점. KDSQ-P로 끝난 결과는 null (저장하지 않고 계산).
+     * 영역 점수로 판단하므로 LAZY인 survey를 읽지 않는다 (트랜잭션 밖·템플릿에서도 안전, Entity 설계서 4.3.2)
+     */
     public Integer getTotalScore() {
-        if (getExamType() == ExamType.KDSQ_P) {
+        if (this.memoryScore == null) {
             return null;
         }
         return this.memoryScore + this.otherScore + this.adlScore;
@@ -82,6 +85,9 @@ public class SurveyResult extends BaseEntity {
 
     /** 1차(KDSQ-P) 0~3점으로 검사가 끝난 경우 */
     public static SurveyResult createFirstOnly(Member member, Survey pSurvey, int firstScore) {
+        if (pSurvey.getExamType() != ExamType.KDSQ_P) {
+            throw new BusinessException(ErrorCode.INVALID_EXAM_TYPE);
+        }
         if (firstScore >= 4) {
             throw new BusinessException(ErrorCode.KDSQ_C_REQUIRED);
         }
@@ -96,6 +102,9 @@ public class SurveyResult extends BaseEntity {
     /** 1차 4점 이상 후 2차(KDSQ-C)까지 완료한 경우 */
     public static SurveyResult createWithSecond(Member member, Survey cSurvey, int firstScore,
                                                 int memoryScore, int otherScore, int adlScore) {
+        if (cSurvey.getExamType() != ExamType.KDSQ_C) {
+            throw new BusinessException(ErrorCode.INVALID_EXAM_TYPE);
+        }
         if (firstScore < 4) {
             throw new BusinessException(ErrorCode.KDSQ_C_NOT_ALLOWED);
         }
@@ -110,10 +119,8 @@ public class SurveyResult extends BaseEntity {
         return result;
     }
 
+    /** 2차까지 완료한 결과의 판정 (1차로 끝난 결과는 createFirstOnly에서 Normal로 고정) */
     private RiskLevel evaluateRisk() {
-        if (getExamType() == ExamType.KDSQ_P) {
-            return RiskLevel.Normal; // 1차에서 끝난 결과는 0~3점만 저장되므로 항상 정상
-        }
         return (getTotalScore() <= 5) ? RiskLevel.Borderline : RiskLevel.HighRisk;
     }
 

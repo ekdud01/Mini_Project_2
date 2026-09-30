@@ -100,15 +100,14 @@ IntelliJ에서 `src/main/java/com/kdsq/KdsqApplication.java`를 열고 `main` �
 Started KdsqApplication in ... seconds
 ```
 
-> `Using generated security password: ...` 경고는 보안 설정이 아직 임시본이라 나오는 것이다. 무시해도 된다.
 
 ### 3-2. 브라우저로 확인
 
 | 주소 | 기대 결과 |
 |---|---|
 | http://localhost:8080/api/health | `{"success":true,"data":{"status":"UP"},"message":"서버가 정상 동작 중입니다",...}` |
-| http://localhost:8080/admin/preview | 관리자 레이아웃(헤더·사이드바·푸터) 확인용 페이지 |
-| http://localhost:8080/admin/login | 관리자 로그인 폼 (로그인 처리는 보안 설정 정식본이 들어오면 동작) |
+| http://localhost:8080/admin/login | 관리자 로그인 폼. `admin@kdsq.com` / `admin1234!`로 로그인하면 관리자 화면으로 이동 |
+| http://localhost:8080/admin/preview | 관리자 레이아웃(헤더·사이드바·푸터) 확인용 페이지 (관리자 로그인 후) |
 
 DB 도구(HeidiSQL 등)나 `mysql` 명령창에서 `USE kdsq_db; SHOW TABLES;`를 실행하면 테이블 6개가 보여야 한다.
 `members`, `surveys`, `questions`, `survey_results`, `solutions`, `refresh_tokens`
@@ -117,9 +116,7 @@ DB 도구(HeidiSQL 등)나 `mysql` 명령창에서 `USE kdsq_db; SHOW TABLES;`�
 
 1. VS Code에서 `backend/http/member.http`를 연다.
 2. 첫 번째 요청(회원가입) 위의 **Send Request**를 누른다.
-3. 오른쪽에 `HTTP/1.1 201`과 `"id": 2`가 나오면 준비 끝이다.
-
-왜 2번인지는 아래 "4-3. 로그인 회원 id"를 본다.
+3. 오른쪽에 `HTTP/1.1 201`이 나오면 준비 끝이다. 이후 API 테스트에는 이 계정으로 로그인해 받은 토큰을 쓴다 (4-3).
 
 **테스트 계정**
 
@@ -154,8 +151,8 @@ com.kdsq
 ├── admin/     관리자 화면 컨트롤러·서비스                                                    (회원·결과: 이원구 / 대시보드: 윤수연)
 └── global/
     ├── common/      BaseEntity, ApiResponse, PageResponse, HealthController
-    ├── config/      SecurityConfig(임시), JpaAuditingConfig, WebConfig, ThymeleafConfig
-    ├── security/    SecurityUtil(임시)
+    ├── config/      SecurityConfig(체인 3개: /api JWT, /admin formLogin, 그 외), JpaAuditingConfig, WebConfig, ThymeleafConfig
+    ├── security/    JwtTokenProvider, JwtAuthenticationFilter, 401·403 JSON 처리, AdminUserDetailsService, SecurityUtil
     ├── exception/   ErrorCode, BusinessException, ErrorResponse, FieldErrorDto, GlobalExceptionHandler
     ├── init/        AdminInitializer (관리자 계정 자동 등록)
     └── validation/  NotFutureYear (올해 이후 연도 금지 검증)
@@ -172,17 +169,34 @@ src/main/resources
 - Entity를 API 응답으로 그대로 반환하지 않고 DTO로 바꿔서 반환한다.
 - **`member` 패키지가 완성된 예시다.** 새 API를 만들 때 `MemberController` → `MemberService` → `MemberRepository`, `dto/SignupRequest`(검증), `dto/MemberResponse`(응답 변환)를 열어 보고 같은 모양으로 만들면 된다.
 
-### 4-3. 로그인 회원 id (임시)
+### 4-3. 로그인 회원 id와 토큰
 
-JWT가 완성되기 전까지 "지금 로그인한 회원"은 항상 이 함수로 얻는다.
+사용자 API(`/api/**`)는 JWT로 로그인을 확인한다. 회원가입(`POST /api/members`), 로그인·재발급(`POST /api/auth/login`, `/reissue`), `/api/health`를 뺀 모든 API는 `Authorization: Bearer {액세스 토큰}` 헤더가 있어야 하고, 없으면 401 `UNAUTHORIZED`가 난다.
+
+컨트롤러·서비스에서 "지금 로그인한 회원"은 항상 이 함수로 얻는다.
 
 ```java
-Long memberId = SecurityUtil.currentMemberId();   // 지금은 항상 2
+Long memberId = SecurityUtil.currentMemberId();   // 액세스 토큰의 회원 id
 ```
 
-- 서버를 처음 켜면 관리자 계정이 1번으로 먼저 등록되므로, 첫 회원가입이 2번이 된다. 그래서 임시로 2를 반환한다.
-- JWT가 들어오면(화요일 저녁\~수요일, 공지 예정) 이 함수의 내부만 토큰 기반으로 바뀐다. **부르는 코드는 고칠 필요가 없다.**
-- 회원을 DB에서 지웠다가 다시 만들면 번호가 3, 4로 밀린다. 그럴 때는 `TRUNCATE TABLE refresh_tokens; TRUNCATE TABLE members;` 후 서버를 다시 켜고 회원가입을 다시 한다. (검사 결과가 있으면 `survey_results`를 먼저 비운다)
+**API 테스트할 때 토큰 받기 (VS Code REST Client)**
+
+```http
+# @name login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{ "email": "hong@test.com", "password": "Test1234!" }
+
+### 로그인 응답의 토큰을 가져다 쓴다 (로그인 요청을 먼저 실행)
+GET http://localhost:8080/api/surveys
+Authorization: Bearer {{login.response.body.data.accessToken}}
+```
+
+- 액세스 토큰은 1시간 동안 유효하다. 401 `ACCESS_TOKEN_EXPIRED`가 나오면 로그인 요청을 다시 실행한다.
+- 예시는 `backend/http/member.http`, `auth.http`에 있다.
+
+**관리자 화면(`/admin/**`)** 은 세션 로그인이다. http://localhost:8080/admin/login 에서 `admin@kdsq.com` / `admin1234!`로 로그인해야 들어갈 수 있다 (`/admin/preview` 포함). 일반 회원 계정으로는 로그인되지 않는다.
 
 ### 4-4. 성공 응답
 
@@ -238,6 +252,7 @@ LocalDateTime createdAt
 - `backend/http/` 폴더에 `.http` 파일을 만들어 두면 VS Code REST Client로 실행할 수 있고, 팀원도 같은 요청을 그대로 쓸 수 있다. `member.http`가 예시다.
 - 요청 본문과 기대 응답은 [`../mock-data/requests/`](../mock-data/requests), [`../mock-data/responses/`](../mock-data/responses)에 API별로 있다. Postman에 그대로 붙여 넣어도 된다.
 - 설계서 7.4의 테스트 케이스(TC-...)를 기준으로 확인한다.
+- 관리자 목록·검색·대시보드처럼 데이터가 많아야 확인되는 화면은 `backend/http/sample-data.sql`로 샘플 회원 26명·검사 결과 119건(Mock 데이터와 같은 내용)을 넣는다. 실행 방법은 파일 맨 위 주석에 있고, 여러 번 실행해도 된다.
 
 ---
 
@@ -245,8 +260,6 @@ LocalDateTime createdAt
 
 | 파일 | 지금 | 교체 후 (담당) |
 |---|---|---|
-| `SecurityConfig` | 모든 요청 허용 | `/api/**`는 JWT, `/admin/**`는 관리자 로그인(formLogin) (윤수연, 화\~수) |
-| `SecurityUtil` | 항상 2 반환 | 토큰의 회원 id (윤수연, 화\~수) |
 | `templates/layout`, `admin/login`, `admin.css` | 최소 뼈대 | UI 설계서 2.5·4장 (황지영) |
 | `admin/preview.html`, `WebConfig`의 `/admin/preview` | 레이아웃 확인용 | 관리자 화면 완성 후 삭제 (황지영) |
 
@@ -273,7 +286,10 @@ LocalDateTime createdAt
 | Gradle 동기화 실패, `Unsupported class file major version` | IntelliJ가 17이 아닌 JDK 사용 | 2-4의 3·4번 |
 | `Port 8080 was already in use` | 다른 서버(이전 실습 등)가 켜져 있음 | 그 서버를 끄거나 IntelliJ 실행 창의 빨간 정지 버튼 |
 | `.http` 파일에 실행 버튼이 없음 | IntelliJ 무료판 미지원 | VS Code REST Client 사용 |
-| `/api/members/me`가 404 `MEMBER_NOT_FOUND` | 2번 회원이 없거나 탈퇴 상태 | 3-3 회원가입, 또는 `UPDATE members SET status = 'ACTIVE' WHERE id = 2;` |
+| `/api/members/me`가 404 `MEMBER_NOT_FOUND` | 로그인한 회원이 탈퇴 상태 | `UPDATE members SET status = 'ACTIVE' WHERE email = 'hong@test.com';` 후 다시 로그인 |
+| API가 401 `UNAUTHORIZED` | `Authorization: Bearer` 헤더가 없거나 토큰이 잘못됨 (리프레시 토큰을 넣은 경우 포함) | 로그인 요청으로 받은 `accessToken`을 헤더에 넣는다 (4-3) |
+| API가 401 `ACCESS_TOKEN_EXPIRED` | 액세스 토큰 1시간 만료 | 로그인 요청을 다시 실행 |
+| 관리자 로그인이 계속 `?error` | 관리자 계정이 아니거나 비밀번호 오류 | `admin@kdsq.com` / `admin1234!` (일반 회원은 관리자 로그인 불가) |
 | 두 번째 실행부터 "관리자 계정을 등록했습니다"가 안 나옴 | 이미 등록됨 | 정상 (없을 때만 만든다) |
 | `git checkout` 시 `Your local changes ... would be overwritten` | 커밋 안 한 수정이 있음 | 필요한 수정이면 커밋, 실수면 `git restore <파일>` |
 
