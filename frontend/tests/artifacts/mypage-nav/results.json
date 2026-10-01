@@ -1,0 +1,101 @@
+{
+  "records": [
+    {
+      "scenario": "375px 배치·제목 노출·일반 스크롤·하단 표시·데이터/페이지/차트 유지",
+      "geometry": {
+        "width": 328,
+        "group": 328,
+        "links": [
+          {
+            "width": 106.65625,
+            "height": 72,
+            "font": 16
+          },
+          {
+            "width": 106.671875,
+            "height": 72,
+            "font": 16
+          },
+          {
+            "width": 106.671875,
+            "height": 72,
+            "font": 16
+          }
+        ],
+        "headerBottom": 81,
+        "top": 81,
+        "overflow": 0,
+        "hidden": false
+      }
+    },
+    {
+      "scenario": "768px 배치·제목 노출·일반 스크롤·하단 표시·데이터/페이지/차트 유지",
+      "geometry": {
+        "width": 721,
+        "group": 381,
+        "links": [
+          {
+            "width": 111,
+            "height": 48,
+            "font": 16
+          },
+          {
+            "width": 142.78125,
+            "height": 48,
+            "font": 16
+          },
+          {
+            "width": 111.21875,
+            "height": 48,
+            "font": 16
+          }
+        ],
+        "headerBottom": 73,
+        "top": 73,
+        "overflow": 0,
+        "hidden": false
+      }
+    },
+    {
+      "scenario": "1280px 배치·제목 노출·일반 스크롤·하단 표시·데이터/페이지/차트 유지",
+      "geometry": {
+        "width": 864,
+        "group": 381,
+        "links": [
+          {
+            "width": 111,
+            "height": 48,
+            "font": 16
+          },
+          {
+            "width": 142.78125,
+            "height": 48,
+            "font": 16
+          },
+          {
+            "width": 111.21875,
+            "height": 48,
+            "font": 16
+          }
+        ],
+        "headerBottom": 73,
+        "top": 73,
+        "overflow": 0,
+        "hidden": false
+      }
+    },
+    {
+      "scenario": "Tab/Enter·포커스 윤곽선·제목 다음 차트 진입·동작 축소 즉시 이동·헤더 메뉴 높이·큰 글자 줄바꿈",
+      "passed": true
+    },
+    {
+      "scenario": "빈 이력 두 링크·로딩 숨김/복원·프로필/이력 오류 재시도·탈퇴 대화상자 취소",
+      "passed": true
+    },
+    {
+      "scenario": "StrictMode·상세 왕복 목차 정리/복원·타 화면 헤더 비고정·차트 단일 인스턴스",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

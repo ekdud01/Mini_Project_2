@@ -167,7 +167,7 @@ function ExamTrendChart({ results = [], totalElements }) {
 
   return (
     <section aria-labelledby="mypage-trend-title" className="min-w-0 space-y-4">
-      <h2 id="mypage-trend-title" className="text-2xl font-bold">검사 결과 추이</h2>
+      <h2 id="mypage-trend-title" tabIndex={-1} className="scroll-mt-[var(--mypage-scroll-offset,1rem)] text-2xl font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">검사 결과 추이</h2>
       <div className="min-w-0 space-y-4 rounded-2xl border bg-white p-4 shadow-sm md:p-6">
         {isLimited && <p className="text-base text-muted-foreground">최근 100건을 표시합니다</p>}
         <div className="flex min-w-0">

@@ -13,6 +13,7 @@ import ExamHistoryTable from './components/ExamHistoryTable';
 import ExamTrendChart from './components/ExamTrendChart';
 import WithdrawButton from './components/WithdrawButton';
 import WithdrawDialog from './components/WithdrawDialog';
+import MyPageSectionNav from './components/MyPageSectionNav';
 import { HISTORY_PAGE_SIZE, MOBILE_HISTORY_PAGE_SIZE } from './history';
 
 const WITHDRAW_COMPLETE_MESSAGE = '회원 탈퇴가 완료되었습니다';
@@ -139,7 +140,7 @@ export default function MyPage() {
   }
 
   return (
-    <section data-page="mypage" aria-labelledby="mypage-title" className="w-full space-y-8 pb-4 md:pb-8">
+    <section data-page="mypage" aria-labelledby="mypage-title" className="w-full space-y-10 pb-4 md:pb-8">
       <h1 id="mypage-title" className="mb-6! break-keep text-center text-2xl font-bold">마이페이지</h1>
 
       {isLoading ? (
@@ -156,11 +157,12 @@ export default function MyPage() {
         </div>
       ) : me ? (
         <>
+          <MyPageSectionNav hasHistory={history.length > 0} />
           <ProfileCard me={me} />
           <ExamTrendChart results={history} totalElements={historyMeta?.totalElements} />
           <section aria-labelledby="mypage-history-title" className="space-y-4">
             <div className="flex flex-wrap items-center gap-3">
-              <h2 id="mypage-history-title" className="text-2xl font-bold">검사 이력</h2>
+              <h2 id="mypage-history-title" tabIndex={-1} className="scroll-mt-[var(--mypage-scroll-offset,1rem)] text-2xl font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">검사 이력</h2>
               <p className="text-base text-muted-foreground">총 {historyMeta?.totalElements ?? history.length}건</p>
             </div>
             {historyMeta?.totalElements > history.length && (

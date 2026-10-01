@@ -57,7 +57,7 @@ export default function Header() {
   }
 
   return (
-    <header className="border-b bg-white">
+    <header className={cn('border-b bg-white', location.pathname === '/mypage' && 'sticky top-0 z-30')}>
       {/* 경로·인증 상태가 바뀌면 모바일 펼침 상태도 초기화한다. */}
       <HeaderNavigation
         key={`${location.key}:${isLoggedIn}`}

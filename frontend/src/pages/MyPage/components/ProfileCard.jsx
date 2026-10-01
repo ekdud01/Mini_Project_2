@@ -16,7 +16,7 @@ export default function ProfileCard({ me }) {
 
   return (
     <section aria-labelledby="mypage-profile-title" className="min-w-0 space-y-4">
-      <h2 id="mypage-profile-title" className="text-2xl font-bold">회원 정보</h2>
+      <h2 id="mypage-profile-title" tabIndex={-1} className="scroll-mt-[var(--mypage-scroll-offset,1rem)] text-2xl font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">회원 정보</h2>
       <Card className="min-w-0 rounded-2xl bg-white">
         <CardContent className="space-y-6 px-4 md:px-6">
           <div className="flex min-w-0 items-center gap-4 border-b pb-6">
