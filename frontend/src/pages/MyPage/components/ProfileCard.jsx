@@ -25,9 +25,9 @@ export default function ProfileCard({ me }) {
             </span>
             <p className="min-w-0 text-2xl font-bold [overflow-wrap:anywhere]">{me.name}</p>
           </div>
-          <dl className="grid min-w-0 grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
+          <dl className="grid min-w-0 grid-cols-1 gap-x-8 gap-y-3 md:grid-cols-2 md:gap-y-6">
             {fields.map(([label, value]) => (
-              <div key={label} className="min-w-0 space-y-1">
+              <div key={label} className="grid min-w-0 grid-cols-[5rem_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1 md:block md:space-y-1">
                 <dt className="text-base text-muted-foreground">{label}</dt>
                 <dd className="min-w-0 text-lg font-semibold [overflow-wrap:anywhere]">{value}</dd>
               </div>

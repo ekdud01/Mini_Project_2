@@ -132,7 +132,7 @@ try {
   for (const width of [375, 768, 1280]) {
     await resize(width);
     const rows = await readRows();
-    assert.equal(rows.length, 10);
+    assert.equal(rows.length, width < 768 ? 5 : 10);
     for (const row of rows) {
       const index = row.id - 1;
       const first = index % 3 === 0 ? (index === 0 ? '0' : '3') : '4';

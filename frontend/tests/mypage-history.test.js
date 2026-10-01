@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { getHistoryPage, getScoreDisplay, toTrendData } from '../src/pages/MyPage/history.js';
+import { getHistoryPage, getScoreDisplay, toTrendData, MOBILE_HISTORY_PAGE_SIZE } from '../src/pages/MyPage/history.js';
 import { formatDateOnly, formatMonthDay, formatKoreanDate } from '../src/utils/date.js';
 
 const result = (id, overrides = {}) => ({
@@ -18,6 +18,20 @@ for (const count of [0, 1, 10, 11, 100]) {
     assert.deepEqual(displayed.flat().map((row) => row.id), Array.from({ length: count }, (_, index) => count - index));
     assert.equal(getHistoryPage(input, 999).currentPage, totalPages);
     assert.equal(getHistoryPage(input, 0).currentPage, 1);
+    assert.deepEqual(input.map((row) => row.id), Array.from({ length: count }, (_, index) => index + 1));
+  });
+}
+
+for (const count of [0, 1, 5, 6, 10, 11, 100]) {
+  test(`모바일 ${count}건은 5건씩 중복·누락 없이 표시하고 페이지 범위를 제한한다`, () => {
+    const input = Object.freeze(Array.from({ length: count }, (_, index) => Object.freeze(result(index + 1))));
+    const { totalPages } = getHistoryPage(input, 1, MOBILE_HISTORY_PAGE_SIZE);
+    assert.equal(totalPages, Math.max(1, Math.ceil(count / 5)));
+    const displayed = Array.from({ length: totalPages }, (_, index) => getHistoryPage(input, index + 1, MOBILE_HISTORY_PAGE_SIZE).rows);
+    assert.ok(displayed.every((rows) => rows.length <= 5));
+    assert.deepEqual(displayed.flat().map((row) => row.id), Array.from({ length: count }, (_, index) => count - index));
+    assert.equal(getHistoryPage(input, 999, MOBILE_HISTORY_PAGE_SIZE).currentPage, totalPages);
+    assert.equal(getHistoryPage(input, 0, MOBILE_HISTORY_PAGE_SIZE).currentPage, 1);
     assert.deepEqual(input.map((row) => row.id), Array.from({ length: count }, (_, index) => index + 1));
   });
 }

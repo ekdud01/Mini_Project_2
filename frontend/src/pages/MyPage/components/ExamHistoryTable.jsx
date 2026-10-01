@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { SurveyResultShape } from '@/types/propTypes';
 import { formatDateOnly } from '@/utils/date';
 import { EXAM_TYPE_LABEL } from '@/utils/kdsq';
-import { getHistoryPage, getScoreDisplay } from '../history';
+import { getHistoryPage, getScoreDisplay, HISTORY_PAGE_SIZE } from '../history';
 import RiskBadge from './RiskBadge';
 
 function scoreContent(score, label) {
@@ -15,8 +15,8 @@ function scoreContent(score, label) {
   return <span className="whitespace-nowrap"><strong className="text-lg font-semibold">{score}</strong><span className="text-muted-foreground">{label.slice(score.length)}</span></span>;
 }
 
-export default function ExamHistoryTable({ results = [], page = 1, onPageChange, onDetail }) {
-  const { rows, currentPage, totalPages } = useMemo(() => getHistoryPage(results, page), [results, page]);
+export default function ExamHistoryTable({ results = [], page = 1, pageSize = HISTORY_PAGE_SIZE, onPageChange, onDetail }) {
+  const { rows, currentPage, totalPages } = useMemo(() => getHistoryPage(results, page, pageSize), [results, page, pageSize]);
 
   function detailButton(result) {
     return (
@@ -86,6 +86,7 @@ export default function ExamHistoryTable({ results = [], page = 1, onPageChange,
 ExamHistoryTable.propTypes = {
   results: PropTypes.arrayOf(SurveyResultShape),
   page: PropTypes.number,
+  pageSize: PropTypes.number,
   onPageChange: PropTypes.func.isRequired,
   onDetail: PropTypes.func.isRequired,
 };

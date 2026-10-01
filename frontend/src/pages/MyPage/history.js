@@ -2,6 +2,7 @@ import { getDisplayScore, RISK_LEVEL } from '../../utils/kdsq.js';
 import { formatDateOnly, formatMonthDay } from '../../utils/date.js';
 
 export const HISTORY_PAGE_SIZE = 10;
+export const MOBILE_HISTORY_PAGE_SIZE = 5;
 
 const TREND_LEVEL = new Map([['Normal', 0], ['Borderline', 1], ['HighRisk', 2]]);
 
@@ -35,12 +36,12 @@ export function sortHistory(results, newestFirst = false) {
   });
 }
 
-export function getHistoryPage(results, page) {
+export function getHistoryPage(results, page, pageSize = HISTORY_PAGE_SIZE) {
   const sorted = sortHistory(results, true);
-  const totalPages = Math.max(1, Math.ceil(sorted.length / HISTORY_PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const currentPage = Math.min(Math.max(1, page), totalPages);
   return {
-    rows: sorted.slice((currentPage - 1) * HISTORY_PAGE_SIZE, currentPage * HISTORY_PAGE_SIZE),
+    rows: sorted.slice((currentPage - 1) * pageSize, currentPage * pageSize),
     currentPage,
     totalPages,
   };

@@ -131,14 +131,29 @@ function ExamTrendChart({ results = [], totalElements }) {
       },
       plugins: [decorate],
     });
-    const updateOverflow = () => setIsOverflowing(scroller.scrollWidth > scroller.clientWidth);
+    let followLatest = true;
+    let previousWidth;
+    let previousScrollWidth;
+    const updateOverflow = () => {
+      setIsOverflowing(scroller.scrollWidth > scroller.clientWidth);
+      // 첫 표시·새 데이터와 최근 끝을 보고 있던 경우에만 최근 검사를 유지한다.
+      // viewport/Chart.js 레이아웃이 늦게 확정돼도 ResizeObserver에서 다시 맞춘다.
+      if (followLatest) scroller.scrollLeft = scroller.scrollWidth;
+      previousWidth = scroller.clientWidth;
+      previousScrollWidth = scroller.scrollWidth;
+    };
+    const handleScroll = () => {
+      // 크기 변경이 만든 scroll 이벤트를 사용자의 과거 탐색으로 오인하지 않는다.
+      if (scroller.clientWidth !== previousWidth || scroller.scrollWidth !== previousScrollWidth) return;
+      followLatest = scroller.scrollWidth - scroller.clientWidth - scroller.scrollLeft <= 1;
+    };
     const observer = new ResizeObserver(updateOverflow);
     observer.observe(scroller);
+    observer.observe(canvasRef.current.parentElement);
+    scroller.addEventListener('scroll', handleScroll, { passive: true });
     updateOverflow();
-    // 첫 표시·새 데이터에만 최근 검사로 이동한다. resize·표 페이지 변경에는 이동하지 않는다.
-    const frame = requestAnimationFrame(() => { scroller.scrollLeft = scroller.scrollWidth; });
     return () => {
-      cancelAnimationFrame(frame);
+      scroller.removeEventListener('scroll', handleScroll);
       observer.disconnect();
       chart.destroy();
     };

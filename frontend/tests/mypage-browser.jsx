@@ -19,6 +19,7 @@ const empty = { content: [], page: { number: 0, size: 100, totalElements: 0, tot
 const scenarios = [
   ['empty', '빈 이력'], ['history', '이력 1건'], ['long', '긴 이메일'],
   ['no-created-at', '가입일 없음'],
+  ['five', '이력 5건'], ['six', '이력 6건'],
   ['ten', '이력 10건'], ['eleven', '이력 11건'], ['hundred', '이력 100건'],
   ['over-hundred', '전체 101건 · 응답 100건'], ['unknown-risk', '알 수 없는 판정'], ['deleted', '삭제된 결과'],
   ['profile-error', '프로필 500'], ['history-error', '이력 500'], ['network', '네트워크 오류'],
@@ -38,7 +39,7 @@ const originalAdapter = api.defaults.adapter;
 const originalActions = {};
 
 function makeHistory(selectedMode) {
-  const count = { history: 1, ten: 10, eleven: 11, hundred: 100, 'over-hundred': 100, 'unknown-risk': 1, deleted: 1 }[selectedMode] ?? 0;
+  const count = { history: 1, five: 5, six: 6, ten: 10, eleven: 11, hundred: 100, 'over-hundred': 100, 'unknown-risk': 1, deleted: 1 }[selectedMode] ?? 0;
   return Array.from({ length: count }, (_, index) => ({
     id: index + 1,
     examType: index % 3 === 0 ? 'KDSQ_P' : 'KDSQ_C',
