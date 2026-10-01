@@ -88,7 +88,7 @@ export const RISK_LEVEL = {
 
 /**
  * 판정 색상
- * - RISK_COLOR: hex 값이 필요한 곳(Recharts 등)
+ * - RISK_COLOR: hex 값이 필요한 곳(Chart.js 등)
  * - RISK_BADGE_CLASS / RISK_TEXT_CLASS: 화면 배지·문구용 Tailwind 클래스
  *   토큰 색(#22c55e 등)을 흰 배경 글자색으로 쓰면 명도 대비가 4.5:1에 못 미쳐,
  *   글자는 같은 계열의 진한 색을 쓰고 테두리·배경에만 토큰 색을 쓴다.

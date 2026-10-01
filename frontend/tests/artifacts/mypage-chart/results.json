@@ -1,0 +1,53 @@
+{
+  "records": [
+    {
+      "scenario": "이력 1건",
+      "count": 1,
+      "drawnPoints": 1,
+      "dashPills": 0
+    },
+    {
+      "scenario": "이력 11건",
+      "count": 11,
+      "drawnPoints": 11,
+      "dashPills": 3
+    },
+    {
+      "scenario": "이력 100건",
+      "count": 100,
+      "drawnPoints": 100,
+      "dashPills": 33
+    },
+    {
+      "scenario": "전체 101건 · 응답 100건",
+      "count": 100,
+      "drawnPoints": 100,
+      "dashPills": 33
+    },
+    {
+      "scenario": "표 페이지·resize 위치 유지 / 키보드 / null·0·알 수 없는 판정 / StrictMode",
+      "passed": true
+    },
+    {
+      "account": "hong",
+      "count": 6,
+      "passed": true
+    },
+    {
+      "account": "park",
+      "count": 1,
+      "passed": true
+    },
+    {
+      "account": "testuser26",
+      "count": 23,
+      "passed": true
+    },
+    {
+      "account": "kim",
+      "count": 0,
+      "passed": true
+    }
+  ],
+  "errors": []
+}

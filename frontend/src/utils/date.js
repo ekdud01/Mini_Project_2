@@ -12,6 +12,22 @@ export function formatDateOnly(value) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+/** "2026-04-12T10:30:00" → "4월 12일" (추이 차트 날짜) */
+export function formatMonthDay(value) {
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return `${d.getMonth() + 1}월 ${d.getDate()}일`;
+}
+
+/** "2024-03-15T10:30:00" → "2024년 3월 15일" (가입일) */
+export function formatKoreanDate(value) {
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+}
+
 /** "2026-09-24T10:30:00" → "2026-09-24 10:30" */
 export function formatDateTime(value) {
   if (!value) return '';

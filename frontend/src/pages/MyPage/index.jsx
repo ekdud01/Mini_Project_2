@@ -13,6 +13,8 @@ import ExamHistoryTable from './components/ExamHistoryTable';
 import ExamTrendChart from './components/ExamTrendChart';
 import WithdrawButton from './components/WithdrawButton';
 import WithdrawDialog from './components/WithdrawDialog';
+import MyPageSectionNav from './components/MyPageSectionNav';
+import { HISTORY_PAGE_SIZE, MOBILE_HISTORY_PAGE_SIZE } from './history';
 
 const WITHDRAW_COMPLETE_MESSAGE = '회원 탈퇴가 완료되었습니다';
 
@@ -20,6 +22,7 @@ export default function MyPage() {
   const navigate = useNavigate();
   const me = useMemberStore((state) => state.me);
   const history = useMemberStore((state) => state.history);
+  const historyMeta = useMemberStore((state) => state.historyMeta);
   const fetchMe = useMemberStore((state) => state.fetchMe);
   const fetchMyResults = useMemberStore((state) => state.fetchMyResults);
   const withdraw = useMemberStore((state) => state.withdraw);
@@ -27,6 +30,8 @@ export default function MyPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [retryAttempt, setRetryAttempt] = useState(0);
   const [historyPage, setHistoryPage] = useState(1);
+  const [historyPageSize, setHistoryPageSize] = useState(() =>
+    window.matchMedia('(min-width: 768px)').matches ? HISTORY_PAGE_SIZE : MOBILE_HISTORY_PAGE_SIZE);
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [withdrawError, setWithdrawError] = useState('');
@@ -34,6 +39,17 @@ export default function MyPage() {
   const activeController = useRef(null);
   const withdrawInFlight = useRef(false);
   const isMounted = useRef(false);
+
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 768px)');
+    const handleChange = () => {
+      setHistoryPageSize(desktop.matches ? HISTORY_PAGE_SIZE : MOBILE_HISTORY_PAGE_SIZE);
+      // 카드/표 전환 시 유효하지 않은 페이지 번호가 남거나 되살아나지 않게 한다.
+      setHistoryPage(1);
+    };
+    desktop.addEventListener('change', handleChange);
+    return () => desktop.removeEventListener('change', handleChange);
+  }, []);
 
   useEffect(() => {
     isMounted.current = true;
@@ -124,7 +140,7 @@ export default function MyPage() {
   }
 
   return (
-    <section data-page="mypage" aria-labelledby="mypage-title" className="w-full space-y-8 pb-4 md:pb-8">
+    <section data-page="mypage" aria-labelledby="mypage-title" className="w-full space-y-10 pb-4 md:space-y-8 md:pb-8">
       <h1 id="mypage-title" className="mb-6! break-keep text-center text-2xl font-bold">마이페이지</h1>
 
       {isLoading ? (
@@ -141,18 +157,22 @@ export default function MyPage() {
         </div>
       ) : me ? (
         <>
+          {historyPageSize === MOBILE_HISTORY_PAGE_SIZE && <MyPageSectionNav hasHistory={history.length > 0} />}
           <ProfileCard me={me} />
+          <ExamTrendChart results={history} totalElements={historyMeta?.totalElements} />
           <section aria-labelledby="mypage-history-title" className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 id="mypage-history-title" className="text-2xl font-bold">검사 이력</h2>
-              <p className="text-base text-muted-foreground">총 {history.length}건</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 id="mypage-history-title" tabIndex={-1} className="scroll-mt-[var(--mypage-scroll-offset,1rem)] text-2xl font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">검사 이력</h2>
+              <p className="text-base text-muted-foreground">총 {historyMeta?.totalElements ?? history.length}건</p>
             </div>
+            {historyMeta?.totalElements > history.length && (
+              <p className="text-base text-muted-foreground">최근 100건을 표시합니다</p>
+            )}
             {history.length === 0 ? <EmptyHistory /> : (
-              <ExamHistoryTable results={history} page={historyPage} onPageChange={setHistoryPage}
+              <ExamHistoryTable results={history} page={historyPage} pageSize={historyPageSize} onPageChange={setHistoryPage}
                 onDetail={(resultId) => navigate(`/results/${resultId}`)} />
             )}
           </section>
-          <ExamTrendChart results={history} />
           <div className="flex justify-end border-t pt-6">
             <WithdrawDialog open={isWithdrawOpen} isWithdrawing={isWithdrawing} errorMessage={withdrawError}
               onOpenChange={handleWithdrawOpenChange} onConfirm={handleWithdraw}>

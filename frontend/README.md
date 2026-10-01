@@ -1,6 +1,6 @@
 # KDSQ 프론트엔드 (사용자 화면)
 
-React 19 · Vite 8 · Tailwind CSS 4 · shadcn/ui · Zustand · React Router 7 · axios · Recharts · MSW
+React 19 · Vite 8 · Tailwind CSS 4 · shadcn/ui · Zustand · React Router 7 · axios · Chart.js 4 · MSW
 
 사용자가 보는 화면(로그인·회원가입·1차/2차 검사·결과·마이페이지)이다. 관리자 화면은 Thymeleaf라서 백엔드 프로젝트의 `backend/src/main/resources/templates/`에 있다 ([`../backend/README.md`](../backend/README.md)).
 
@@ -181,7 +181,7 @@ try {
   - 예: `import { Button } from '@/components/ui/button';`
   - 이 파일들은 되도록 고치지 않는다. 모양을 바꿀 때는 사용하는 쪽에서 `className`을 넘긴다.
   - 더 필요한 컴포넌트는 강찬식에게 요청한다. 추가 명령(`npx shadcn@latest add ...`)이 `package.json`을 바꾸기 때문이다.
-  - (추가하는 사람 참고) CLI가 `import { cn } from "cn"`과 `cn` 패키지를 넣으면, `@/lib/utils`로 바꾸고 `npm uninstall cn` 한다. `recharts` 버전이 내려가면 `^3.10.1`로 되돌린다.
+  - (추가하는 사람 참고) CLI가 `import { cn } from "cn"`과 `cn` 패키지를 넣으면, `@/lib/utils`로 바꾸고 `npm uninstall cn` 한다. 마이페이지 차트는 Chart.js 4를 직접 사용하므로 shadcn chart와 Recharts 의존성을 추가하지 않는다.
 
 ### 4-6. 파일 주인
 
