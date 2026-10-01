@@ -501,3 +501,45 @@ fixture 작성 중 HMR에서 createRoot 중복 경고가 발생해 제어판 roo
 - 375/767px 기존 목차 동작, 768/1280px 목차 DOM 없음·헤더 비고정·동적 이동 여백 정리, 모든 폭의 가로 넘침 0 확인. md 경계 왕복 후 조회 횟수·차트 ID·가로 위치 유지 확인
 - 모바일 키보드/동작 축소·빈 이력·로딩/오류 재시도·탈퇴 취소·상세 왕복도 기존 브라우저 검증 통과. 브라우저 warning/error 0건. 캡처·결과는 `tests/artifacts/mypage-nav/`에 갱신했다
 - 최초 실행은 기존 5184 서버에서 fixture 로드가 되지 않아, 현재 작업 폴더의 새 5188 서버에서 검증했다. 실제 200% 확대·실서버 검증은 수행하지 않았다. 구현·검증 스크립트·캡처·결과를 함께 커밋한다
+
+## 2026-10-01 화면 개선 6단계 — 최종 검증 (MSW)
+
+기준: `feature/fe-mypage-redesign@0183f78` + 이번 테스트 스크립트 보정. 제품 코드는 변경하지 않았다
+
+### 자동 검사
+
+| 검사 | 결과 |
+|---|---|
+| `npm run test:mypage` | 45/45 통과 |
+| `npm run test:auth` | 16/16 통과 |
+| `npm run test:validation` | 12/12 통과 |
+| `npm run lint` | 오류 0, 기존 경고 5건 (MyPage 경고 0) |
+| `npm run build` | 통과. MyPage 청크 397KB → 208KB (Recharts 제거), recharts 의존성 0 |
+| `git diff --check 2f2fde4 HEAD` | README 109행만 표시. 파일 전체가 원래 CRLF라 변경 줄이 표시된 것으로 새 공백 문제 아님 |
+
+### 브라우저 회귀 스크립트 (현재 HEAD 재실행)
+
+| 스크립트 | 결과 |
+|---|---|
+| `mypage-chart-browser.mjs` | 통과 (보정 후). 이력 1·11·100·전체101건, 표 페이지·resize 위치 유지, 키보드, null·0·알 수 없는 판정, StrictMode, hong 6·park 1·testuser26 23·kim 0, warning/error 0 |
+| `mypage-history-browser.mjs` | 통과 |
+| `mypage-adjustments-browser.mjs` | 통과 |
+| `mypage-nav-browser.mjs` | 통과 |
+
+`mypage-chart-browser.mjs`는 3단계에 작성되어 캡처 전 차트 섹션을 화면 맨 위에 붙였다. 이후 생긴 모바일 고정 목차(81~143px)가 마지막 점(y=140)을 덮어 툴팁 검사가 실패했다. 실제 흐름(목차 “검사 결과 추이” 이동)에서는 제목이 목차 아래 159px에 오고 보이는 점이 모두 목차 아래에 있으며 툴팁·제목 포커스가 정상임을 hong·park·testuser26에서 확인했다. 스크립트만 고정 목차 높이를 빼고 스크롤하도록 보정했다
+
+### 추가 확인 (headless Chrome + MSW)
+
+| 항목 | 조건 | 결과 |
+|---|---|---|
+| 200% 확대 | 1280px 창 200% = CSS 640px·배율 2, 768px 창 200% = 384px, 리플로 320px / hong·testuser26 | 페이지 가로 넘침 0, 목차 글자 잘림 없음·링크 52px(320px에서 2줄 76px), 판정 칩 잘림 없음, 48px 미만 버튼 0, 목차 이동 후 제목 가림 없음. canvas 내부 점수 알약·“최근 검사”는 캡처로 잘림 없음 확인. 320px에서는 차트 영역 가장자리의 이전 점이 스크롤 경계에 걸리며 스크롤로 확인 가능 |
+| 토큰 재발급 | hong, SPA 이동 중 `devExpireToken()` 후 검사 → 마이페이지 | reissue 후 회원 정보·이력 조회 성공 |
+| 탈퇴 완료 | kim(0건)·park(1건), 잔여 `pendingFirstAnswers` 심은 상태 | `/login` “회원 탈퇴가 완료되었습니다”, 인증 비움, 임시 답변 정리, 재로그인 403 `MEMBER_WITHDRAWN` |
+| 변경 전후 비교 | hong·kim·testuser26 × 375·1280px 전체 페이지 | 가로 넘침 0, 시안 구조(아바타·2열 정보, 판정축 차트·최근 강조, 관리자 형식 이력) 확인 |
+
+200% 확대는 브라우저 확대와 같은 조건(CSS 폭 절반 + 기기 배율 2)을 CDP로 재현했다. 자동 잘림 검사에서 `sr-only` 요소와 모바일에서 숨긴 표 머리글이 잘림으로 잡혔으나 화면 표시 대상이 아니므로 제외했다
+
+### 남은 범위
+
+- 실서버(JWT·DB) 재테스트: 체크리스트 U-33·U-35·U-36·U-38과 목차 항목. 기대값이 바뀌어 기존 통과 기록으로 대체할 수 없음 (미검증)
+- 공용 문서 갱신: UI 설계서 3.6·7장, React 설계서 5.5·ExamTrendChart·MyPageSectionNav, 통합 체크리스트 기대값 (미진행). README 두 곳의 기술 스택은 반영 완료

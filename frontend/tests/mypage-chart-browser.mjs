@@ -65,7 +65,12 @@ try {
     await sleep(350);
   };
   const screenshot = async (name) => {
-    await evaluate("document.querySelector('[aria-labelledby=mypage-trend-title]').scrollIntoView({block:'start'})");
+    // 모바일 고정 목차 아래에서 차트가 시작되도록 고정 영역 높이만큼 띄운다.
+    await evaluate(`(() => {
+      const section = document.querySelector('[aria-labelledby=mypage-trend-title]');
+      const stickyBottom = document.querySelector('nav[aria-label="마이페이지 목차"]')?.getBoundingClientRect().bottom ?? 0;
+      scrollBy({ top: section.getBoundingClientRect().top - stickyBottom - 8, behavior: 'instant' });
+    })()`);
     await sleep(150);
     const shot = await send('Page.captureScreenshot', { format: 'png' });
     writeFileSync(new URL(`${name}.png`, out), Buffer.from(shot.data, 'base64'));
