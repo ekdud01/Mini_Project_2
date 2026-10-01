@@ -389,3 +389,31 @@ fixture 작성 중 HMR에서 createRoot 중복 경고가 발생해 제어판 roo
 - 4단계 이력 표·카드의 1차/2차 열과 대체 정보 완성, 5단계 차트→이력 배치가 남아 있어 현재 이력은 여전히 차트 위에 있다. canvas의 최종 안내 문구 “아래 검사 이력 참고”와 실제 배치는 5단계에서 일치하게 된다
 - 실제 브라우저 200% 확대, 인증/입력 검증 전체 회귀, 탈퇴 UI 전체 회귀, 실제 JWT·DB E2E는 이번 단계에서 미검증
 - 공용 UI/React 설계서의 전체 개선 반영과 통합테스트 U-33·35·36·38 재검증은 후속 단계에 남긴다. 기존 검증 기록은 이전 구현 결과로 보존한다
+
+## 2026-10-01 화면 개선 4단계 — 검사 이력 (관리자 형식)
+
+### 변경 파일·동작 범위
+
+- `ExamHistoryTable.jsx`: 공통 `getScoreDisplay`를 연결해 검사일 / 1차 (KDSQ-P) / 2차 (KDSQ-C) / 위험도 / 상세 열과 동일한 모바일 카드 항목을 표시한다. 점수 숫자는 18px 굵게, 본문·페이지 상태는 16px, 보기·페이지 버튼은 48px 이상이다. P의 2차 `—`는 접근성 트리에 “2차 검사 없음”으로 제공하고 C 총점 null의 `-`, P·C 0점을 구분한다
+- `RiskBadge.jsx`: 관리자 배지 색 값만 참고해 점 + 판정 글자, 둥근 연한 배경을 적용했다. 전역 관리자 CSS는 불러오지 않는다
+- `MyPage/index.jsx`: 기존 제목 옆에 `historyMeta.totalElements ?? history.length` 건수를 표시하고 전체 건수가 조회 건수보다 클 때 최근 100건 안내를 표시한다. 제목이 MyPage에 있어 이 부분의 메타데이터 연결만 5단계보다 먼저 반영했다
+- 페이지 번호는 계속 MyPage가 소유하고 조회된 결과를 10건씩 나눈다. 조회·탈퇴·경합 처리, 섹션 순서는 변경하지 않았다
+
+### 검증 결과
+
+- `npm run test:mypage`: 38/38 통과. Windows 샌드박스의 `spawn EPERM`으로 첫 실행이 막혀 권한 확장으로 재실행했다
+- `npm run lint`: 오류 0, 기존 경고 5개. `npm run build` 통과 (샌드박스 네이티브 모듈·spawn 실패 후 권한 확장 재실행, 기존 Vite 설정 안내 있음)
+- `node tests/mypage-history-browser.mjs`: 로컬 Vite + HTTP adapter fixture에서 실제 MyPage·store·ResultPage를 사용한 Chrome headless 검증 통과
+  - 빈 이력과 총 0건, 10→11건 페이지 경계, 100건 10페이지 확인
+  - 전체 101건·응답 100건: 총 101건·범위 안내, 서버 totalPages=2와 독립적인 10페이지, 100건 중복·누락 없음 확인
+  - 375/768/1280px: 표·카드 항목, P 종료/C 완료, 0점/null 구분, 16px 본문·18px 점수·48px 버튼 확인. 페이지 가로 넘침 0, 데스크톱 표 내부 넘침 0
+  - “2차 검사 없음”의 접근성 트리 노출, 각 폭에서 상세 `/results/:id` 왕복 확인
+  - 페이지 변경 시 차트 인스턴스·가로 위치 유지, 메타데이터 누락 시 조회 건수 대체 확인
+  - 브라우저 warning/error 0건. 캡처를 직접 열어 모바일 카드와 데스크톱 표 배치 확인
+- 재현: `frontend/`에서 `npm run dev -- --host 127.0.0.1 --port 5184 --strictPort` 실행 후 별도 터미널에서 `node tests/mypage-history-browser.mjs`. 다른 주소는 첫 인수로 지정한다
+- 결과·캡처: `tests/artifacts/mypage-history/results.json`, `history-375.png`, `history-768.png`, `history-1280.png`
+
+### 남은 범위
+
+- 5단계 섹션 순서·파일철 목차, 6단계 전체 회귀 및 공용 설계서·통합테스트 기대값 갱신은 미진행
+- 실제 브라우저 200% 확대, 스크린리더 음성 출력, 실서버 JWT·DB E2E는 이번 단계에서 미검증. 접근성 검증은 DOM/Chrome 접근성 트리 기준이다

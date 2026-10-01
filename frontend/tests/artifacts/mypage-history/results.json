@@ -1,0 +1,33 @@
+{
+  "records": [
+    {
+      "scenario": "빈 이력 기존 안내 / 총 0건",
+      "passed": true
+    },
+    {
+      "scenario": "10→11건 페이지 경계 / 차트 인스턴스·스크롤 유지",
+      "passed": true
+    },
+    {
+      "scenario": "100건 10페이지 / 전체101·응답100 범위 / 중복·누락 없음",
+      "passed": true
+    },
+    {
+      "scenario": "375px 표·카드 / P·C·0·null / 글자·48px / AX 대체 문구 / 상세 왕복",
+      "passed": true
+    },
+    {
+      "scenario": "768px 표·카드 / P·C·0·null / 글자·48px / AX 대체 문구 / 상세 왕복",
+      "passed": true
+    },
+    {
+      "scenario": "1280px 표·카드 / P·C·0·null / 글자·48px / AX 대체 문구 / 상세 왕복",
+      "passed": true
+    },
+    {
+      "scenario": "메타데이터 누락 시 조회 건수로 대체",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

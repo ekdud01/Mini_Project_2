@@ -144,10 +144,13 @@ export default function MyPage() {
         <>
           <ProfileCard me={me} />
           <section aria-labelledby="mypage-history-title" className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-3">
               <h2 id="mypage-history-title" className="text-2xl font-bold">검사 이력</h2>
-              <p className="text-base text-muted-foreground">총 {history.length}건</p>
+              <p className="text-base text-muted-foreground">총 {historyMeta?.totalElements ?? history.length}건</p>
             </div>
+            {historyMeta?.totalElements > history.length && (
+              <p className="text-base text-muted-foreground">최근 100건을 표시합니다</p>
+            )}
             {history.length === 0 ? <EmptyHistory /> : (
               <ExamHistoryTable results={history} page={historyPage} onPageChange={setHistoryPage}
                 onDetail={(resultId) => navigate(`/results/${resultId}`)} />
