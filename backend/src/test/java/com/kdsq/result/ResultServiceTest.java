@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.kdsq.global.exception.BusinessException;
@@ -202,6 +205,7 @@ class ResultServiceTest {
     @Test
     @DisplayName("상세: 본인의 위험 결과면 memberId와 관리 안내(solutions)를 함께 준다 (TC-RES-09)")
     void getMyResult_highRisk_withSolutions() {
+        given(memberRepository.findById(2L)).willReturn(Optional.of(member(2L)));
         Member owner = member(2L);
         SurveyResult result = saved(SurveyResult.createWithSecond(owner, cSurvey, 5, 4, 2, 3), 102L);
         given(surveyResultRepository.findActiveDetailById(102L)).willReturn(Optional.of(result));
@@ -218,6 +222,7 @@ class ResultServiceTest {
     @Test
     @DisplayName("상세: 정상 결과면 solutions는 빈 배열이고 안내를 조회하지 않는다 (TC-RES-10)")
     void getMyResult_normal_emptySolutions() {
+        given(memberRepository.findById(2L)).willReturn(Optional.of(member(2L)));
         Member owner = member(2L);
         SurveyResult result = saved(SurveyResult.createFirstOnly(owner, pSurvey, 2), 101L);
         given(surveyResultRepository.findActiveDetailById(101L)).willReturn(Optional.of(result));
@@ -231,6 +236,7 @@ class ResultServiceTest {
     @Test
     @DisplayName("상세: 다른 회원의 결과면 403이 아니라 RESULT_NOT_FOUND (결과 존재 여부를 알려 주지 않음)")
     void getMyResult_otherMember_notFound() {
+        given(memberRepository.findById(2L)).willReturn(Optional.of(member(2L)));
         Member other = member(3L);
         SurveyResult result = saved(SurveyResult.createFirstOnly(other, pSurvey, 2), 201L);
         given(surveyResultRepository.findActiveDetailById(201L)).willReturn(Optional.of(result));
@@ -244,6 +250,7 @@ class ResultServiceTest {
     @Test
     @DisplayName("상세: 삭제됐거나 없는 결과면 RESULT_NOT_FOUND")
     void getMyResult_deletedOrMissing_notFound() {
+        given(memberRepository.findById(2L)).willReturn(Optional.of(member(2L)));
         given(surveyResultRepository.findActiveDetailById(999L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> resultService.getMyResult(2L, 999L))
@@ -251,5 +258,36 @@ class ResultServiceTest {
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESULT_NOT_FOUND);
         verify(solutionRepository, never()).findByRiskLevel(any());
+    }
+
+    @Test
+    @DisplayName("상세: 탈퇴 회원이면 MEMBER_NOT_FOUND, 결과와 관리 안내를 조회하지 않는다")
+    void getMyResult_withdrawnMember() {
+        Member withdrawn = member(2L);
+        withdrawn.withdraw();
+        given(memberRepository.findById(2L)).willReturn(Optional.of(withdrawn));
+
+        assertThatThrownBy(() -> resultService.getMyResult(2L, 101L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
+
+        verifyNoInteractions(surveyResultRepository, solutionRepository);
+    }
+
+    @Test
+    @DisplayName("이력: 탈퇴 회원이면 MEMBER_NOT_FOUND, 검사 이력을 조회하지 않는다")
+    void getMyResults_withdrawnMember() {
+        Member withdrawn = member(2L);
+        withdrawn.withdraw();
+        given(memberRepository.findById(2L)).willReturn(Optional.of(withdrawn));
+        Pageable pageable = PageRequest.of(0, 10);
+
+        assertThatThrownBy(() -> resultService.getMyResults(2L, pageable))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
+
+        verifyNoInteractions(surveyResultRepository, solutionRepository);
     }
 }

@@ -43,9 +43,7 @@ public class ResultService {
      */
     @Transactional
     public ResultResponse submit(Long memberId, ResultSubmitRequest request) {
-        Member member = memberRepository.findById(memberId)
-                .filter(m -> m.getStatus().isActive())
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member = requireActiveMember(memberId);
         Survey survey = surveyRepository.findById(request.surveyId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.SURVEY_NOT_FOUND));
 
@@ -68,6 +66,7 @@ public class ResultService {
      * (403으로 응답하면 다른 회원 결과가 있다는 사실이 드러나므로 404로 통일, REST 설계서 4.3.3)
      */
     public ResultResponse getMyResult(Long memberId, Long resultId) {
+        requireActiveMember(memberId);
         SurveyResult result = surveyResultRepository.findActiveDetailById(resultId)
                 .filter(r -> r.getMember().getId().equals(memberId))
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESULT_NOT_FOUND));
@@ -83,8 +82,19 @@ public class ResultService {
 
     /** 내 검사 이력: 본인의 삭제되지 않은 결과, 검사일시 최신순 (size 최대 100은 application.properties) */
     public PageResponse<ResultResponse> getMyResults(Long memberId, Pageable pageable) {
+        requireActiveMember(memberId);
         return PageResponse.of(
                 surveyResultRepository.findByMemberIdOrderByCreatedAtDesc(memberId, pageable),
                 ResultResponse::from);
+    }
+    /**
+     * 활성 회원을 조회한다.
+     * 존재하지 않거나 탈퇴·비활성 상태이면 MEMBER_NOT_FOUND로 처리한다.
+     */
+    private Member requireActiveMember(Long memberId){
+        return memberRepository.findById(memberId)
+                .filter(member -> member.getStatus().isActive())
+                .orElseThrow(()->new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
     }
 }
