@@ -297,3 +297,30 @@ fixture 작성 중 HMR에서 createRoot 중복 경고가 발생해 제어판 roo
 검증 종료 시점의 판정은 **Mock/프론트 통합 통과, 실제 JWT·DB E2E 미검증**이다. 위 결과는 `e4fb0b2`의 제품 코드에 대한 기록이며 이후 develop 변경의 검증 결과가 아니다
 
 후속 결정: 실제 서버 검증은 추후 진행하고 현재 구현·Mock 검증 내역을 커밋해 `develop` 대상 PR로 제출한다. PR 준비 시 원격 fetch로 `origin/develop@9f6a1b3`를 확인했다. develop의 추가 변경은 이 브랜치에 병합하지 않았으며, 실제 서버 통합 시 최신 기준을 다시 확인한다
+
+## 2026-10-01 — 화면 개선 1단계: 데이터 변환·표시 규칙·날짜 유틸
+
+기준: `feature/fe-mypage-redesign@270d9f2`, 작업 시작 시 작업 트리 깨끗함. 현재 개선 가이드의 1단계만 구현했으며 팀 조율 대상 정책은 변경하지 않았다
+
+### 변경 파일과 동작 범위
+
+- `src/pages/MyPage/history.js`: 기존 정렬·페이지 나누기를 유지하고 `toTrendData`에 `level`(0/1/2, 미확인 판정 null), `isLatest`, 다중 행 `label` 배열을 추가했다. 첫 점·연도 전환점만 `['4월 12일', '2026년']`, 나머지는 `['4월 12일']` 형태다. 점수 null이어도 판정 위치는 유지하며 최근 판정이 미확인이어도 이전 검사를 최근으로 바꾸지 않는다
+- 같은 파일의 `getScoreDisplay`: 표의 숫자(`firstScore`, `secondScore`)·전체 표기(`firstLabel`, `secondLabel`), 알약(`scoreLabel`), 툴팁/접근성 설명(`tooltip`)을 반환한다. `examType`으로 P/C를 구분하고 P의 2차는 `—`, C의 누락 총점은 `-`, 0점은 그대로 표시한다
+- `src/utils/date.js`: `formatMonthDay`, `formatKoreanDate` 추가. 누락·해석 불가능한 날짜는 기존 `formatDateOnly`와 같이 빈 문자열을 반환하고 화면의 대체 표기는 소비 컴포넌트가 담당한다
+- `src/types/propTypes.js`: 가입일이 없는 경우도 허용하도록 `MemberShape.createdAt`을 선택적 문자열로 추가했다
+- `tests/mypage-history.test.js`: 기존 9개 테스트를 유지하고 P/C 표시·0점·C 총점 null·판정 위치·원본 보존·최근 결과·연도 전환·한글 날짜를 검증하는 7개 테스트를 추가했다
+
+### 검증 결과
+
+| 검사 | 결과 |
+|---|---|
+| `npm run test:mypage` | 38/38 통과 (API/store/초기 등록 22개 + 이력·표시·날짜 16개) |
+| `npm run lint` | 오류 0, 변경하지 않은 badge/button/Result/Survey의 기존 경고 5건 |
+| `npm run build` | 통과, 기존 Vite 설정의 `__dirname` 경고 유지 |
+| `git diff --check` | 통과 |
+
+최초 테스트는 자식 프로세스 실행의 `spawn EPERM`, 최초 빌드는 같은 실행 제한과 Tailwind 네이티브 모듈 로드 오류로 실패했다. 권한 확장으로 동일 명령을 다시 실행해 모두 통과했다
+
+### 남은 범위
+
+이번 단계는 데이터·유틸만 변경했다. 기존 Recharts는 계속 `score`를 사용하므로 화면의 점수 차트 동작은 유지된다. 새 판정 위치·점수 알약·공통 표시 함수의 화면 연결과 실제 점 렌더링은 2~4단계에서 진행한다. 101건 범위 안내, 키보드·200% 확대·브라우저 및 실서버 검증은 이번 단계에서 실행하지 않았다. 인증·회원가입 전용 테스트는 변경 범위 밖이므로 재실행하지 않았으며 전체 회귀는 가이드 6단계에서 수행한다

@@ -36,4 +36,5 @@ export const MemberShape = PropTypes.shape({
   email: PropTypes.string.isRequired,
   gender: PropTypes.oneOf(['MALE', 'FEMALE']).isRequired,
   birthYear: PropTypes.number.isRequired,
+  createdAt: PropTypes.string, // 가입일이 없으면 화면에서 '-' 표시
 });
