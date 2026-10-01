@@ -73,7 +73,7 @@ try {
     await sleep(150);
   };
   const readRows = () => evaluate(`${visibleRows}.map(row => {
-    const values = Array.from(row.querySelectorAll('td, dd')).map(cell => cell.innerText);
+    const values = Array.from(row.querySelectorAll('td, dd')).map(cell => cell.innerText.replace(/\\s+/g, ' ').trim());
     return {
       values: row.tagName === 'LI'
         ? [row.querySelector('time').dateTime, values[2].replaceAll('점', '').replace(/\\s+/g, ' ').trim(), values[3].replaceAll('점', '').replace(/\\s+/g, ' ').trim(), values[1]]

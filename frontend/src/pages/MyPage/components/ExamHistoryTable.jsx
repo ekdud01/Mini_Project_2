@@ -13,7 +13,13 @@ function scoreContent(score, label) {
   if (score === '—') {
     return <><span aria-hidden="true">—</span><span className="sr-only">2차 검사 없음</span></>;
   }
-  return <span className="whitespace-nowrap"><strong className="text-lg font-semibold">{score}</strong><span className="text-muted-foreground">{label.slice(score.length)}</span></span>;
+  if (score === '-') return <strong className="text-lg font-semibold">-</strong>;
+  return (
+    <span className="inline-flex items-baseline justify-center gap-x-1 whitespace-nowrap tabular-nums">
+      <strong className="inline-block w-[2ch] text-right text-lg font-semibold">{score}</strong>
+      <span className="inline-block w-[4ch] text-left text-muted-foreground">{label.slice(score.length)}</span>
+    </span>
+  );
 }
 
 export default function ExamHistoryTable({ results = [], page = 1, pageSize = HISTORY_PAGE_SIZE, onPageChange, onDetail }) {
@@ -34,9 +40,16 @@ export default function ExamHistoryTable({ results = [], page = 1, pageSize = HI
   return (
     <div className="space-y-4">
       <div className="hidden rounded-2xl border bg-white p-4 shadow-sm md:block">
-        <Table className="text-base" aria-label="검사 이력">
+        <Table className="table-fixed text-base tabular-nums [&_td]:text-center" aria-label="검사 이력">
+          <colgroup>
+            <col className="w-[22%]" />
+            <col className="w-[23%]" />
+            <col className="w-[23%]" />
+            <col className="w-[18%]" />
+            <col className="w-[14%]" />
+          </colgroup>
           <TableHeader><TableRow className="bg-muted/50">
-            {['검사일', '1차 (KDSQ-P)', '2차 (KDSQ-C)', '위험도', '상세'].map((label) => <TableHead key={label} scope="col" className="h-12 font-semibold">{label}</TableHead>)}
+            {['검사일', '1차 (KDSQ-P)', '2차 (KDSQ-C)', '위험도', '상세'].map((label) => <TableHead key={label} scope="col" className="h-12 text-center font-semibold">{label}</TableHead>)}
           </TableRow></TableHeader>
           <TableBody>{rows.map((result) => {
             const display = getScoreDisplay(result);
