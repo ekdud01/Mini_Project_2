@@ -7,6 +7,7 @@ import { formatDateOnly } from '@/utils/date';
 import { EXAM_TYPE_LABEL } from '@/utils/kdsq';
 import { getHistoryPage, getScoreDisplay, HISTORY_PAGE_SIZE } from '../history';
 import RiskBadge from './RiskBadge';
+import ExamHistoryCard from './ExamHistoryCard';
 
 function scoreContent(score, label) {
   if (score === '—') {
@@ -52,20 +53,7 @@ export default function ExamHistoryTable({ results = [], page = 1, pageSize = HI
         </Table>
       </div>
       <ul aria-label="검사 이력" className="space-y-4 md:hidden">
-        {rows.map((result) => {
-          const display = getScoreDisplay(result);
-          return (
-            <li key={result.id} className="space-y-4 rounded-2xl border bg-white p-4 text-base shadow-sm">
-              <dl className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3">
-                <dt className="font-semibold">검사일</dt><dd>{formatDateOnly(result.createdAt)}</dd>
-                <dt className="font-semibold">1차 (KDSQ-P)</dt><dd>{scoreContent(display.firstScore, display.firstLabel)}</dd>
-                <dt className="font-semibold">2차 (KDSQ-C)</dt><dd>{scoreContent(display.secondScore, display.secondLabel)}</dd>
-                <dt className="font-semibold">위험도</dt><dd><RiskBadge riskLevel={result.riskLevel} /></dd>
-              </dl>
-              <div className="flex justify-end">{detailButton(result)}</div>
-            </li>
-          );
-        })}
+        {rows.map((result) => <ExamHistoryCard key={result.id} result={result} onDetail={onDetail} />)}
       </ul>
       <nav aria-label="검사 이력 페이지" className="flex flex-wrap items-center justify-center gap-2">
         <Button type="button" variant="outline" className="min-h-12 min-w-12 text-base"

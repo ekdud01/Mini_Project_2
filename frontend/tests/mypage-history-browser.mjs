@@ -72,10 +72,15 @@ try {
     await waitFor(`!!${section}`);
     await sleep(150);
   };
-  const readRows = () => evaluate(`${visibleRows}.map(row => ({
-    values: Array.from(row.querySelectorAll('td, dd')).map(cell => cell.innerText),
-    id: Number(row.querySelector('button').getAttribute('aria-label').match(/결과 ([0-9]+) 상세/)[1])
-  }))`);
+  const readRows = () => evaluate(`${visibleRows}.map(row => {
+    const values = Array.from(row.querySelectorAll('td, dd')).map(cell => cell.innerText);
+    return {
+      values: row.tagName === 'LI'
+        ? [row.querySelector('time').dateTime, values[2].replaceAll('점', '').replace(/\\s+/g, ' ').trim(), values[3].replaceAll('점', '').replace(/\\s+/g, ' ').trim(), values[1]]
+        : values,
+      id: Number(row.querySelector('button').getAttribute('aria-label').match(/결과 ([0-9]+) 상세/)[1])
+    };
+  })`);
   const readPages = () => evaluate(`Array.from(${section}.querySelectorAll('button[aria-label$="페이지"]')).map(b => b.textContent)`);
   const screenshot = async (name) => {
     await evaluate(`${section}.scrollIntoView({block:'start'})`);
@@ -129,7 +134,7 @@ try {
   records.push({ scenario: '100건 10페이지 / 전체101·응답100 범위 / 중복·누락 없음', passed: true });
 
   await choose('이력 10건');
-  for (const width of [375, 768, 1280]) {
+  for (const width of [320, 375, 640, 767, 768, 1280]) {
     await resize(width);
     const rows = await readRows();
     assert.equal(rows.length, width < 768 ? 5 : 10);
@@ -150,7 +155,15 @@ try {
       assert.deepEqual(await evaluate(`Array.from(${section}.querySelectorAll('th')).map(el => el.textContent)`), ['검사일', '1차 (KDSQ-P)', '2차 (KDSQ-C)', '위험도', '상세']);
       assert.equal(await evaluate(`(() => { const el = ${section}.querySelector('[data-slot="table-container"]'); return el.scrollWidth - el.clientWidth; })()`), 0);
     } else {
-      assert.deepEqual(await evaluate(`${visibleRows}[0] && Array.from(${visibleRows}[0].querySelectorAll('dt')).map(el => el.textContent)`), ['검사일', '1차 (KDSQ-P)', '2차 (KDSQ-C)', '위험도']);
+      assert.deepEqual(await evaluate(`Array.from(${visibleRows}[0].querySelectorAll('dt')).map(el => el.textContent)`), ['검사일', '위험도', '1차 검사 (KDSQ-P)', '2차 검사 (KDSQ-C)']);
+      assert.ok(await evaluate(`${visibleRows}.every(row => {
+        const boxes = Array.from(row.querySelectorAll('dl.grid > div')).map(el => el.getBoundingClientRect());
+        const button = row.querySelector('button').getBoundingClientRect();
+        return boxes.length === 2 && boxes[0].top === boxes[1].top && boxes[0].height === boxes[1].height
+          && Math.abs(boxes[0].width - boxes[1].width) < 1 && Math.abs(button.width - (boxes[1].right - boxes[0].left)) < 1;
+      })`), '점수 박스 동일 너비·높이 / 상세 버튼 전체 너비');
+      assert.match(await evaluate(`${visibleRows}[0].querySelector('time').textContent`), /^2026년 9월 [0-9]+일$/);
+      assert.equal(await evaluate(`${visibleRows}[0].querySelector('button').textContent.trim()`), '결과 자세히 보기');
     }
     const tree = await send('Accessibility.getFullAXTree');
     assert.ok(tree.nodes.some(node => !node.ignored && node.name?.value === '2차 검사 없음'));

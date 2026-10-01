@@ -132,7 +132,7 @@ try {
   await sleep(250);
   assert.equal((await inspect()).instances, 1, 'StrictMode 재진입');
   assert.equal(await evaluate("document.querySelector('canvas').parentElement.parentElement.getAttribute('tabindex')"), null, '단건은 스크롤 포커스 없음');
-  await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent === '보기' && b.getClientRects().length).click()");
+  await evaluate("Array.from(document.querySelectorAll('[aria-labelledby=mypage-history-title] button')).find(b => b.getAttribute('aria-label')?.endsWith('상세 보기') && b.getClientRects().length).click()");
   await waitFor("document.body.textContent.includes('현재 경로: /results/')");
   assert.equal((await inspect()).instances, 0, '상세 이동 시 Chart 해제');
   await evaluate("document.querySelector('a[href=\"/mypage\"]').click()");

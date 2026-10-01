@@ -13,7 +13,19 @@
       "passed": true
     },
     {
+      "scenario": "320px 표·카드 / P·C·0·null / 글자·48px / AX 대체 문구 / 상세 왕복",
+      "passed": true
+    },
+    {
       "scenario": "375px 표·카드 / P·C·0·null / 글자·48px / AX 대체 문구 / 상세 왕복",
+      "passed": true
+    },
+    {
+      "scenario": "640px 표·카드 / P·C·0·null / 글자·48px / AX 대체 문구 / 상세 왕복",
+      "passed": true
+    },
+    {
+      "scenario": "767px 표·카드 / P·C·0·null / 글자·48px / AX 대체 문구 / 상세 왕복",
       "passed": true
     },
     {
