@@ -348,3 +348,44 @@ fixture 작성 중 HMR에서 createRoot 중복 경고가 발생해 제어판 roo
 | build / diff 검사 | 통과, 기존 Vite `__dirname` 경고 유지 |
 
 캡처: `docs/images/mypage-step2/profile-1280.jpg` (검증용 회원 데이터). 1단계의 38개 테스트 결과는 해당 커밋에 대한 기록이며 이번 UI 변경에서 재실행하지 않았다. 200% 확대·차트 변경·전체 통합 회귀·실서버 검증은 후속 단계다. 2단계 코드·fixture·검증 기록·캡처를 함께 커밋한다
+
+## 2026-10-01 — 화면 개선 3단계: Chart.js 검사 결과 추이
+
+기준: `feature/fe-mypage-redesign@fd20750`, 작업 시작 시 작업 트리 깨끗함
+
+- `ExamTrendChart.jsx`: Chart.js 4.5.1로 교체하고 필요한 6개 요소만 등록. 판정 세로축, 판정색 점(8px/hover 10px), 16px 점수 알약·날짜·최근 검사 강조, 화면 크기를 따르는 고정 HTML 판정 칩을 구현했다. 관리자 CSS는 가져오지 않고 색 값만 사용한다
+- 차트 전용 컨테이너는 모바일 300px/md 이상 340px 높이, 점당 최소 96px 폭이다. 첫 표시·새 데이터에만 오른쪽으로 이동하며 페이지 변경·resize는 Chart 인스턴스와 스크롤 위치를 보존한다. 넘칠 때만 region/tabIndex/안내를 제공하고 기본 방향키·Tab을 사용한다
+- 공통 `getScoreDisplay`로 알약·툴팁·canvas 요약을 표시한다. C 총점 null은 판정 위치의 점과 `-` 알약, 0은 `0점`, 알 수 없는 판정은 점·알약 없이 최근 열만 표시한다. 모바일 툴팁은 같은 문장을 여러 줄로 표시해 잘림을 막는다
+- `MyPage/index.jsx`는 차트의 101건 범위 안내에 필요한 `historyMeta.totalElements` 전달만 추가했다. 표 개편과 섹션 순서 변경은 4·5단계에 남아 있다
+- Recharts와 사용처가 사라진 `ui/chart.jsx`를 제거하고 package/lockfile 및 두 README의 기술 스택을 갱신했다
+- `mypage-browser.jsx`에 전체 101건·응답 100건과 미확인 판정 시나리오, “차트 상태 확인”을 추가했다. `mypage-chart-inspection.js`는 Chart.getChart로 결과·점·누락 점수 알약·최근 대상·칩 위치를 관찰한다. `mypage-chart-browser.mjs`는 이를 사용하는 Chrome/CDP 검증 스크립트다
+
+### 검증 결과
+
+검증 서버: MSW를 켠 `http://127.0.0.1:5184`. fixture는 실제 MyPage/UserLayout/store와 테스트 adapter, 계정 검증은 실제 앱과 MSW를 사용했다. 실제 JWT·DB E2E 결과가 아니다
+
+| 검사 | 결과 |
+|---|---|
+| `npm run test:mypage` | 38/38 통과 |
+| `npm run lint` | 오류 0, 기존 경고 5건 |
+| `npm run build` | 통과, 기존 Vite `__dirname` 경고 유지 |
+| Recharts 제거 | package/lockfile/src/dist에서 `recharts` 검색 결과 0건 |
+| hong/park/testuser26/kim | 각각 6/1/23/0건. 점 수 일치, 최근 대상 1개, 0건 차트 없음 |
+| fixture 1/11/100건, 전체 101건·응답 100건 | 점 수 일치, 100건 C 누락 점수 알약 33개, 범위 안내·aria 요약 확인 |
+| 같은 날짜·0·null·미확인 판정 | 같은 날짜 별도 점, 점 간격 96px 이상, 0 보존, null은 점 유지, 미확인 판정 점 없음 |
+| 375/768/1280px | 문서 가로 넘침 0, 스크롤 밖 칩의 축 위치 오차 1px 미만 |
+| 페이지·resize | 동일 Chart 인스턴스·scrollLeft 240 유지 |
+| 키보드 | 넘치는 영역 focus, 기본 ArrowLeft 이동, Tab으로 이탈, 단건은 tabIndex 없음 |
+| StrictMode·빈 상태 전환·상세 왕복 | 이탈 시 Chart 0개, 재진입 시 1개 |
+| 모바일 툴팁 | hong/park/testuser26 날짜·문장 표시, 스크롤 뷰포트 내 좌우 경계 확인 |
+| 콘솔 | 최종 자동 검증 문서들의 warning/error 0건 |
+
+최초 설치는 npm 캐시 제한, 최초 테스트·빌드는 Windows `spawn EPERM`/네이티브 모듈 실행 제한으로 실패했다. 권한 확장 후 설치와 검증은 통과했다. 기존 5183 서버는 그대로 두고 별도 5184 서버로 검증했다
+
+재현: MSW 개발 서버를 켠 뒤 `frontend/`에서 `node tests/mypage-chart-browser.mjs http://127.0.0.1:5184` 실행. Windows 기본 Chrome 경로를 사용하며 `CHROME_PATH`로 바꿀 수 있다. `tests/artifacts/mypage-chart/`에 JSON 결과와 375/1280px 차트·모바일 툴팁 캡처를 저장한다. 캡처에서 최근 열·날짜·알약·판정 칩과 안내 줄바꿈을 확인했다
+
+### 남은 범위
+
+- 4단계 이력 표·카드의 1차/2차 열과 대체 정보 완성, 5단계 차트→이력 배치가 남아 있어 현재 이력은 여전히 차트 위에 있다. canvas의 최종 안내 문구 “아래 검사 이력 참고”와 실제 배치는 5단계에서 일치하게 된다
+- 실제 브라우저 200% 확대, 인증/입력 검증 전체 회귀, 탈퇴 UI 전체 회귀, 실제 JWT·DB E2E는 이번 단계에서 미검증
+- 공용 UI/React 설계서의 전체 개선 반영과 통합테스트 U-33·35·36·38 재검증은 후속 단계에 남긴다. 기존 검증 기록은 이전 구현 결과로 보존한다

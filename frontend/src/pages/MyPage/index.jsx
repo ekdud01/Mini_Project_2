@@ -20,6 +20,7 @@ export default function MyPage() {
   const navigate = useNavigate();
   const me = useMemberStore((state) => state.me);
   const history = useMemberStore((state) => state.history);
+  const historyMeta = useMemberStore((state) => state.historyMeta);
   const fetchMe = useMemberStore((state) => state.fetchMe);
   const fetchMyResults = useMemberStore((state) => state.fetchMyResults);
   const withdraw = useMemberStore((state) => state.withdraw);
@@ -152,7 +153,7 @@ export default function MyPage() {
                 onDetail={(resultId) => navigate(`/results/${resultId}`)} />
             )}
           </section>
-          <ExamTrendChart results={history} />
+          <ExamTrendChart results={history} totalElements={historyMeta?.totalElements} />
           <div className="flex justify-end border-t pt-6">
             <WithdrawDialog open={isWithdrawOpen} isWithdrawing={isWithdrawing} errorMessage={withdrawError}
               onOpenChange={handleWithdrawOpenChange} onConfirm={handleWithdraw}>

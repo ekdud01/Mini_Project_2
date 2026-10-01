@@ -106,7 +106,7 @@ flowchart TD
 | 인증 | JWT (jjwt 0.12.6, HS256) — 액세스 1시간 / 리프레시 7일(DB 저장, 회원당 1개), 관리자는 세션 formLogin |
 | 관리자 화면 | Thymeleaf 3.1 + Layout Dialect, Chart.js |
 | 데이터베이스 | MariaDB 10.11 |
-| 프론트엔드 | React 19, Vite 8, React Router 7, Zustand 5, axios, Tailwind CSS 4, shadcn/ui, Recharts |
+| 프론트엔드 | React 19, Vite 8, React Router 7, Zustand 5, axios, Tailwind CSS 4, shadcn/ui, Chart.js 4 |
 | 개발 도구 | MSW(Mock API), JUnit 5 + Mockito + AssertJ, IntelliJ IDEA, VS Code(REST Client), HeidiSQL |
 | 협업 | GitHub(PR 리뷰), Discord, Notion, Figma |
 
