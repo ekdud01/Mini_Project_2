@@ -9,7 +9,7 @@
 | 개발 기간 | 2026-09-21 \~ 2026-10-05 (설계 \~9/27, 기능 개발 9/28\~10/1, 안정화·발표 준비 10/2\~10/5) |
 | 발표 | 2026-10-06 |
 | 팀 | REMEMNE (리멤느) · 6명 (백엔드 3, 프론트엔드 3) |
-| 저장소 브랜치 | `main`(최종 제출) · `develop`(통합) · `feature/*` · `docs/*` · `test/*` |
+| 저장소 브랜치 | `main`(최종 제출) · `develop`(통합) · `feature/*` · `fix/*` · `refactor/*` · `test/*` · `docs/*` · `chore/*` |
 
 ---
 
@@ -40,7 +40,7 @@
 |---|---|
 | 누구나 쉽게 검사 | 로그인 후 바로 1차 검사(5문항), 필요할 때만 2차 검사(15문항). 고령층을 고려해 큰 글씨·넓은 선택 영역·모바일 우선 화면 |
 | 정확한 채점·판정 | 점수 계산과 판정은 서버가 담당(화면 계산은 이동 판단용). 1·2차를 합쳐 검사 1회당 결과 1건 저장 |
-| 결과 관리 | 결과 화면의 영역별 점수와 관리 안내, 마이페이지의 검사 이력 표·점수 추이 그래프 |
+| 결과 관리 | 결과 화면의 영역별 점수와 관리 안내, 마이페이지의 검사 이력 표·검사 결과 추이 그래프 |
 | 운영 관리 | 관리자 대시보드(회원 수, 위험도 분포, 평균 점수, 월별 추이, 최근 위험 검사), 회원·검사 결과 검색과 관리 |
 
 > 이 서비스의 결과는 선별검사 결과이며 의학적 진단이 아닙니다. 화면에서도 "진단", "확진" 같은 표현을 쓰지 않습니다 (UI 설계서 3.5.9).
@@ -57,7 +57,7 @@
 | 1차 검사 (KDSQ-P) | 5문항. 0\~3점이면 정상으로 결과 저장, 4점 이상이면 저장하지 않고 2차 검사로 이동 |
 | 2차 검사 (KDSQ-C) | 15문항(기억력·기타 인지기능·일상생활 수행능력 각 5문항). 1차 답변과 함께 제출해 결과 1건 저장 |
 | 검사 결과 | 판정(정상·주의·위험), 총점과 영역별 점수, 주의·위험일 때 관리 안내 |
-| 마이페이지 | 회원 정보(조회 전용), 검사 이력 표, 점수 추이 그래프, 회원 탈퇴 |
+| 마이페이지 | 회원 정보(조회 전용), 검사 결과 추이 그래프(판정 단계별 위치 + 점수), 검사 이력 표(1차·2차 점수·위험도, 모바일은 카드), 회원 탈퇴 |
 
 ### 관리자 (Thymeleaf)
 
@@ -65,8 +65,8 @@
 |---|---|
 | 관리자 로그인 | 사전 등록된 관리자 계정만 사용 (세션 + CSRF) |
 | 대시보드 | 활성·비활성 회원 수, 전체 검사 건수, 위험도 분포(건수·%), 종합·영역별 평균, 최근 12개월 추이(Chart.js), 최근 위험 검사 5건 |
-| 회원 관리 | 이름·이메일 검색(검색어 강조), 상태 필터, 페이징, 상세(검사 이력), 정보 수정, 비활성화·활성화 |
-| 검사 결과 관리 | 이름·기간·검사 종류·판정 복합 검색, 상세 조회, 삭제(소프트 삭제) |
+| 회원 관리 | 이름·이메일 검색(검색어 강조), 상태 필터, 페이징, 상세(검사 결과 추이·이력), 정보 수정, 비활성화·활성화 (본인 탈퇴·관리자 비활성화 구분 안내) |
+| 검사 결과 관리 | 이름·기간·검사 종류·판정·회원 상태 복합 검색, 상세 조회, 삭제(소프트 삭제) |
 
 ---
 
@@ -107,7 +107,7 @@ flowchart TD
 | 관리자 화면 | Thymeleaf 3.1 + Layout Dialect, Chart.js |
 | 데이터베이스 | MariaDB 10.11 |
 | 프론트엔드 | React 19, Vite 8, React Router 7, Zustand 5, axios, Tailwind CSS 4, shadcn/ui, Chart.js 4 |
-| 개발 도구 | MSW(Mock API), JUnit 5 + Mockito + AssertJ, IntelliJ IDEA, VS Code(REST Client), HeidiSQL |
+| 개발 도구 | MSW(Mock API), JUnit Jupiter + Mockito + AssertJ(백엔드), Node.js 내장 테스트 러너 `node --test`(프론트엔드), oxlint, IntelliJ IDEA, VS Code(REST Client), HeidiSQL |
 | 협업 | GitHub(PR 리뷰), Discord, Notion, Figma |
 
 ---
@@ -137,7 +137,7 @@ flowchart LR
 
 - **한 서버, 두 인증 방식:** 사용자 API는 JWT(무상태), 관리자 화면은 세션 로그인을 씁니다. `SecurityFilterChain`을 주소별로 나눠(`@Order`) 서로 영향을 주지 않습니다 (REST 설계서 3.3).
 - **공통 응답 형식:** 모든 API는 `{ success, data, message, timestamp }`, 오류는 `{ success: false, error: { code, message, fields } }`로 응답하고, 화면은 HTTP 상태가 아니라 `error.code`로 분기합니다 (REST 설계서 2.5·5장).
-- **개발 중 Mock:** 백엔드 없이도 프론트를 개발할 수 있도록 MSW가 설계서와 같은 응답을 돌려줍니다. 목요일 통합 때 환경 변수 하나로 실제 서버에 연결합니다.
+- **개발 중 Mock:** 백엔드 없이도 프론트를 개발할 수 있도록 MSW가 설계서와 같은 응답을 돌려줍니다. 환경 변수(`VITE_USE_MOCK=false`) 하나로 실제 서버에 연결합니다.
 
 ---
 
@@ -158,6 +158,7 @@ erDiagram
         ENUM gender "MALE / FEMALE"
         INT birth_year
         ENUM status "ACTIVE / WITHDRAWN"
+        ENUM withdrawn_by "SELF / ADMIN, 활성은 NULL"
         ENUM role "MEMBER / ADMIN"
     }
     surveys {
@@ -200,7 +201,7 @@ erDiagram
 - 모든 테이블에 `created_at`, `updated_at`(JPA Auditing)이 있습니다.
 - `solutions`는 결과와 외래키로 연결하지 않고 **판정 등급(risk_level)이 같은 안내**를 조회합니다.
 - 총점과 검사 종류는 저장하지 않고 계산합니다 (`memory + other + adl`, 연결된 설문의 `exam_type`).
-- 회원 탈퇴(사용자 본인)·비활성화(관리자)와 결과 삭제는 모두 **소프트 삭제**입니다(상태값 변경). 탈퇴·비활성화해도 검사 결과는 통계를 위해 보존하며, 관리자는 비활성 회원을 다시 활성화할 수 있습니다.
+- 회원 탈퇴(사용자 본인)·비활성화(관리자)와 결과 삭제는 모두 **소프트 삭제**입니다(상태값 변경). 탈퇴·비활성화 모두 `status = WITHDRAWN`이고 `withdrawn_by`(SELF·ADMIN)로 구분합니다. 검사 결과는 통계를 위해 보존하며, 관리자는 비활성 회원을 다시 활성화할 수 있습니다.
 
 ---
 
@@ -223,7 +224,7 @@ erDiagram
 | 내 검사 이력 | GET | `/api/members/me/results?page=&size=` | JWT | 200 |
 | 서버 상태 확인 | GET | `/api/health` | - | 200 |
 
-주요 오류 코드: `VALIDATION_ERROR`(400), `INVALID_CREDENTIALS`·`ACCESS_TOKEN_EXPIRED`·`INVALID_REFRESH_TOKEN`·`UNAUTHORIZED`(401), `MEMBER_WITHDRAWN`(403), `RESULT_NOT_FOUND`(404, 다른 회원의 결과도 404), `DUPLICATE_EMAIL`(409), `KDSQ_C_REQUIRED`·`KDSQ_C_NOT_ALLOWED`(422)
+주요 오류 코드: `VALIDATION_ERROR`·`INVALID_ANSWER_COUNT`(400), `INVALID_CREDENTIALS`·`ACCESS_TOKEN_EXPIRED`·`INVALID_REFRESH_TOKEN`·`UNAUTHORIZED`(401), `MEMBER_WITHDRAWN`(403, 탈퇴·비활성 회원 로그인), `RESULT_NOT_FOUND`(404, 다른 회원의 결과도 404)·`SURVEY_NOT_FOUND`·`MEMBER_NOT_FOUND`(404, 탈퇴 후 남은 토큰), `DUPLICATE_EMAIL`(409), `KDSQ_C_REQUIRED`·`KDSQ_C_NOT_ALLOWED`(422)
 요청·응답 예시와 전체 오류 코드는 [REST API 설계서](필수제출문서/3.RESTAPI설계서_2조.md)에 있습니다.
 
 ---
@@ -239,11 +240,21 @@ erDiagram
 | SCR-05 검사 결과 | `/results/:resultId` | | ADM-05 검사 결과 | `/admin/results` |
 | SCR-06 마이페이지 | `/mypage` | | ADM-06 검사 상세 결과 | `/admin/results/{id}` |
 
-<!-- 기능 개발 마감(10/1) 후 실제 화면 캡처를 docs/images/에 넣고 아래 표를 채웁니다.
-| 1차 검사 | 검사 결과 | 마이페이지 | 관리자 대시보드 |
-|---|---|---|---|
-| ![](docs/images/survey-p.png) | ![](docs/images/result.png) | ![](docs/images/mypage.png) | ![](docs/images/admin-dashboard.png) |
--->
+### 화면 캡처
+
+| 로그인 | 1차 검사 |
+|---|---|
+| ![로그인](docs/images/user/scr-01-login-01.png) | ![1차 검사](docs/images/user/scr-03-survey-p-02.png) |
+| **검사 결과 (위험)** | **마이페이지** |
+| ![검사 결과](docs/images/user/scr-05-result-highrisk.png) | ![마이페이지](docs/images/user/scr-06-mypage-01.png) |
+
+| 관리자 대시보드 | 회원 상세 |
+|---|---|
+| ![관리자 대시보드](docs/images/admin/adm-02-dashboard.png) | ![회원 상세](docs/images/admin/adm-04-member-detail-01-active.png) |
+| **검사 결과 목록** | **검사 상세 결과** |
+| ![검사 결과 목록](docs/images/admin/adm-06-result-list-01.png) | ![검사 상세 결과](docs/images/admin/adm-07-result-detail-03-highrisk.png) |
+
+판정별 결과, 입력 오류, 빈 목록, 확인 창, 오류 페이지(403·404·500) 등 전체 화면 캡처 37장은 [docs/images/user](docs/images/user)(사용자 14장)와 [docs/images/admin](docs/images/admin)(관리자 23장)에 있습니다.
 
 와이어프레임과 화면별 상태·문구는 [UI 화면설계서](필수제출문서/4.UI화면설계서_2조.md)에 있습니다.
 
@@ -303,9 +314,11 @@ npm run dev
 
 ## 10. 테스트
 
+**백엔드 단위 테스트 — 10개 클래스, 93개**
+
 ```bash
 cd backend
-./gradlew test
+./gradlew cleanTest test
 ```
 
 DB·서버 없이 실행되는 단위 테스트입니다. Repository 등 의존 객체는 Mockito로 대체하고, 각 테스트 이름(`@DisplayName`)에 확인하는 규칙을 한글로 적었습니다.
@@ -316,12 +329,28 @@ DB·서버 없이 실행되는 단위 테스트입니다. Repository 등 의존 
 | `AuthServiceTest` | 로그인 성공·실패(401·403), 관리자 계정 차단, 토큰 재발급 실패 5가지, 로그아웃 |
 | `JwtTokenProviderTest` | 토큰 발급·검증, 만료·위조·변조 토큰, 짧은 비밀키 |
 | `SignupRequestValidationTest` | 회원가입 입력 규칙과 오류 문구 (비밀번호 규칙 위반 7가지 등) |
+| `SurveyServiceTest` | 설문 목록 전체·유형별 조회, 문항 번호순 조회, 없는 설문 404 |
+| `ScoringServiceTest` | 1차 합산, 2차 영역별 점수(답변 순서 무관), 문항 수·누락·중복·다른 설문 문항 오류 |
+| `ResultServiceTest` | 결과 제출(정상·주의·위험 판정, 422 분기, 없는 설문), 상세(관리 안내, 다른 회원 결과 404), 탈퇴 회원 404 |
 | `AdminStatisticsServiceTest` | 대시보드 위험도 비율(%)·반올림, 빈 등급·빈 달 처리 |
 | `AdminMemberServiceTest` | 관리자 회원 조회·수정·비활성화·활성화 처리 규칙 |
+| `AdminResultServiceTest` | 관리자 검사 결과 상세 조회, 삭제(소프트 삭제)·삭제된 결과 404 |
 
-API 단위 시나리오는 REST 설계서 7.4의 테스트 케이스(TC-AUTH·TC-SURV·TC-RES)를 `backend/http/*.http`로 확인합니다.
-프론트엔드 인증 흐름(토큰 재발급·동시 요청) 테스트: `cd frontend && npm run test:auth`
+**프론트엔드**
 
+```bash
+cd frontend
+npm run lint              # oxlint
+npm run build             # 빌드 확인
+npm run test:auth         # 로그인·토큰 재발급·동시 요청 (16개)
+npm run test:validation   # 회원가입 입력 검증 문구 (12개)
+npm run test:mypage       # 마이페이지 조회·이력·탈퇴 (45개)
+```
+
+**API·통합 테스트**
+
+- API 단위 시나리오는 REST 설계서 7.4의 테스트 케이스(TC-AUTH·TC-SURV·TC-RES)를 `backend/http/*.http`로 확인합니다.
+- 프론트·백엔드·DB를 연결한 전체 흐름은 [통합테스트 체크리스트](docs/통합테스트_체크리스트.md)로 확인했습니다 (119개 항목 전체 통과).
 ---
 
 ## 11. 프로젝트 구조
@@ -349,7 +378,7 @@ Mini_Project_2/
 │       └── components/          공통·레이아웃·shadcn ui
 ├── mock-data/                   Mock 응답 JSON, MSW 핸들러, 테스트 계정
 ├── 필수제출문서/                 설계서 5종
-└── docs/                        개발 파트 분배·일정·규칙
+└── docs/                        개발 파트 분배, 통합테스트 체크리스트, 화면 문구 규칙, 화면 캡처(images/)
 ```
 
 ---
@@ -364,6 +393,8 @@ Mini_Project_2/
 | [4. UI 화면설계서](필수제출문서/4.UI화면설계서_2조.md) | 사용자·관리자 화면 와이어프레임, 상태·문구, 반응형·접근성 |
 | [5. React 컴포넌트 설계서](필수제출문서/5.React컴포넌트와Props_State설계서_2조.md) | 컴포넌트 트리, Props·State, 스토어, API 연동, 오류 처리 |
 | [개발 파트 분배](docs/개발_파트_분배.md) | 담당, 일정, 화면 연결 규칙, Git 규칙 |
+| [통합테스트 체크리스트](docs/통합테스트_체크리스트.md) | 사용자·관리자·연동·공통·자동 테스트 119개 항목과 결과, 실패·수정 기록 |
+| [화면 문구 작성 규칙](docs/화면문구_작성규칙.md) | 화면 문구 규칙(끝 마침표 없음, 같은 상황 같은 문구), 문구 위치, 확인 명령 |
 
 ---
 
@@ -386,8 +417,11 @@ Mini_Project_2/
 
 ```text
 main ← develop ← feature/be-*, feature/fe-*   (기능)
-                ← docs/*                       (설계서·문서)
+                ← fix/*                        (버그 수정)
+                ← refactor/*                   (리팩터링)
                 ← test/*                       (테스트)
+                ← docs/*                       (설계서·문서)
+                ← chore/*                      (설정·기타)
 ```
 
 - `main`, `develop`에는 직접 커밋하지 않고 PR로만 병합합니다. `main`은 최종 제출 시 한 번 병합합니다.
@@ -399,5 +433,5 @@ main ← develop ← feature/be-*, feature/fe-*   (기능)
 **코드·문구 규칙**
 
 - 설계서를 먼저 고치고 코드를 맞춥니다. 코드와 설계서가 다르면 팀에서 정한 뒤 둘 다 고칩니다.
-- 화면에 보이는 문구는 끝에 마침표를 찍지 않고, 같은 상황에는 서버와 화면이 같은 문구를 씁니다 (UI 설계서 2.4).
+- 화면에 보이는 문구는 끝에 마침표를 찍지 않고, 같은 상황에는 서버와 화면이 같은 문구를 씁니다 (UI 설계서 2.4, [화면 문구 작성 규칙](docs/화면문구_작성규칙.md)).
 - 개인 설정 파일(`application-local.properties`, `.env.development.local`)은 커밋하지 않습니다.
