@@ -13,10 +13,11 @@ import { useResultStore } from '@/store/resultStore';
 import UserLayout from '@/components/layout/UserLayout';
 import '@/index.css';
 
-const profile = { name: '검증회원', email: 'fixture@test.com', gender: 'FEMALE', birthYear: 1960 };
+const profile = { name: '검증회원', email: 'fixture@test.com', gender: 'FEMALE', birthYear: 1960, createdAt: '2024-03-15T10:00:00' };
 const empty = { content: [], page: { number: 0, size: 100, totalElements: 0, totalPages: 0, first: true, last: true } };
 const scenarios = [
   ['empty', '빈 이력'], ['history', '이력 1건'], ['long', '긴 이메일'],
+  ['no-created-at', '가입일 없음'],
   ['ten', '이력 10건'], ['eleven', '이력 11건'], ['hundred', '이력 100건'], ['deleted', '삭제된 결과'],
   ['profile-error', '프로필 500'], ['history-error', '이력 500'], ['network', '네트워크 오류'],
   ['delayed', '두 조회 지연'], ['late-success', '이력 실패와 늦은 프로필 성공'],
@@ -88,6 +89,7 @@ api.defaults.adapter = async (config) => {
   const me = capturedMode === 'long'
     ? { ...profile, email: `${'a'.repeat(64)}@${'b'.repeat(24)}.example.kr` }
     : { ...profile, name: capturedMode === 'late-success' ? '이전 응답' : profile.name };
+  if (capturedMode === 'no-created-at') delete me.createdAt;
   const content = makeHistory(capturedMode);
   const results = { content, page: { ...empty.page, totalElements: content.length, totalPages: content.length ? 1 : 0 } };
   return { status: 200, data: { success: true, data: isHistory ? results : me }, config, headers: {} };
