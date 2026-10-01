@@ -72,13 +72,13 @@ export default function MyPageSectionNav({ hasHistory }) {
 
   return (
     <nav ref={navRef} aria-label="마이페이지 목차"
-      className="sticky top-[var(--mypage-header-height,0px)] z-20 border-b-2 border-slate-300 bg-slate-50 pt-2">
-      <div className="flex items-stretch gap-1 md:w-fit md:gap-2">
+      className="sticky top-[var(--mypage-header-height,0px)] z-20 border-b-2 border-slate-300 bg-slate-50 pt-2 md:hidden">
+      <div className="flex items-stretch gap-1">
         {sections.map(({ id, label }) => (
           <a key={id} href={`#${id}`} aria-current={currentId === id ? 'location' : undefined}
             onClick={(event) => handleNavigate(event, id)}
             className={cn(
-              'flex min-h-12 min-w-0 flex-1 items-center justify-center rounded-t-xl border-2 px-2 py-3 text-center text-base break-keep focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:flex-none md:px-6',
+              'flex min-h-12 min-w-0 flex-1 items-center justify-center rounded-t-xl border-2 px-2 py-3 text-center text-base break-keep focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
               currentId === id
                 ? 'border-primary border-b-slate-50 bg-white font-bold text-blue-700'
                 : 'border-slate-200 bg-slate-100 font-medium text-slate-700 hover:bg-white',

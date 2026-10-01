@@ -29,60 +29,44 @@
       }
     },
     {
-      "scenario": "768px 배치·제목 노출·일반 스크롤·하단 표시·데이터/페이지/차트 유지",
+      "scenario": "767px 배치·제목 노출·일반 스크롤·하단 표시·데이터/페이지/차트 유지",
       "geometry": {
-        "width": 721,
-        "group": 381,
+        "width": 720,
+        "group": 720,
         "links": [
           {
-            "width": 111,
+            "width": 237.328125,
             "height": 48,
             "font": 16
           },
           {
-            "width": 142.78125,
+            "width": 237.34375,
             "height": 48,
             "font": 16
           },
           {
-            "width": 111.21875,
+            "width": 237.328125,
             "height": 48,
             "font": 16
           }
         ],
-        "headerBottom": 73,
-        "top": 73,
+        "headerBottom": 81,
+        "top": 81,
         "overflow": 0,
         "hidden": false
       }
     },
     {
-      "scenario": "1280px 배치·제목 노출·일반 스크롤·하단 표시·데이터/페이지/차트 유지",
-      "geometry": {
-        "width": 864,
-        "group": 381,
-        "links": [
-          {
-            "width": 111,
-            "height": 48,
-            "font": 16
-          },
-          {
-            "width": 142.78125,
-            "height": 48,
-            "font": 16
-          },
-          {
-            "width": 111.21875,
-            "height": 48,
-            "font": 16
-          }
-        ],
-        "headerBottom": 73,
-        "top": 73,
-        "overflow": 0,
-        "hidden": false
-      }
+      "scenario": "768px 목차 미렌더·헤더 비고정·이동 여백 정리·가로 넘침 0",
+      "passed": true
+    },
+    {
+      "scenario": "1280px 목차 미렌더·헤더 비고정·이동 여백 정리·가로 넘침 0",
+      "passed": true
+    },
+    {
+      "scenario": "md 경계 왕복: 모바일 목차 복원·데스크톱 제거·조회/차트 인스턴스/가로 위치 유지",
+      "passed": true
     },
     {
       "scenario": "Tab/Enter·포커스 윤곽선·제목 다음 차트 진입·동작 축소 즉시 이동·헤더 메뉴 높이·큰 글자 줄바꿈",

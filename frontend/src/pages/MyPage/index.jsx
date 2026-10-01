@@ -140,7 +140,7 @@ export default function MyPage() {
   }
 
   return (
-    <section data-page="mypage" aria-labelledby="mypage-title" className="w-full space-y-10 pb-4 md:pb-8">
+    <section data-page="mypage" aria-labelledby="mypage-title" className="w-full space-y-10 pb-4 md:space-y-8 md:pb-8">
       <h1 id="mypage-title" className="mb-6! break-keep text-center text-2xl font-bold">마이페이지</h1>
 
       {isLoading ? (
@@ -157,7 +157,7 @@ export default function MyPage() {
         </div>
       ) : me ? (
         <>
-          <MyPageSectionNav hasHistory={history.length > 0} />
+          {historyPageSize === MOBILE_HISTORY_PAGE_SIZE && <MyPageSectionNav hasHistory={history.length > 0} />}
           <ProfileCard me={me} />
           <ExamTrendChart results={history} totalElements={historyMeta?.totalElements} />
           <section aria-labelledby="mypage-history-title" className="space-y-4">

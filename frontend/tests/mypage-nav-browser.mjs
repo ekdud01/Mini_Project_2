@@ -68,7 +68,7 @@ try {
   const ids = ['mypage-profile-title', 'mypage-trend-title', 'mypage-history-title'];
   const choose = async (label) => {
     await clickText(label);
-    await waitFor(`!!${nav}`);
+    await waitFor('!!document.getElementById("mypage-profile-title")');
     await sleep(200);
   };
   const current = () => evaluate(`${nav}.querySelector('[aria-current="location"]').hash.slice(1)`);
@@ -93,9 +93,19 @@ try {
   await send('Page.enable');
   await send('Page.navigate', {url:`${base}/tests/mypage-browser.html`});
   await waitFor('!!document.querySelector("[data-page=mypage]")');
-  for (const width of [375,768,1280]) {
+  for (const width of [375,767,768,1280]) {
     await resize(width);
     await choose('이력 100건');
+    if (width >= 768) {
+      assert.equal(await evaluate(`!!${nav}`),false);
+      assert.equal(await evaluate("getComputedStyle(document.querySelector('header')).position"),'static');
+      assert.equal(await evaluate("document.querySelector('[data-page=mypage]').style.getPropertyValue('--mypage-scroll-offset')"),'');
+      assert.equal(await evaluate('document.documentElement.scrollWidth-document.documentElement.clientWidth'),0);
+      await evaluate("document.querySelector('[data-page=mypage]').scrollIntoView()");
+      await capture(`nav-${width}`);
+      records.push({scenario:`${width}px 목차 미렌더·헤더 비고정·이동 여백 정리·가로 넘침 0`,passed:true});
+      continue;
+    }
     await jump(ids[0]);
     const geometry = await evaluate(`(() => {
       const n = ${nav};
@@ -135,6 +145,17 @@ try {
     assert.equal(await evaluate("document.querySelector('aside').innerText"),requestsBefore);
     records.push({scenario:`${width}px 배치·제목 노출·일반 스크롤·하단 표시·데이터/페이지/차트 유지`,geometry});
   }
+  const beforeResize = await inspect();
+  await evaluate("document.querySelector('canvas').parentElement.parentElement.scrollLeft=180");
+  const requestsBeforeResize = await evaluate("document.querySelector('aside').innerText");
+  for (const width of [767,768,375]) {
+    await resize(width);
+    assert.equal(await evaluate(`!!${nav}`),width<768);
+    assert.equal((await inspect()).id,beforeResize.id);
+    assert.equal((await inspect()).scrollLeft,180);
+    assert.equal(await evaluate("document.querySelector('aside').innerText"),requestsBeforeResize);
+  }
+  records.push({scenario:'md 경계 왕복: 모바일 목차 복원·데스크톱 제거·조회/차트 인스턴스/가로 위치 유지',passed:true});
   await resize(375);
   await jump(ids[0]);
   await evaluate(`${nav}.querySelector('a').focus()`);
