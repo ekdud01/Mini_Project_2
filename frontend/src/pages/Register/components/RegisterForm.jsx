@@ -13,8 +13,9 @@ const INITIAL_FORM = { name: '', email: '', password: '', passwordConfirm: '', g
 const TEXT_FIELDS = [
   { field: 'name', label: '이름', autoComplete: 'name', placeholder: '홍길동', maxLength: 50 },
   { field: 'email', label: '이메일', type: 'email', autoComplete: 'email', inputMode: 'email', placeholder: 'example@email.com', maxLength: 100 },
-  { field: 'password', label: '비밀번호', type: 'password', autoComplete: 'new-password', placeholder: '8~20자 입력', maxLength: 20 },
-  { field: 'passwordConfirm', label: '비밀번호 확인', type: 'password', autoComplete: 'new-password', placeholder: '비밀번호를 한 번 더 입력해주세요', maxLength: 20 },
+  // 비밀번호는 maxLength를 두지 않는다. 붙여넣은 긴 값이 가려진 채 잘리면 로그인 비밀번호와 어긋난다.
+  { field: 'password', label: '비밀번호', type: 'password', autoComplete: 'new-password', placeholder: '8~20자 입력' },
+  { field: 'passwordConfirm', label: '비밀번호 확인', type: 'password', autoComplete: 'new-password', placeholder: '비밀번호를 한 번 더 입력해주세요' },
 ];
 
 export default function RegisterForm({ onSubmit, isLoading = false }) {
