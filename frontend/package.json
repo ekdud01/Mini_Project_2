@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:demo": "vite build --mode demo",
     "lint": "oxlint",
     "test:auth": "node --test tests/auth.test.js",
     "test:validation": "node --test tests/validation.test.js",
