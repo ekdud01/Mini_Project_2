@@ -173,7 +173,7 @@ try {
 ### 4-5. 공통 규칙
 
 - **import 경로**는 `@/`(= `src/`)를 쓴다. 예: `import { formatDateTime } from '@/utils/date';`
-- **Props 검증:** Props를 받는 컴포넌트는 `propTypes`를 작성한다. 도메인 객체는 `@/types/propTypes`의 shape(`QuestionShape`, `SolutionShape`, `SurveyResultShape`, `MemberShape`, `RiskLevelType`)을 쓴다.
+- **Props 계약 명세:** Props를 받는 컴포넌트는 `propTypes`를 선언해 타입·필수 여부를 명세한다. React 19에서는 `propTypes` 선언만으로 자동 검사·콘솔 경고가 일어나지 않는다. 도메인 객체는 `@/types/propTypes`의 shape(`QuestionShape`, `SolutionShape`, `SurveyResultShape`, `MemberShape`, `RiskLevelType`)을 쓴다.
 - **날짜 표시:** 서버는 `2026-09-24T10:30:00`으로 보낸다. 화면에는 `formatDateTime()`(→ `2026-09-24 10:30`), 그래프 축에는 `formatDate()`(→ `09.24`)를 쓴다.
 - **스타일:** Tailwind 클래스로 작성한다. 색상 토큰은 `src/index.css`에 있다.
 - **shadcn/ui 컴포넌트:** 설계서에 나온 컴포넌트는 이미 `src/components/ui/`에 있다. 바로 import해서 쓴다.
