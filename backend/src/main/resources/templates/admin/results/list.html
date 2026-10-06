@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin-layout}">
+<!-- ADM-05 검사 결과 목록 (UI 4.6) | GET /admin/results?examType=&riskLevels=&name=&memberStatus=&from=&to=&page=
+     Model: results(Page), cond(examType, riskLevels, name, memberStatus, from, to)
+     - 복합 필터 + 검색 후 조건 유지, page는 폼에 넣지 않는다
+     - 위험도 칩은 실제 체크박스(모양만 칩), 기간 빠른 선택은 admin.js
+     - 보기·삭제 모두 현재 목록 주소를 returnUrl로 전달
+     - Thymeleaf 3.1 제한 모드: Bean 메서드(@pageUrl, @highlight)는 th:with로 먼저 계산한 뒤 변수로 사용 -->
+<head><title>검사 결과</title></head>
+<body>
+<section layout:fragment="content"
+         th:with="rl=${cond?.riskLevels != null} ? ${#strings.listJoin(cond.riskLevels, ',')} : '',
+                  ms=${cond?.memberStatus != null} ? ${cond.memberStatus.name()} : '',
+                  hasFilter=${cond?.examType != null or !#strings.isEmpty(rl) or !#strings.isEmpty(cond?.name)
+                              or !#strings.isEmpty(ms) or cond?.from != null or cond?.to != null}">
+
+    <div class="page-title"><h1>검사 결과</h1></div>
+
+    <div class="card">
+        <!-- 필터 2줄: 윗줄 = 검사 종류·위험도·성명, 아랫줄 = 기간(윗줄 오른쪽 끝까지) + 검색·초기화 -->
+        <form class="search-form search-grid" th:action="@{/admin/results}" method="get" role="search">
+            <div class="form-group">
+                <label for="examType">검사 종류</label>
+                <select id="examType" name="examType" class="form-control">
+                    <option value="">전체</option>
+                    <option value="KDSQ_P" th:selected="${cond?.examType?.toString() == 'KDSQ_P'}">KDSQ-P</option>
+                    <option value="KDSQ_C" th:selected="${cond?.examType?.toString() == 'KDSQ_C'}">KDSQ-C</option>
+                </select>
+            </div>
+
+            <!-- 위험도: 복수 선택. 누르면 해당 위험도 색으로 바뀜 -->
+            <fieldset class="form-group">
+                <legend>위험도</legend>
+                <div class="chip-group">
+                    <label class="chip-check"><input type="checkbox" name="riskLevels" value="Normal"
+                                                     th:checked="${#strings.contains(rl, 'Normal')}"><span>정상</span></label>
+                    <label class="chip-check"><input type="checkbox" name="riskLevels" value="Borderline"
+                                                     th:checked="${#strings.contains(rl, 'Borderline')}"><span>주의</span></label>
+                    <label class="chip-check"><input type="checkbox" name="riskLevels" value="HighRisk"
+                                                     th:checked="${#strings.contains(rl, 'HighRisk')}"><span>위험</span></label>
+                </div>
+            </fieldset>
+
+            <div class="form-group">
+                <label for="name">성명</label>
+                <input type="search" id="name" name="name" class="form-control" th:value="${cond?.name}" placeholder="성명">
+            </div>
+
+            <!-- 회원 상태: 활성·비활성 회원의 결과만 (회원 관리 화면과 같은 라디오 칩, 색은 admin.css의 value 기준) -->
+            <fieldset class="form-group">
+                <legend>회원 상태</legend>
+                <div class="chip-group">
+                    <label class="chip-check"><input type="radio" name="memberStatus" value=""
+                                                     th:checked="${ms == ''}"><span>전체</span></label>
+                    <label class="chip-check"><input type="radio" name="memberStatus" value="ACTIVE"
+                                                     th:checked="${ms == 'ACTIVE'}"><span>활성</span></label>
+                    <label class="chip-check"><input type="radio" name="memberStatus" value="WITHDRAWN"
+                                                     th:checked="${ms == 'WITHDRAWN'}"><span>비활성</span></label>
+                </div>
+            </fieldset>
+
+            <fieldset class="form-group period">
+                <legend>기간</legend>
+                <div class="date-range">
+                    <label for="from" class="sr-only">시작일</label>
+                    <input type="date" id="from" name="from" class="form-control" th:value="${cond?.from}">
+                    <span aria-hidden="true">~</span>
+                    <label for="to" class="sr-only">종료일</label>
+                    <input type="date" id="to" name="to" class="form-control" th:value="${cond?.to}">
+                    <button type="button" class="btn btn-pill" data-range="7d">최근 7일</button>
+                    <button type="button" class="btn btn-pill" data-range="month">이번 달</button>
+                </div>
+            </fieldset>
+
+            <div class="search-actions">
+                <button type="submit" class="btn btn-primary btn-control" data-loading-text="검색 중">검색</button>
+                <a th:href="@{/admin/results}" class="btn btn-control">초기화</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="card card-flush">
+        <div class="card-head">
+            <p class="list-summary">총 <strong th:text="|${results.totalElements}건|">108건</strong></p>
+            <span class="text-sub">검사일 최신순</span>
+        </div>
+
+        <div class="empty-state" th:if="${results.empty}">
+            <strong>검색 결과가 없습니다</strong>
+            <a th:if="${hasFilter}" th:href="@{/admin/results}" class="btn btn-sm">필터 초기화</a>
+        </div>
+
+        <div class="table-wrap" th:unless="${results.empty}">
+            <table class="table table-center">
+                <caption class="sr-only">검사 결과 목록</caption>
+                <thead>
+                <tr>
+                    <th scope="col">성명</th>
+                    <th scope="col" class="center">위험도</th>
+                    <th scope="col" class="num">1차 (P)</th>
+                    <th scope="col" class="num">2차 (C)</th>
+                    <th scope="col">검사일</th>
+                    <th scope="col" class="center">회원 상태</th>
+                    <th scope="col" class="center">작업</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${results.content}"
+                    th:with="day=${#temporals.format(r.createdAt, 'yyyy-MM-dd')},
+                       rurl=${@pageUrl.current()}">
+                    <!-- th:utext는 @highlight.mark 결과에만 사용 -->
+                    <td class="strong" th:with="h=${@highlight.mark(r.member.name, cond?.name)}" th:utext="${h}">홍길동</td>
+                    <td class="center">
+              <span class="badge" th:classappend="'badge-' + ${r.riskLevel.name()}"
+                    th:text="${r.riskLevel.displayName}">위험</span>
+                    </td>
+                    <td class="num"><span class="score"><b th:text="${r.firstScore}">7</b> <span>/ 10</span></span></td>
+                    <td class="num">
+                        <span class="score" th:if="${r.totalScore != null}"><b th:text="${r.totalScore}">9</b> <span>/ 30</span></span>
+                        <span class="muted" th:if="${r.totalScore == null}" aria-label="2차 검사 없음">—</span>
+                    </td>
+                    <td th:text="${day}">2026-09-24</td>
+                    <!-- 회원 상태: 회원 관리 목록과 같은 배지 (활성 = 파랑, 비활성 = 회색, 위험도 색과 구분) -->
+                    <td class="center">
+              <span class="badge" th:classappend="'badge-' + ${r.member.status.name()}"
+                    th:text="${r.member.status.name() == 'WITHDRAWN'} ? '비활성' : '활성'">활성</span>
+                    </td>
+                    <td class="center">
+                        <div class="table-actions">
+                            <a th:href="@{/admin/results/{id}(id=${r.id}, returnUrl=${rurl})}" class="btn btn-sm">보기</a>
+                            <!-- 삭제: 휴지통 아이콘 버튼 + 확인 모달, returnUrl 포함 -->
+                            <form th:action="@{/admin/results/{id}/delete(id=${r.id})}" method="post">
+                                <input type="hidden" name="returnUrl" th:value="${rurl}">
+                                <button type="submit" class="btn btn-sm btn-icon"
+                                        data-confirm-title="이 검사 결과를 삭제할까요?" data-confirm-ok="삭제"
+                                        th:attr="aria-label=|${r.member.name} ${day} 결과 삭제|,
+                                   data-confirm=|${r.member.name} · ${day} ${r.examType.label} 결과가 목록과 통계에서 제외됩니다|">
+                                    <svg th:replace="~{fragments/icons :: trash}"></svg>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/pagination :: pagination(${results})}"></div>
+</section>
+</body>
+</html>

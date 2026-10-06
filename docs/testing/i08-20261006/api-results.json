@@ -1,0 +1,446 @@
+[
+  {
+    "time": "2026-10-05T19:37:05.718879+00:00",
+    "label": "api_signup",
+    "method": "POST",
+    "path": "/api/members",
+    "status": 201,
+    "error_code": null,
+    "expected_status": 201,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:05.932720+00:00",
+    "label": "api_login",
+    "method": "POST",
+    "path": "/api/auth/login",
+    "status": 200,
+    "error_code": null,
+    "expected_status": 200,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "label": "api_login_lifetime",
+    "lifetime_seconds": 3600,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:05.969315+00:00",
+    "label": "api_active_profile",
+    "method": "GET",
+    "path": "/api/members/me",
+    "status": 200,
+    "error_code": null,
+    "expected_status": 200,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:06.026340+00:00",
+    "label": "api_questions",
+    "method": "GET",
+    "path": "/api/surveys/1/questions",
+    "status": 200,
+    "error_code": null,
+    "expected_status": 200,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:06.094247+00:00",
+    "label": "api_submit",
+    "method": "POST",
+    "path": "/api/results",
+    "status": 201,
+    "error_code": null,
+    "expected_status": 201,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:06.138589+00:00",
+    "label": "api_active_detail",
+    "method": "GET",
+    "path": "/api/results/1",
+    "status": 200,
+    "error_code": null,
+    "expected_status": 200,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:06.182295+00:00",
+    "label": "api_active_history",
+    "method": "GET",
+    "path": "/api/members/me/results",
+    "status": 200,
+    "error_code": null,
+    "expected_status": 200,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:06.276797+00:00",
+    "label": "browser_signup",
+    "method": "POST",
+    "path": "/api/members",
+    "status": 201,
+    "error_code": null,
+    "expected_status": 201,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:06.360869+00:00",
+    "label": "browser_login",
+    "method": "POST",
+    "path": "/api/auth/login",
+    "status": 200,
+    "error_code": null,
+    "expected_status": 200,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "label": "browser_login_lifetime",
+    "lifetime_seconds": 3600,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:06.389692+00:00",
+    "label": "browser_active_profile",
+    "method": "GET",
+    "path": "/api/members/me",
+    "status": 200,
+    "error_code": null,
+    "expected_status": 200,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:06.422912+00:00",
+    "label": "browser_questions",
+    "method": "GET",
+    "path": "/api/surveys/1/questions",
+    "status": 200,
+    "error_code": null,
+    "expected_status": 200,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:06.457350+00:00",
+    "label": "browser_submit",
+    "method": "POST",
+    "path": "/api/results",
+    "status": 201,
+    "error_code": null,
+    "expected_status": 201,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:06.485134+00:00",
+    "label": "browser_active_detail",
+    "method": "GET",
+    "path": "/api/results/2",
+    "status": 200,
+    "error_code": null,
+    "expected_status": 200,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:06.515121+00:00",
+    "label": "browser_active_history",
+    "method": "GET",
+    "path": "/api/members/me/results",
+    "status": 200,
+    "error_code": null,
+    "expected_status": 200,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:54.858306+00:00",
+    "label": "admin_withdraw",
+    "member_id": 2,
+    "status": 200,
+    "final_path": "/admin/members/2",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:54.927998+00:00",
+    "label": "admin_withdraw",
+    "member_id": 3,
+    "status": 200,
+    "final_path": "/admin/members/3",
+    "passed": true
+  },
+  {
+    "label": "token_expiry_condition",
+    "expired": false,
+    "seconds_remaining": 3550.07,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:54.951397+00:00",
+    "label": "inactive_profile",
+    "method": "GET",
+    "path": "/api/members/me",
+    "status": 404,
+    "error_code": "MEMBER_NOT_FOUND",
+    "expected_status": 404,
+    "expected_code": "MEMBER_NOT_FOUND",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:54.976285+00:00",
+    "label": "inactive_history",
+    "method": "GET",
+    "path": "/api/members/me/results",
+    "status": 404,
+    "error_code": "MEMBER_NOT_FOUND",
+    "expected_status": 404,
+    "expected_code": "MEMBER_NOT_FOUND",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:54.983087+00:00",
+    "label": "inactive_detail",
+    "method": "GET",
+    "path": "/api/results/1",
+    "status": 404,
+    "error_code": "MEMBER_NOT_FOUND",
+    "expected_status": 404,
+    "expected_code": "MEMBER_NOT_FOUND",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:54.991902+00:00",
+    "label": "inactive_submit",
+    "method": "POST",
+    "path": "/api/results",
+    "status": 404,
+    "error_code": "MEMBER_NOT_FOUND",
+    "expected_status": 404,
+    "expected_code": "MEMBER_NOT_FOUND",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:55.002855+00:00",
+    "label": "inactive_reissue",
+    "method": "POST",
+    "path": "/api/auth/reissue",
+    "status": 401,
+    "error_code": "INVALID_REFRESH_TOKEN",
+    "expected_status": 401,
+    "expected_code": "INVALID_REFRESH_TOKEN",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:37:55.089383+00:00",
+    "label": "inactive_login",
+    "method": "POST",
+    "path": "/api/auth/login",
+    "status": 403,
+    "error_code": "MEMBER_WITHDRAWN",
+    "expected_status": 403,
+    "expected_code": "MEMBER_WITHDRAWN",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:38:25.859589+00:00",
+    "label": "admin_activate",
+    "member_id": 2,
+    "status": 200,
+    "final_path": "/admin/members/2",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:38:25.919636+00:00",
+    "label": "admin_activate",
+    "member_id": 3,
+    "status": 200,
+    "final_path": "/admin/members/3",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:39:14.651861+00:00",
+    "label": "short_lifetime_login",
+    "method": "POST",
+    "path": "/api/auth/login",
+    "status": 200,
+    "error_code": null,
+    "expected_status": 200,
+    "expected_code": null,
+    "passed": true
+  },
+  {
+    "label": "short_lifetime_login_lifetime",
+    "lifetime_seconds": 60,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:39:16.497578+00:00",
+    "label": "admin_withdraw",
+    "member_id": 2,
+    "status": 200,
+    "final_path": "/admin/members/2",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:39:16.567681+00:00",
+    "label": "admin_withdraw",
+    "member_id": 3,
+    "status": 200,
+    "final_path": "/admin/members/3",
+    "passed": true
+  },
+  {
+    "label": "token_expiry_condition",
+    "expired": false,
+    "seconds_remaining": 57.43,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:39:16.602380+00:00",
+    "label": "inactive_profile",
+    "method": "GET",
+    "path": "/api/members/me",
+    "status": 404,
+    "error_code": "MEMBER_NOT_FOUND",
+    "expected_status": 404,
+    "expected_code": "MEMBER_NOT_FOUND",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:39:16.631446+00:00",
+    "label": "inactive_history",
+    "method": "GET",
+    "path": "/api/members/me/results",
+    "status": 404,
+    "error_code": "MEMBER_NOT_FOUND",
+    "expected_status": 404,
+    "expected_code": "MEMBER_NOT_FOUND",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:39:16.659564+00:00",
+    "label": "inactive_detail",
+    "method": "GET",
+    "path": "/api/results/1",
+    "status": 404,
+    "error_code": "MEMBER_NOT_FOUND",
+    "expected_status": 404,
+    "expected_code": "MEMBER_NOT_FOUND",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:39:16.717621+00:00",
+    "label": "inactive_submit",
+    "method": "POST",
+    "path": "/api/results",
+    "status": 404,
+    "error_code": "MEMBER_NOT_FOUND",
+    "expected_status": 404,
+    "expected_code": "MEMBER_NOT_FOUND",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:39:16.739882+00:00",
+    "label": "inactive_reissue",
+    "method": "POST",
+    "path": "/api/auth/reissue",
+    "status": 401,
+    "error_code": "INVALID_REFRESH_TOKEN",
+    "expected_status": 401,
+    "expected_code": "INVALID_REFRESH_TOKEN",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:39:16.841386+00:00",
+    "label": "inactive_login",
+    "method": "POST",
+    "path": "/api/auth/login",
+    "status": 403,
+    "error_code": "MEMBER_WITHDRAWN",
+    "expected_status": 403,
+    "expected_code": "MEMBER_WITHDRAWN",
+    "passed": true
+  },
+  {
+    "label": "token_expiry_condition",
+    "expired": true,
+    "seconds_remaining": -1.04,
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:40:15.053646+00:00",
+    "label": "expired_profile",
+    "method": "GET",
+    "path": "/api/members/me",
+    "status": 401,
+    "error_code": "ACCESS_TOKEN_EXPIRED",
+    "expected_status": 401,
+    "expected_code": "ACCESS_TOKEN_EXPIRED",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:40:15.059852+00:00",
+    "label": "expired_history",
+    "method": "GET",
+    "path": "/api/members/me/results",
+    "status": 401,
+    "error_code": "ACCESS_TOKEN_EXPIRED",
+    "expected_status": 401,
+    "expected_code": "ACCESS_TOKEN_EXPIRED",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:40:15.067149+00:00",
+    "label": "expired_detail",
+    "method": "GET",
+    "path": "/api/results/1",
+    "status": 401,
+    "error_code": "ACCESS_TOKEN_EXPIRED",
+    "expected_status": 401,
+    "expected_code": "ACCESS_TOKEN_EXPIRED",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:40:15.073181+00:00",
+    "label": "expired_submit",
+    "method": "POST",
+    "path": "/api/results",
+    "status": 401,
+    "error_code": "ACCESS_TOKEN_EXPIRED",
+    "expected_status": 401,
+    "expected_code": "ACCESS_TOKEN_EXPIRED",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:40:15.081662+00:00",
+    "label": "expired_reissue",
+    "method": "POST",
+    "path": "/api/auth/reissue",
+    "status": 401,
+    "error_code": "INVALID_REFRESH_TOKEN",
+    "expected_status": 401,
+    "expected_code": "INVALID_REFRESH_TOKEN",
+    "passed": true
+  },
+  {
+    "time": "2026-10-05T19:40:15.196164+00:00",
+    "label": "expired_login",
+    "method": "POST",
+    "path": "/api/auth/login",
+    "status": 403,
+    "error_code": "MEMBER_WITHDRAWN",
+    "expected_status": 403,
+    "expected_code": "MEMBER_WITHDRAWN",
+    "passed": true
+  }
+]

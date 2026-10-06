@@ -1,0 +1,85 @@
+{
+  "records": [
+    {
+      "scenario": "375px 배치·제목 노출·일반 스크롤·하단 표시·데이터/페이지/차트 유지",
+      "geometry": {
+        "width": 328,
+        "group": 328,
+        "links": [
+          {
+            "width": 106.65625,
+            "height": 72,
+            "font": 16
+          },
+          {
+            "width": 106.671875,
+            "height": 72,
+            "font": 16
+          },
+          {
+            "width": 106.671875,
+            "height": 72,
+            "font": 16
+          }
+        ],
+        "headerBottom": 81,
+        "top": 81,
+        "overflow": 0,
+        "hidden": false
+      }
+    },
+    {
+      "scenario": "767px 배치·제목 노출·일반 스크롤·하단 표시·데이터/페이지/차트 유지",
+      "geometry": {
+        "width": 720,
+        "group": 720,
+        "links": [
+          {
+            "width": 237.328125,
+            "height": 48,
+            "font": 16
+          },
+          {
+            "width": 237.34375,
+            "height": 48,
+            "font": 16
+          },
+          {
+            "width": 237.328125,
+            "height": 48,
+            "font": 16
+          }
+        ],
+        "headerBottom": 81,
+        "top": 81,
+        "overflow": 0,
+        "hidden": false
+      }
+    },
+    {
+      "scenario": "768px 목차 미렌더·헤더 비고정·이동 여백 정리·가로 넘침 0",
+      "passed": true
+    },
+    {
+      "scenario": "1280px 목차 미렌더·헤더 비고정·이동 여백 정리·가로 넘침 0",
+      "passed": true
+    },
+    {
+      "scenario": "md 경계 왕복: 모바일 목차 복원·데스크톱 제거·조회/차트 인스턴스/가로 위치 유지",
+      "passed": true
+    },
+    {
+      "scenario": "Tab/Enter·포커스 윤곽선·제목 다음 차트 진입·동작 축소 즉시 이동·헤더 메뉴 높이·큰 글자 줄바꿈",
+      "passed": true
+    },
+    {
+      "scenario": "빈 이력 두 링크·로딩 숨김/복원·프로필/이력 오류 재시도·탈퇴 대화상자 취소",
+      "passed": true
+    },
+    {
+      "scenario": "StrictMode·상세 왕복 목차 정리/복원·타 화면 헤더 비고정·차트 단일 인스턴스",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

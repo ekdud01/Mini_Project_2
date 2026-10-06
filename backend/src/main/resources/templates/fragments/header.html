@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- 공통 헤더 (한 줄): 서비스 이름 | 상단 메뉴 | 로그아웃
+     Model: adminEmail(로그인 여부 확인용), currentPath(메뉴 강조) — AdminModelAdvice 제공 -->
+<body>
+<header th:fragment="header" class="admin-header">
+    <a th:href="@{/admin/dashboard}" class="brand" aria-label="MEMORY ATTACK 관리자 대시보드로 이동">
+        <span class="brand-name">MEMORY ATTACK</span>
+        <span class="brand-tag">ADMIN</span>
+    </a>
+    <!-- 상단 메뉴는 로그아웃 바로 왼쪽 (한 줄 헤더) -->
+    <nav th:replace="~{fragments/menu :: menu}"></nav>
+    <form class="header-logout" th:if="${adminEmail != null}" th:action="@{/admin/logout}" method="post">
+        <button type="submit" class="btn btn-sm">
+            <svg th:replace="~{fragments/icons :: logout}"></svg>로그아웃
+        </button>
+    </form>
+</header>
+</body>
+</html>

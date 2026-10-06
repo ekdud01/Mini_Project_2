@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<!-- 관리자 공통 레이아웃: 헤더(서비스 이름 · 상단 메뉴 · 로그아웃) → 본문(브레드크럼·플래시·content) → 푸터
+     각 화면: layout:decorate="~{layout/admin-layout}" + layout:fragment="content" -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title layout:title-pattern="$CONTENT_TITLE | KDSQ 관리자">KDSQ 관리자</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body class="admin-page">
+<header th:replace="~{fragments/header :: header}"></header>
+<main class="admin-main">
+    <div th:replace="~{fragments/breadcrumb :: breadcrumb}"></div>
+    <div th:replace="~{fragments/flash :: flash}"></div>
+    <div layout:fragment="content">본문 영역</div>
+</main>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<script th:src="@{/js/admin.js}" defer></script>
+</body>
+</html>

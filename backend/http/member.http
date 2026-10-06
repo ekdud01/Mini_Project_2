@@ -1,0 +1,88 @@
+### 실행: VS Code 확장 "REST Client"(Huachao Mao) 설치 후 각 요청 위의 Send Request 클릭
+### 회원 API 테스트 케이스 (REST API 설계서 7.4 TC-AUTH-01~03-1, TC-MEM-01~02)
+### 회원가입은 토큰 없이, 내 정보·탈퇴는 로그인 토큰이 필요하다 → 아래 "로그인" 요청을 먼저 실행한다
+
+### TC-AUTH-01 회원가입 성공 → 201
+POST http://localhost:8080/api/members
+Content-Type: application/json
+
+{
+  "email": "hong@test.com",
+  "password": "Test1234!",
+  "name": "홍길동",
+  "gender": "MALE",
+  "birthYear": 1955
+}
+
+### TC-AUTH-02 같은 이메일로 다시 가입 → 409 DUPLICATE_EMAIL
+POST http://localhost:8080/api/members
+Content-Type: application/json
+
+{
+  "email": "hong@test.com",
+  "password": "Test1234!",
+  "name": "홍길동",
+  "gender": "MALE",
+  "birthYear": 1955
+}
+
+### TC-AUTH-03 이메일 형식 오류 + 출생년도 1800 → 400, fields에 email·birthYear
+POST http://localhost:8080/api/members
+Content-Type: application/json
+
+{
+  "email": "not-an-email",
+  "password": "Test1234!",
+  "name": "김철수",
+  "gender": "MALE",
+  "birthYear": 1800
+}
+
+### TC-AUTH-03-1 특수문자 없는 비밀번호 → 400, fields에 password
+POST http://localhost:8080/api/members
+Content-Type: application/json
+
+{
+  "email": "kim@test.com",
+  "password": "abcd1234",
+  "name": "김철수",
+  "gender": "MALE",
+  "birthYear": 1960
+}
+
+### 미래 출생년도 → 400, fields에 birthYear
+POST http://localhost:8080/api/members
+Content-Type: application/json
+
+{
+  "email": "kim@test.com",
+  "password": "Test1234!",
+  "name": "김철수",
+  "gender": "MALE",
+  "birthYear": 2999
+}
+
+### 로그인 (내 정보·탈퇴 요청이 이 응답의 accessToken을 사용)
+# @name login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "hong@test.com",
+  "password": "Test1234!"
+}
+
+### 토큰 없이 내 정보 조회 → 401 UNAUTHORIZED (TC-AUTH-11)
+GET http://localhost:8080/api/members/me
+
+### TC-MEM-01 내 정보 조회 → 200 (password 없음)
+GET http://localhost:8080/api/members/me
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### TC-MEM-02 회원 탈퇴 → 204 (테스트 후 DB에서 UPDATE members SET status = 'ACTIVE' WHERE email = 'hong@test.com'; 로 되돌린다)
+DELETE http://localhost:8080/api/members/me
+Authorization: Bearer {{login.response.body.data.accessToken}}
+
+### 탈퇴 후 같은 토큰으로 내 정보 조회 → 404 MEMBER_NOT_FOUND
+GET http://localhost:8080/api/members/me
+Authorization: Bearer {{login.response.body.data.accessToken}}
